@@ -8,6 +8,14 @@ import numpy
 import arcpy
 
 
+def progress_print(msg, verbose=False, asMessage=False):
+    if verbose:
+        if asMessage:
+            arcpy.AddMessage(msg)
+        else:
+            print(msg)
+
+
 class EasyMapDoc(object):
     def __init__(self, *args, **kwargs):
         self.mapdoc = arcpy.mapping.MapDocument(*args, **kwargs)
@@ -22,7 +30,7 @@ class EasyMapDoc(object):
 
     def findLayerByName(self, name):
         for lyr in self.layers:
-            if not lyr.isGroupLayer and lyr.datasetName == name:
+            if not lyr.isGroupLayer and lyr.name == name:
                 return lyr
 
     def add_layer(self, layer, df=None, position='top'):
@@ -38,6 +46,8 @@ class EasyMapDoc(object):
         # layer can be a path to a file. if so, convert to a Layer object
         if isinstance(layer, basestring):
             layer = arcpy.mapping.Layer(layer)
+        elif not isinstance(layer, arcpy.mapping.Layer):
+            raise ValueError("``layer`` be an arcpy Layer or a path to a file")
 
         # add the layer to the map
         arcpy.mapping.AddLayer(df, layer, position.upper())
@@ -66,7 +76,11 @@ class Extension(object):
         self.name = name
 
     def __enter__(self):
-        arcpy.CheckOutExtension(self.name)
+        if arcpy.CheckExtension(self.name) == "Available":
+            status = arcpy.CheckOutExtension(self.name)
+            return status
+        else:
+            raise RuntimeError("%s license isn't available" % self.name)
 
     def __exit__(self, *args):
         arcpy.CheckOutExtension(self.name)
@@ -138,12 +152,21 @@ def result_to_layer(result):
     return arcpy.mapping.Layer(result.getOutput(0))
 
 
-def rasters_to_arrays(*rasters):
+def rasters_to_arrays(*rasters, **kwargs):
     """ Converts an arbitrary number of rasters to numpy arrays"""
+    verbose = kwargs.pop("verbose", False)
+    asMessage = kwargs.pop("asMessage", False)
+    squeeze = kwargs.pop("squeeze", False)
+
     arrays = []
-    for r in rasters:
-        arcpy.AddMessage(r)
+    for n, r in enumerate(rasters):
+        msg = 'Processing raster {} of {}: {}'.format(n, len(rasters), r)
+        progress_print(msg, verbose=verbose, asMessage=asMessage)
         arrays.append(arcpy.RasterToNumPyArray(r, nodata_to_value=-999))
+
+    if squeeze and len(arrays) == 1:
+        arrays = arrays[0]
+
     return arrays
 
 
@@ -175,40 +198,50 @@ def array_to_raster(array, template):
     return newraster
 
 
-def load_data(datapath, dtype):
+def load_data(datapath, datatype, greedyRasters=True):
     """ Prepare a DEM or other raster for masking floods
 
     Parameters
     ----------
     datapath : str, arcpy.Raster, or arcpy.mapping.Layer
         The (filepath to the) data you want to load.
-    dtype : str
+    datatype : str
         The type of data you are trying to load. Must be either
         "shape" (for polygons) or "raster" (for rasters).
+    greedyRasters : bool (default = True)
+        Currently, arcpy lets you load raster data as a "Raster" or as a
+        "Layer". When ``greedyRasters`` is True, rasters loaded as type
+        "Layer" will be forced to type "Raster".
 
     Returns
     -------
-    topo : arcpy.Raster
-        The topo data as an arcpy.Raster
+    data : arcpy.Raster or arcpy.mapping.Layer
+        The data loaded as an arcpy type.
 
     """
 
-    if dtype.lower() in ['raster', 'grid']:
-        objtype = arcpy.Raster
-    elif dtype.lower() in ['shape', 'layer']:
-        objtype = arcpy.mapping.Layer
-    else:
-        raise ValueError("Datatype %s not supported. Must be rater or layer")
+    dtype_lookup = {
+        'raster': arcpy.Raster,
+        'grid': arcpy.Raster,
+        'shape': arcpy.mapping.Layer,
+        'layer': arcpy.mapping.Layer,
+    }
 
-    if isinstance(datapath, basestring):
+    try:
+        objtype = dtype_lookup[datatype.lower()]
+    except KeyError:
+        raise ValueError("Datatype {} not supported. Must be raster or layer".format(datatype))
+
+    if isinstance(datapath, objtype):
+        data = datapath
+    else:
         try:
             data = objtype(datapath)
         except:
-            raise ValueError("could not load %s as a %s" % (datapath, objtype))
-    elif isinstance(datapath, objtype):
-        data = datapath
-    else:
-        raise ValueError("`raster` must be a path to a raster or a Raster object")
+            raise ValueError("could not load {} as a {}".format(datapath, objtype))
+
+    if greedyRasters and isinstance(data, arcpy.mapping.Layer) and data.isRasterLayer:
+        data = arcpy.Raster(datapath)
 
     return data
 
@@ -245,7 +278,6 @@ def process_polygons(polygons, tidegate_column, cellsize=4):
             in_features=_zones,
             value_field=tidegate_column,
             cellsize=cellsize,
-            out_rasterdataset='_temp_wshed_raster'
         )
 
     # result object isn't actually the raster
@@ -294,3 +326,39 @@ def clip_dem_to_zones(dem, zones):
     dem_clipped = result_to_raster(result)
 
     return dem_clipped, result
+
+
+def mask_array_with_flood(zones_array, topo_array, elevation):
+    """ Mask out non-flooded portions of rasters.
+
+    Parameters
+    ----------
+    zones_array : numpy.ndarray
+        Array of zone IDs from each zone of influence.
+    topo_array : numpy.ndarray
+        Digital elevation model (as an array) of the areas.
+    elevation : float
+        The flood elevation *above& which everything will be masked.
+
+    Returns
+    -------
+    flooded_array : numpy.ndarray
+        Array of zone IDs only where there is flooding.
+
+    """
+
+    # compute mask of non-zoned areas of topo
+    nonzone_mask = zones_array <= 0
+
+    invalid_mask = numpy.ma.masked_invalid(topo_array).mask
+    topo_array[invalid_mask] = -999
+
+    # mask out zoned areas above the flood elevation
+    unflooded_mask = topo_array > elevation
+
+    # apply the mask to the zone array
+    final_mask = nonzone_mask | unflooded_mask
+    flooded_array = zones_array.copy()
+    flooded_array[final_mask] = 0
+
+    return flooded_array
