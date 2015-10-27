@@ -232,8 +232,10 @@ def load_data(datapath, datatype, greedyRasters=True):
     except KeyError:
         raise ValueError("Datatype {} not supported. Must be raster or layer".format(datatype))
 
+    # if the input is already a Raster or Layer, just return it
     if isinstance(datapath, objtype):
         data = datapath
+    # otherwise, load it as the datatype
     else:
         try:
             data = objtype(datapath)
@@ -306,7 +308,7 @@ def clip_dem_to_zones(dem, zones):
     dem_clipped : arcpy.Raster
         The zones of influence as a raster dataset
     result : arcpy.Result
-        The weird, crpyric results object that so many (but not all)
+        The weird, cryptic results object that so many (but not all)
         ESRI arcpy function return.
 
     """
@@ -318,7 +320,7 @@ def clip_dem_to_zones(dem, zones):
         result = arcpy.management.Clip(
             in_raster=_dem,
             in_template_dataset=_zones,
-            out_raster="_temp_clipped_dem",
+            out_raster="_temp_clipped",
             maintain_clipping_extent="MAINTAIN_EXTENT",
             clipping_geometry="NONE",
         )
@@ -328,7 +330,7 @@ def clip_dem_to_zones(dem, zones):
     return dem_clipped, result
 
 
-def mask_array_with_flood(zones_array, topo_array, elevation):
+def flood_zones(zones_array, topo_array, elevation):
     """ Mask out non-flooded portions of rasters.
 
     Parameters
