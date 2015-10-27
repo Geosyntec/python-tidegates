@@ -229,8 +229,8 @@ def test_array_to_raster():
 
 
 class Test_load_data(object):
-    rasterpath = resource_filename("tidegates.testing", 'test_raster2')
-    vectorpath = resource_filename("tidegates.testing", 'wetlands.shp')
+    rasterpath = resource_filename("tidegates.testing", 'test_dem.tif')
+    vectorpath = resource_filename("tidegates.testing", 'test_wetlands.shp')
 
     @nt.raises(ValueError)
     def test_bad_datatype(self):
@@ -277,64 +277,119 @@ class Test_load_data(object):
         nt.assert_true(isinstance(x, arcpy.mapping.Layer))
 
 
-class Test_process_polygons(object):
-    def setup(self):
-        self.testfile = resource_filename("tidegates.testing", "test_zones.shp")
-        self.known_x4 = numpy.array([
-            [-999, -999, -999, -999, -999, -999, -999],
-            [-999, -999,    7,    7,    7,    7, -999],
-            [-999, -999,    7,    7,    7,    7, -999],
-            [-999, -999,    7,    7,    7,    7, -999],
-            [-999, -999, -999, -999, -999,    7, -999],
-            [-999, -999, -999, -999, -999, -999, -999],
-            [-999, -999, -999, -999, -999, -999, -999],
-            [   3,    3,    3,    3, -999, -999, -999],
-            [   3,    3,    3, -999, -999, -999, -999]
-        ])
-        self.known_x2 = numpy.array([
-            [-999, -999, -999, -999, -999,    7,    7,    7,    7,    7,    7,    7, -999],
-            [-999, -999, -999, -999, -999,    7,    7,    7,    7,    7,    7,    7,    7],
-            [-999, -999, -999, -999,    7,    7,    7,    7,    7,    7,    7,    7,    7],
-            [-999, -999, -999, -999,    7,    7,    7,    7,    7,    7,    7,    7,    7],
-            [-999, -999, -999, -999,    7,    7,    7,    7,    7,    7,    7,    7, -999],
-            [-999, -999, -999, -999,    7,    7,    7,    7,    7,    7,    7,    7, -999],
-            [-999, -999, -999, -999, -999,    7,    7,    7,    7,    7,    7,    7, -999],
-            [-999, -999, -999, -999, -999, -999, -999,    7,    7,    7,    7, -999, -999],
-            [-999, -999, -999, -999, -999, -999, -999, -999, -999, -999, -999, -999, -999],
-            [-999, -999, -999, -999, -999, -999, -999, -999, -999, -999, -999, -999, -999],
-            [-999, -999, -999, -999, -999, -999, -999, -999, -999, -999, -999, -999, -999],
-            [-999, -999, -999, -999, -999, -999, -999, -999, -999, -999, -999, -999, -999],
-            [-999, -999, -999, -999, -999, -999, -999, -999, -999, -999, -999, -999, -999],
-            [-999, -999,    3,    3,    3,    3,    3, -999, -999, -999, -999, -999, -999],
-            [   3,    3,    3,    3,    3,    3,    3, -999, -999, -999, -999, -999, -999],
-            [   3,    3,    3,    3,    3,    3,    3, -999, -999, -999, -999, -999, -999],
-            [-999, -999,    3,    3,    3, -999, -999, -999, -999, -999, -999, -999, -999]
-        ])
+class _process_polygons_mixin(object):
+    testfile = resource_filename("tidegates.testing", "test_zones.shp")
+    known_values = numpy.array([-999, 16, 150])
 
-
-    def test_defaults_x4(self):
-        raster, res = utils.process_polygons(self.testfile, "tg_id")
+    def test_process(self):
+        raster, res = utils.process_polygons(self.testfile, "GeoID", **self.kwargs)
         nt.assert_true(isinstance(raster, arcpy.Raster))
         nt.assert_true(isinstance(res, arcpy.Result))
+
         array = utils.rasters_to_arrays(raster, squeeze=True)
-        nptest.assert_array_almost_equal(array, self.known_x4)
         arcpy.management.Delete(raster)
 
-    def test_x2(self):
-        raster, res = utils.process_polygons(self.testfile, "tg_id", cellsize=2)
-        nt.assert_true(isinstance(raster, arcpy.Raster))
-        nt.assert_true(isinstance(res, arcpy.Result))
-        array = utils.rasters_to_arrays(raster, squeeze=True)
-        nptest.assert_array_almost_equal(array, self.known_x2)
-        arcpy.management.Delete(raster)
+        flat_arr = array.flatten()
+        bins = numpy.bincount(flat_arr[flat_arr > 0])
+        nptest.assert_array_almost_equal(numpy.unique(array), self.known_values)
+        nptest.assert_array_almost_equal(bins[bins > 0], self.known_counts)
+        nt.assert_tuple_equal(array.shape, self.known_shape)
 
 
-class Test_clip_dem_to_zones(object):
+class Test_process_polygons_default(_process_polygons_mixin):
     def setup(self):
-        pass
+        self.kwargs = {}
+        self.known_shape = (854, 661)
+        self.known_counts = numpy.array([95274, 36674])
 
-    def teardown(self):
-        pass
 
-    def test_basic(self):
-        nt.assert_equal(1+1, 2)
+class Test_process_polygons_x02(_process_polygons_mixin):
+    def setup(self):
+        self.kwargs = {'cellsize': 2}
+        self.known_shape = (1709, 1322)
+        self.known_counts = numpy.array([381211, 146710])
+
+class Test_process_polygons_x08(_process_polygons_mixin):
+    def setup(self):
+        self.kwargs = {'cellsize': 8}
+        self.known_shape = (427, 330)
+        self.known_counts = numpy.array([23828,  9172])
+
+    def test_actual_arrays(self):
+        known_raster_file = resource_filename("tidegates.testing", "test_zones_raster.tif")
+        known_raster = utils.load_data(known_raster_file, 'raster')
+        raster, result = utils.process_polygons(self.testfile, "GeoID", **self.kwargs)
+        arrays = utils.rasters_to_arrays(raster, known_raster)
+        arcpy.management.Delete(raster)
+
+        nptest.assert_array_almost_equal(*arrays)
+
+
+class Test_process_polygons_x16(_process_polygons_mixin):
+    def setup(self):
+        self.kwargs = {'cellsize': 16}
+        self.known_shape = (214, 165)
+        self.known_counts = numpy.array([5953, 2288])
+
+
+def test_clip_dem_to_zones():
+    demfile = resource_filename("tidegates.testing", 'test_dem.tif')
+    zonefile = resource_filename("tidegates.testing", "test_zones_raster_small.tif")
+    raster, result = utils.clip_dem_to_zones(demfile, zonefile)
+
+    array = utils.rasters_to_arrays(raster, squeeze=True)
+    arcpy.management.Delete(raster)
+
+    nt.assert_true(isinstance(raster, arcpy.Raster))
+    nt.assert_true(isinstance(result, arcpy.Result))
+
+    known_shape = (146, 172)
+    nt.assert_tuple_equal(array.shape, known_shape)
+
+
+def test_mask_array_with_flood():
+    zones = numpy.array([
+        [  1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   0],
+        [  1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   0],
+        [  1,   1,   1,   1,   1,   1,   0,   0,   0,   0,   0],
+        [  1,   1,   1,   1,   2,   2,   2,   2,   0,   0,   0],
+        [  0,   0,   0,   2,   2,   2,   2,   0,   0,   0,   0],
+        [  2,   2,   2,   2,   2,   2,   2,   0,   0,   0,   0],
+        [  2,   2,   2,   2,   0,   0,   0,   0,   0,   0,   0],
+        [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0],
+        [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0],
+        [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0],
+        [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0],
+    ])
+
+    topo = numpy.array([
+        [ 0.,  1.,  2.,  3.,  4.,  5.,  6.,  7.,  8.,  9., 10.],
+        [ 1.,  2.,  3.,  4.,  5.,  6.,  7.,  8.,  9., 10., 11.],
+        [ 2.,  3.,  4.,  5.,  6.,  7.,  8.,  9., 10., 11., 12.],
+        [ 3.,  4.,  5.,  6.,  7.,  8.,  9., 10., 11., 12., 13.],
+        [ 4.,  5.,  6.,  7.,  8.,  9., 10., 11., 12., 13., 14.],
+        [ 5.,  6.,  7.,  8.,  9., 10., 11., 12., 13., 14., 15.],
+        [ 6.,  7.,  8.,  9., 10., 11., 12., 13., 14., 15., 16.],
+        [ 7.,  8.,  9., 10., 11., 12., 13., 14., 15., 16., 17.],
+        [ 8.,  9., 10., 11., 12., 13., 14., 15., 16., 17., 18.],
+        [ 9., 10., 11., 12., 13., 14., 15., 16., 17., 18., 19.],
+        [10., 11., 12., 13., 14., 15., 16., 17., 18., 19., 20.],
+    ])
+
+    known_flooded = numpy.array([
+        [  1,   1,   1,   1,   1,   1,   1,   0,   0,   0,   0],
+        [  1,   1,   1,   1,   1,   1,   0,   0,   0,   0,   0],
+        [  1,   1,   1,   1,   1,   0,   0,   0,   0,   0,   0],
+        [  1,   1,   1,   1,   0,   0,   0,   0,   0,   0,   0],
+        [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0],
+        [  2,   2,   0,   0,   0,   0,   0,   0,   0,   0,   0],
+        [  2,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0],
+        [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0],
+        [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0],
+        [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0],
+        [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0],
+    ])
+
+    flooded = utils.flood_zones(zones, topo, 6.0)
+    nptest.assert_array_almost_equal(flooded, known_flooded)
+
