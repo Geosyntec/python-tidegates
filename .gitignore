@@ -6,7 +6,7 @@ _old
 *.egg-info
 *.pyc
 .ipynb_checkpoints
-
+tidegates/testing/info
 
 #################
 ## Eclipse
