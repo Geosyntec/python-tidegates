@@ -56,6 +56,14 @@ Installing collected packages: tidegates
 Successfully installed tidegates-0.1
 ```
 
+## Input data
+The input data required to run the tool are the following:
+  1. workspace - this is an Esri geodatabase or folder in which the analysis will take place
+  1. DEM - this is a raster dataset of a digitial elevation model
+  1. zones_of_influence - a polygon layer that delineates the zones of influence behind each tidegate of interest
+  1. elevations - the water surface elevation (in feet) at the tidegates
+  1. filename - an optional name of the outputfile where the results will be saved.
+
 ## Small Sample Dataset
 This repository contains a very small sample dataset that is used to:
   1. Run the test suite
