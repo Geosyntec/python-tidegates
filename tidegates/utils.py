@@ -18,7 +18,10 @@ def progress_print(msg, verbose=False, asMessage=False):
 
 class EasyMapDoc(object):
     def __init__(self, *args, **kwargs):
-        self.mapdoc = arcpy.mapping.MapDocument(*args, **kwargs)
+        try:
+            self.mapdoc = arcpy.mapping.MapDocument(*args, **kwargs)
+        except RuntimeError:
+            self.mapdoc = None
 
     @property
     def layers(self):
