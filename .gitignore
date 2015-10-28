@@ -7,6 +7,15 @@ _old
 *.pyc
 .ipynb_checkpoints
 tidegates/testing/info
+tidegates/testing/info/*
+tidegates/testing/tempraster
+tidegates/testing/tempraster.*
+tidegates/testing/log
+tidegates/testing/test_zones_PolygonToRaster*
+tidegates/testing/_temp_clipped
+tidegates/testing/_temp*
+
+
 
 #################
 ## Eclipse
@@ -227,3 +236,4 @@ pip-log.txt
 *.zip
 *.lock
 *.noseids
+tidegates/testing/info/arc.dir

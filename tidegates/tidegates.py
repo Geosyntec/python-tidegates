@@ -9,27 +9,25 @@ import arcpy
 
 from . import utils
 
-__all__ = ["flood_area", "assess_impact", "SURGES"]
+__all__ = ["flood_area", "assess_impact"]
 
 
-METERS_PER_FEET = 0.3048
-MHHW = 4  * METERS_PER_FEET # GUESS
+METERS_PER_FOOT = 0.3048
+
+MHHW = 4  * METERS_PER_FOOT # GUESS
+SEALEVELRISE = numpy.arange(7) * METERS_PER_FOOT
 SURGES = {
-    'MHHW' :   4.0 * METERS_PER_FEET, # no storm surge
-    '10-yr':   8.0 * METERS_PER_FEET, #  10-yr (approx)
-    '25-yr':   8.5 * METERS_PER_FEET, #  25-yr (guess)
-    '50-yr':   9.6 * METERS_PER_FEET, #  50-yr (approx)
-    '100-yr': 10.5 * METERS_PER_FEET, # 100-yr (guess
+    'MHHW' :   4.0 * METERS_PER_FOOT, # no storm surge
+    '10-yr':   8.0 * METERS_PER_FOOT, #  10-yr (approx)
+    '25-yr':   8.5 * METERS_PER_FOOT, #  25-yr (guess)
+    '50-yr':   9.6 * METERS_PER_FOOT, #  50-yr (approx)
+    '100-yr': 10.5 * METERS_PER_FOOT, # 100-yr (guess
 }
 
 
-def progress_print(verbose, msg):
-    if verbose:
-        print(msg)
 
-
-def flood_area(dem, polygons, tidegate_column, sea_level_rise, storm_surge,
-               filename=None, workspace=None, verbose=False):
+def flood_area(dem, polygons, tidegate_column, elevation_feet,
+               filename=None, cleanup=True, **verbose_options):
     """ Mask out portions of a a tidegates area of influence below
     a certain elevation.
 
@@ -43,13 +41,23 @@ def flood_area(dem, polygons, tidegate_column, sea_level_rise, storm_surge,
     tidegate_column : str
         Name of the column in the ``polygons`` layer that associates
         each geomstry with a tidegate.
-    sea_level_rise : float
-        The amount of sea level rise to be evaluated (in feet).
-    storm_surge : string
-        The return period of the storm surge event to be analyzed.
-        Valid values are "MHHW", "10-yr", "25-yr", "100-yr"
+    elevation_feet: float
+        The theoritical flood elevation (in ft MSL) that will be
+        analyzed.
     filename : str, optional
         Filename to which the flooded zone will be saved.
+    cleanup : bool (default = True)
+        When True, temporary results are removed from disk.
+
+    Additional Optional Parameters
+    ------------------------------
+    verbose : bool (default = False)
+        Toggles the printing of messages communication the progress
+        of the processing.
+    asMessage : bool (default = False)
+        When True, progress messages are passed through
+        ``arcpy.AddMessage``. Otherwise, the msg is simply printed to
+        stdin.
 
     Returns
     -------
@@ -59,12 +67,8 @@ def flood_area(dem, polygons, tidegate_column, sea_level_rise, storm_surge,
 
     """
 
-    # add up the sea level rise and storm sturge to a single elevation
-    try:
-        elevation = SURGES[storm_surge] + sea_level_rise
-    except KeyError:
-        msg = '{} is not a valid surge event. Valid values are {}'
-        raise ValueError(msg.format(storm_surge, SURGES.keys()))
+    # convert the elevation to meters to match the DEM
+    elevation_meters = elevation_feet * METERS_PER_FOOT
 
     if filename is None:
         datefmt = '%Y%m%d_%H%M'
@@ -73,35 +77,37 @@ def flood_area(dem, polygons, tidegate_column, sea_level_rise, storm_surge,
     else:
         temp_filename = '_temp_' + filename
 
-    progress_print(verbose, '1/9 {}'.format(arcpy.env.workspace))
-    # load the raw (full extent) DEM (topo data)
+    utils.progress_print('1/9 Working in {}'.format(arcpy.env.workspace), **verbose_options)
+
+    # load the raw DEM (topo data)
     raw_topo = utils.load_data(dem, "raster")
-    progress_print(verbose, '2/9 {} raster loaded'.format(dem))
+    utils.progress_print('2/9 {} raster loaded'.format(dem), **verbose_options)
 
     # load the zones of influence, converting to a raster
-    zones_r, zone_res = utils.process_polygons(polygons, tidegate_column)
-    progress_print(verbose, '3/9 {} polygon processed'.format(polygons))
+    cellsize = raw_topo.meanCellWidth
+    zones_r, zone_res = utils.process_polygons(polygons, tidegate_column, cellsize=cellsize)
+    utils.progress_print('3/9 {} polygon processed'.format(polygons), **verbose_options)
 
     # clip the DEM to the zones raster
     topo_r, topo_res = utils.clip_dem_to_zones(raw_topo, zones_r)
-    progress_print(verbose, '4/9 topo clipped')
+    utils.progress_print('4/9 topo clipped', **verbose_options)
 
     # convert the clipped DEM and zones to numpy arrays
-    arcpy.AddMessage(zones_r)
     zones_a, topo_a = utils.rasters_to_arrays(zones_r, topo_r)
-    progress_print(verbose, '5/9 rasters to arrays')
+    utils.progress_print('5/9 rasters to arrays', **verbose_options)
 
-    # compute mask of non-zoned areas of topo
-    flooded_a = utils.mask_array_with_flood(zones_a, topo_a, elevation)
-    progress_print(verbose, '6/9 mask things')
+    # compute floods of zoned areas of topo
+    flooded_a = utils.flood_zones(zones_a, topo_a, elevation_meters)
+    utils.progress_print('6/9 flood things', **verbose_options)
 
-    # convert masked zone array back into a Raster
+    # convert flooded zone array back into a Raster
     flooded_r = utils.array_to_raster(array=flooded_a, template=zones_r)
-    flooded_r.save('tempraster')
-    progress_print(verbose, '7/9 coverted back to raster and saved')
+    with utils.OverwriteState(True):
+        flooded_r.save('tempraster')
+        utils.progress_print('7/9 coverted back to raster and saved', **verbose_options)
 
     # convert raster into polygons
-    progress_print(verbose, '8/9 convert to polygon in {}'.format(arcpy.env.workspace))
+    utils.progress_print('8/9 convert to polygon in {}'.format(arcpy.env.workspace), **verbose_options)
     temp_result = arcpy.conversion.RasterToPolygon(
         in_raster=flooded_r,
         out_polygon_features=temp_filename,
@@ -116,40 +122,47 @@ def flood_area(dem, polygons, tidegate_column, sea_level_rise, storm_surge,
         dissolve_field="gridcode",
         statistics_fields='#'
     )
-    progress_print(verbose, '9/9 dissolve')
+    utils.progress_print('9/9 dissolve', **verbose_options)
+
+    if cleanup:
+        utils.cleanup_temp_results(temp_result, flooded_r, topo_r, zones_r)
+
+    ezmd = utils.EasyMapDoc("CURRENT")
+    if ezmd.mapdoc is not None and filename is not None:
+        ezmd.add_layer(filename)
 
     return flood_polygons
 
 
-def assess_impact(flood_layer, input_gdb, overwrite=False, verbose=False):
+def assess_impact(flood_layer, input_gdb, overwrite=False, **verbose_options):
     outputlayers = []
     assetnames = ["Landuse", "SaltMarsh", "Wetlands"]
 
 
     with utils.OverwriteState(overwrite):
         with utils.WorkSpace(input_gdb):
-            progress_print(verbose, arcpy.env.workspace)
+            utils.progress_print(arcpy.env.workspace, **verbose_options)
             input_layer = utils.load_data(flood_layer, "shape")
             # loop through the selected assets
             for asset in assetnames:
                 # create the asset layer object
-                progress_print(verbose, 'load asset layer {}'.format(asset))
+                utils.progress_print('load asset layer {}'.format(asset), **verbose_options)
                 assetlayer = utils.load_data(asset, "shape")
 
                 # intersect the flooding with the asset
                 outputpath = '{}_{}'.format(flood_layer, asset)
-                progress_print(verbose, "save intersection to {}".format(outputpath))
+                utils.progress_print("save intersection to {}".format(outputpath), **verbose_options)
                 result = arcpy.analysis.Intersect([input_layer, assetlayer], outputpath)
 
                 # append instersetected layer to the output list
-                progress_print(verbose, "save results")
+                utils.progress_print("save results", **verbose_options)
                 outputlayers.append(utils.result_to_layer(result))
 
     return outputlayers
 
 
 def _assess_impact(inputspace, outputspace, SLR, surge, overwrite, assetnames):
-    progress_print(verbose, assetnames)
+    utils.progress_print(assetnames, **verbose_options)
     INPUT_FLOOD_LAYER = "FloodScenarios"
     outputlayers = []
 

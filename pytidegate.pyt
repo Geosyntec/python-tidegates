@@ -7,25 +7,16 @@ import numpy
 
 import arcpy
 
-from tidegates import tidegates
-
-METERS_PER_FEET = 0.3048
-
-MHHW = 4  * METERS_PER_FEET # GUESS
-SEALEVELRISE = numpy.arange(7) * METERS_PER_FEET
-SURGES = {
-    'MHHW' :   4.0 * METERS_PER_FEET, # no storm surge
-    '10-yr':   8.0 * METERS_PER_FEET, #  10-yr (approx)
-    '25-yr':   8.5 * METERS_PER_FEET, #  25-yr (guess)
-    '50-yr':   9.6 * METERS_PER_FEET, #  50-yr (approx)
-    '100-yr': 10.5 * METERS_PER_FEET, # 100-yr (guess
-}
+import tidegates
 
 
 class Toolbox(object):
     def __init__(self):
-        """Define the toolbox (the name of the toolbox is the name of the
-        .pyt file)."""
+        """ Python-Tidegates: Analyze flooding behind tidegates under
+        various sea-level rise as storm-surge scenarios.
+
+        """
+
         self.label = "pytidegates"
         self.alias = "pytidegates"
 
@@ -34,11 +25,6 @@ class Toolbox(object):
 
 
 class BaseTool_Mixin(object):
-    def getParameterInfo(self):
-        """Define parameter definitions"""
-        params = None
-        return params
-
     def isLicensed(self):
         """Set whether tool is licensed to execute."""
         return True
@@ -102,7 +88,8 @@ class Flooder(BaseTool_Mixin):
             name="elevation",
             datatype="GPDouble",
             parameterType="Required",
-            direction="Input"
+            direction="Input",
+            multiValue=False
         )
 
         filename = arcpy.Parameter(
@@ -113,15 +100,15 @@ class Flooder(BaseTool_Mixin):
             direction="Input"
         )
 
-        floods = arcpy.Parameter(
-            displayName="Output layer/filename",
-            name="floods",
-            datatype="DEFeatureClass",
-            parameterType="Derived",
-            direction="Output"
-        )
+        # floods = arcpy.Parameter(
+        #     displayName="Output layer/filename",
+        #     name="floods",
+        #     datatype="DEFeatureClass",
+        #     parameterType="Derived",
+        #     direction="Output"
+        # )
 
-        return [workspace, dem, polygons, tidegate_column, elevation, filename, floods]
+        return [workspace, dem, polygons, tidegate_column, elevation, filename]
 
     def execute(self, parameters, messages):
         """The source code of the tool."""
@@ -133,8 +120,28 @@ class Flooder(BaseTool_Mixin):
         elevation = parameters[4].value
         filename = parameters[5].valueAsText
 
+        tidegates.utils.progress_print("""
+            workspace: {}
+            dem: {}
+            polygons: {}
+            tidegate_column: {}
+            elevation: {}
+            filename: {}
+        """.format(workspace, dem, polygons, tidegate_column, elevation, filename))
+
         with tidegates.utils.WorkSpace(workspace):
-            return tidegates.flood_area(dem, polygons, tidegate_column, elevation, filename=filename)
+            x = tidegates.flood_area(
+                dem,
+                polygons,
+                tidegate_column,
+                elevation,
+                filename=filename,
+                verbose=True,
+                asMessage=True
+            )
+
+        return x
+
 
 
 class Assessor(BaseTool_Mixin):
@@ -147,3 +154,9 @@ class Assessor(BaseTool_Mixin):
     def execute(self, parameters, messages):
         """The source code of the tool."""
         return tidegate.assess_impact(*parameters)
+
+
+""" ESRI Documentation
+parameter types  http://resources.arcgis.com/en/help/main/10.2/index.html#/Defining_parameter_data_types_in_a_Python_toolbox/001500000035000000/
+
+"""

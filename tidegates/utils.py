@@ -18,7 +18,10 @@ def progress_print(msg, verbose=False, asMessage=False):
 
 class EasyMapDoc(object):
     def __init__(self, *args, **kwargs):
-        self.mapdoc = arcpy.mapping.MapDocument(*args, **kwargs)
+        try:
+            self.mapdoc = arcpy.mapping.MapDocument(*args, **kwargs)
+        except RuntimeError:
+            self.mapdoc = None
 
     @property
     def layers(self):
@@ -154,14 +157,10 @@ def result_to_layer(result):
 
 def rasters_to_arrays(*rasters, **kwargs):
     """ Converts an arbitrary number of rasters to numpy arrays"""
-    verbose = kwargs.pop("verbose", False)
-    asMessage = kwargs.pop("asMessage", False)
     squeeze = kwargs.pop("squeeze", False)
 
     arrays = []
     for n, r in enumerate(rasters):
-        msg = 'Processing raster {} of {}: {}'.format(n, len(rasters), r)
-        progress_print(msg, verbose=verbose, asMessage=asMessage)
         arrays.append(arcpy.RasterToNumPyArray(r, nodata_to_value=-999))
 
     if squeeze and len(arrays) == 1:
@@ -364,3 +363,8 @@ def flood_zones(zones_array, topo_array, elevation):
     flooded_array[final_mask] = 0
 
     return flooded_array
+
+
+def cleanup_temp_results(*results):
+    for r in results:
+        arcpy.management.Delete(r)

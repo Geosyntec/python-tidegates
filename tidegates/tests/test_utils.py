@@ -337,14 +337,18 @@ def test_clip_dem_to_zones():
     zonefile = resource_filename("tidegates.testing", "test_zones_raster_small.tif")
     raster, result = utils.clip_dem_to_zones(demfile, zonefile)
 
-    array = utils.rasters_to_arrays(raster, squeeze=True)
+    zone_r = utils.load_data(zonefile, 'raster')
+
+    arrays = utils.rasters_to_arrays(raster, zone_r)
+
+    dem_a, zone_a = arrays[0], arrays[1]
     arcpy.management.Delete(raster)
 
     nt.assert_true(isinstance(raster, arcpy.Raster))
     nt.assert_true(isinstance(result, arcpy.Result))
 
     known_shape = (146, 172)
-    nt.assert_tuple_equal(array.shape, known_shape)
+    nt.assert_tuple_equal(dem_a.shape, zone_a.shape)
 
 
 def test_mask_array_with_flood():
