@@ -1,6 +1,18 @@
 # python-tidegates
 An ArcGIS python toolbox and library for analyzing extent of flooding and damage to assets under varying sea level rise and storm surge scenarios.
 
+## Terminology
+  1. ArcGIS: the suite of proprietarty software application licensed by Esri. Includes the ArcMap and ArcCatalog applications.
+  1. ArcGIS session: use of either ArcMap or ArcCatalog.
+  1. prompt or terminal: the Windows interface to its command-line tools.
+  1. Python: an open source, dynamic programming language that Esri bundles with ArcGIS.
+  1. numpy: an open source numerical extension to python that provides the basis for must scientific libraries in python.
+  1. arcpy: a proprietary Python-based interface to some of the geoprocessing functionality of ArcGIS.
+  1. nose: an open source unit test runner for python.
+  1. juptyer: an open source, programming language-agnostic suite tools aimed at facilitating reproducible scientific work.
+     The name stands for "Julia", "Python", and "R", the names of three of the dominating scientific computing languages.
+
+
 ## Download
 An always current zipped archive of the tool can be [downloaded here](https://github.com/Geosyntec/python-tidegates/archive/master.zip).
 Alternatively, you can simply clone this repository through git:
