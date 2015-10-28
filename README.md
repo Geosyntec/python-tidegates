@@ -81,8 +81,6 @@ C:\Users\phobson
 $ cd C:\Users\phobson\Downloads\python-tidegates-master
 
 C:\Users\phobson\Downloads\python-tidegates-master
-$ pip install .
-Processing c:\users\phobson\downloads\python-tidegates-master
 nosetests
 ........................................
 ----------------------------------------------------------------------
