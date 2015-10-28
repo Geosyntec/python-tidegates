@@ -81,7 +81,7 @@ def flood_area(dem, polygons, tidegate_column, elevation_feet,
 
     # load the raw DEM (topo data)
     raw_topo = utils.load_data(dem, "raster")
-    progress_print(verbose, '2/9 {} raster loaded'.format(dem))
+    utils.progress_print('2/9 {} raster loaded'.format(dem), **verbose_options)
 
     # load the zones of influence, converting to a raster
     cellsize = raw_topo.meanCellWidth
@@ -123,6 +123,13 @@ def flood_area(dem, polygons, tidegate_column, elevation_feet,
         statistics_fields='#'
     )
     utils.progress_print('9/9 dissolve', **verbose_options)
+
+    if cleanup:
+        utils.cleanup_temp_results(temp_result, flooded_r, topo_r, zones_r)
+
+    ezmd = utils.EasyMapDoc("CURRENT")
+    if ezmd.mapdoc is not None and filename is not None:
+        ezmd.add_layer(filename)
 
     return flood_polygons
 
