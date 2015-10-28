@@ -363,3 +363,8 @@ def flood_zones(zones_array, topo_array, elevation):
     flooded_array[final_mask] = 0
 
     return flooded_array
+
+
+def cleanup_temp_results(*results):
+    for r in results:
+        arcpy.management.Delete(r)
