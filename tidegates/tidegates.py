@@ -9,17 +9,19 @@ import arcpy
 
 from . import utils
 
-__all__ = ["flood_area", "assess_impact", "SURGES"]
+__all__ = ["flood_area", "assess_impact"]
 
 
-METERS_PER_FEET = 0.3048
-MHHW = 4  * METERS_PER_FEET # GUESS
+METERS_PER_FOOT = 0.3048
+
+MHHW = 4  * METERS_PER_FOOT # GUESS
+SEALEVELRISE = numpy.arange(7) * METERS_PER_FOOT
 SURGES = {
-    'MHHW' :   4.0 * METERS_PER_FEET, # no storm surge
-    '10-yr':   8.0 * METERS_PER_FEET, #  10-yr (approx)
-    '25-yr':   8.5 * METERS_PER_FEET, #  25-yr (guess)
-    '50-yr':   9.6 * METERS_PER_FEET, #  50-yr (approx)
-    '100-yr': 10.5 * METERS_PER_FEET, # 100-yr (guess
+    'MHHW' :   4.0 * METERS_PER_FOOT, # no storm surge
+    '10-yr':   8.0 * METERS_PER_FOOT, #  10-yr (approx)
+    '25-yr':   8.5 * METERS_PER_FOOT, #  25-yr (guess)
+    '50-yr':   9.6 * METERS_PER_FOOT, #  50-yr (approx)
+    '100-yr': 10.5 * METERS_PER_FOOT, # 100-yr (guess
 }
 
 
@@ -28,8 +30,8 @@ def progress_print(verbose, msg):
         print(msg)
 
 
-def flood_area(dem, polygons, tidegate_column, sea_level_rise, storm_surge,
-               filename=None, workspace=None, verbose=False):
+def flood_area(dem, polygons, tidegate_column, elevation_feet,
+               filename=None, cleanup=True, **verbose_options):
     """ Mask out portions of a a tidegates area of influence below
     a certain elevation.
 
@@ -43,13 +45,23 @@ def flood_area(dem, polygons, tidegate_column, sea_level_rise, storm_surge,
     tidegate_column : str
         Name of the column in the ``polygons`` layer that associates
         each geomstry with a tidegate.
-    sea_level_rise : float
-        The amount of sea level rise to be evaluated (in feet).
-    storm_surge : string
-        The return period of the storm surge event to be analyzed.
-        Valid values are "MHHW", "10-yr", "25-yr", "100-yr"
+    elevation_feet: float
+        The theoritical flood elevation (in ft MSL) that will be
+        analyzed.
     filename : str, optional
         Filename to which the flooded zone will be saved.
+    cleanup : bool (default = True)
+        When True, temporary results are removed from disk.
+
+    Additional Optional Parameters
+    ------------------------------
+    verbose : bool (default = False)
+        Toggles the printing of messages communication the progress
+        of the processing.
+    asMessage : bool (default = False)
+        When True, progress messages are passed through
+        ``arcpy.AddMessage``. Otherwise, the msg is simply printed to
+        stdin.
 
     Returns
     -------
@@ -59,12 +71,8 @@ def flood_area(dem, polygons, tidegate_column, sea_level_rise, storm_surge,
 
     """
 
-    # add up the sea level rise and storm sturge to a single elevation
-    try:
-        elevation = SURGES[storm_surge] + sea_level_rise
-    except KeyError:
-        msg = '{} is not a valid surge event. Valid values are {}'
-        raise ValueError(msg.format(storm_surge, SURGES.keys()))
+    # convert the elevation to meters to match the DEM
+    elevation_meters = elevation_feet * METERS_PER_FOOT
 
     if filename is None:
         datefmt = '%Y%m%d_%H%M'
