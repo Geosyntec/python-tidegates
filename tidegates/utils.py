@@ -157,14 +157,10 @@ def result_to_layer(result):
 
 def rasters_to_arrays(*rasters, **kwargs):
     """ Converts an arbitrary number of rasters to numpy arrays"""
-    verbose = kwargs.pop("verbose", False)
-    asMessage = kwargs.pop("asMessage", False)
     squeeze = kwargs.pop("squeeze", False)
 
     arrays = []
     for n, r in enumerate(rasters):
-        msg = 'Processing raster {} of {}: {}'.format(n, len(rasters), r)
-        progress_print(msg, verbose=verbose, asMessage=asMessage)
         arrays.append(arcpy.RasterToNumPyArray(r, nodata_to_value=-999))
 
     if squeeze and len(arrays) == 1:
