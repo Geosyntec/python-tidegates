@@ -26,10 +26,10 @@ This library requires the following python-packages to be installed on your syst
   1. Python 2.7
   1. arcpy
   1. numpy
-  
-All of these are bundled with modern ArcGIS installations. 
+
+All of these are bundled with modern ArcGIS installations.
 Additional libraries are required to run the test suite.
-See the section titled **Running the test suite** for more information.
+See the section titled [Running the test suite](https://github.com/Geosyntec/python-tidegates#running-the-test-suite) for more information.
 
 ## Installation and use
 This is a pure-python library, so installation from source -- even on Windows --is not an issue.
@@ -60,7 +60,7 @@ Successfully installed tidegates-0.1
 This repository contains a very small sample dataset that is used to:
   1. Run the test suite
   1. Provide a minimal demostration of the toolbox
-  
+
 ### Running the test suite
 The code base that powers the GIS toolboxes is uses a code QC technique known as [unit testing](https://en.wikipedia.org/wiki/Unit_testing).
 In this case, we rely on the python package [`nose`](https://nose.readthedocs.org/en/latest/) to find, collect, and execute all of the tests.
@@ -89,8 +89,54 @@ nosetests
 Ran 40 tests in 5.634s
 ```
 
-Each dot above represents a test that pass. 
+Each dot above represents a test that pass.
 Alternatively, you can use `nosetests --verbose` and the name descriptive of each test will be printed to the terminal.
+
+
+### Using the code base outside of an ArcGIS session.
+The main advantage of building `python-tidegates` as a python library instead of simply an ArcGIS toolbox, is that it can be used outside of ArcGIS sessions.
+
+One basic way would be to write your own python files, call it "my_analysis.py", and to run that file with:
+```
+> python my_analysis.py
+```.
+
+As an example, the contents of "my_analysis.py" could be as simple as:
+import tidegates
+
+```python
+workspace = r"F:\phobson\Tidegates\python-tidegates\tidegates\testing"
+dem = r"python-tidegates\tidegates\testing\test_dem.tif "
+ZOI = r"python-tidegates\tidegates\testing\test_zones.shp "
+col = "GeoID"
+elev = 9.5
+output = "test01.shp"
+with tidegates.utils.WorkSpace(workspace), tidegates.utils.OverwriteState(True):
+    tidegates.flood_area(dem, ZOI, col, elev, filename=output, verbose=True)
+```
+
+Alternatively, you can use some of the jupyter notebook provided with the source code.
+
+To install jupyter, execute `pip install jupyer` in a terminal.
+
+To launch the notebooks bundled with the source code, navigate to the directory and execute `jupyter notebook`.
+In a newly opened terminal, this looks like:
+```
+Microsoft Windows [Version 6.3.9600]
+(c) 2013 Microsoft Corporation. All rights reserved.
+
+C:\Users\phobson
+$ cd C:\Users\phobson\Downloads\python-tidegates-master\notebooks
+
+$ C:\Users\phobson\Downloads\python-tidegates-master\notebooks
+juptyer notebook
+```
+
+...and then a browser window will pop up with a list of example notebooks to run.
+For best results, use jupyter in a modern browswer like Chrome or Firefox.
+Unexpected behavior sometimes occurs in Internet Explorer.
+
+For more information on jupyter, see the [official documentation](http://jupyter.readthedocs.org/en/latest/install.html)
 
 ### Using the tool
 TDB
