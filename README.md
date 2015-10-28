@@ -11,6 +11,7 @@ An ArcGIS python toolbox and library for analyzing extent of flooding and damage
   1. nose: an open source unit test runner for python.
   1. juptyer: an open source, programming language-agnostic suite tools aimed at facilitating reproducible scientific work.
      The name stands for "Julia", "Python", and "R", the names of three of the dominating scientific computing languages.
+  1. git: A distributed version control software. See https://git-scm.com/ for more details.
 
 
 ## Download
@@ -32,7 +33,7 @@ Additional libraries are required to run the test suite.
 See the section titled [Running the test suite](https://github.com/Geosyntec/python-tidegates#running-the-test-suite) for more information.
 
 ## Installation and use
-This is a pure-python library, so installation from source -- even on Windows --is not an issue.
+This is a pure-python library, so installation from source (even on Windows) is not an issue.
 After acquiring and unzipping the source-code in some fashion, open a command window, navigate into the directory, and execute `pip install .`.
 In total, that looks like this:
 
