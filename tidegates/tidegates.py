@@ -14,15 +14,6 @@ __all__ = ["flood_area", "assess_impact"]
 
 METERS_PER_FOOT = 0.3048
 
-MHHW = 4  * METERS_PER_FOOT # GUESS
-SEALEVELRISE = numpy.arange(7) * METERS_PER_FOOT
-SURGES = {
-    'MHHW' :   4.0 * METERS_PER_FOOT, # no storm surge
-    '10-yr':   8.0 * METERS_PER_FOOT, #  10-yr (approx)
-    '25-yr':   8.5 * METERS_PER_FOOT, #  25-yr (guess)
-    '50-yr':   9.6 * METERS_PER_FOOT, #  50-yr (approx)
-    '100-yr': 10.5 * METERS_PER_FOOT, # 100-yr (guess
-}
 
 def flood_area(dem, polygons, ID_column, elevation_feet,
                filename=None, cleanup=True, **verbose_options):
