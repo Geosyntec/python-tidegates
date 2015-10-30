@@ -4,11 +4,21 @@ import glob
 import datetime
 from textwrap import dedent
 
+import arcpy
 import numpy
 
-import arcpy
-
 import tidegates
+from tidegates import utils
+
+
+SEALEVELRISE = numpy.arange(7) # FEET
+SURGES = {
+    'MHHW' :   4.0, # FEET
+    '10-yr':   8.0, # FEET
+    #'25-yr':   8.5, # FEET
+    '50-yr':   9.6, # FEET
+    '100-yr': 10.5, # FEET
+}
 
 
 class Toolbox(object):
@@ -22,7 +32,7 @@ class Toolbox(object):
         self.alias = "python-tidegates"
 
         # List of tool classes associated with this toolbox
-        self.tools = [Flooder]
+        self.tools = [Flooder, StandardScenarios]
 
 
 class BaseFlooder_Mixin(object):
@@ -84,15 +94,14 @@ class BaseFlooder_Mixin(object):
         downstream.parameterDependencies = [u.name for u in upstream]
 
     @staticmethod
-    def _show_header(elev):
-        base_msg = "Analyzing flood elevation: {} ft".format(elev)
+    def _show_header(base_msg):
         underline = ''.join(['-'] * len(base_msg))
         header = '\n{}\n{}'.format(base_msg, underline)
-        tidegates.utils._status(header, verbose=True, asMessage=True, addTab=False)
+        utils._status(header, verbose=True, asMessage=True, addTab=False)
 
     @staticmethod
     def _add_results_to_map(mapname, filename):
-        ezmd = tidegates.utils.EasyMapDoc(mapname)
+        ezmd = utils.EasyMapDoc(mapname)
         if ezmd.mapdoc is not None:
             ezmd.add_layer(filename)
 
@@ -196,6 +205,20 @@ class BaseFlooder_Mixin(object):
             self._set_parameter_dependency(self._tidegate_column, self.polygons)
         return self._tidegate_column
 
+    def _do_flood(self, dem, poly, idcol, elev, surge=None, slr=None):
+        res = tidegates.flood_area(
+            dem=dem,
+            polygons=poly,
+            tidegate_column=idcol,
+            elevation_feet=elev,
+            filename=None,
+            verbose=True,
+            asMessage=True
+        )
+        self._add_scenario_columns(res, elev=elev, surge=surge, slr=slr)
+
+        return res
+
 
 class Flooder(BaseFlooder_Mixin):
     def __init__(self):
@@ -244,26 +267,17 @@ class Flooder(BaseFlooder_Mixin):
         workspace = parameters[0].valueAsText
         dem = parameters[1].valueAsText
         polygons = parameters[2].valueAsText
-        tidegate_column = parameters[3].valueAsText
+        id_col = parameters[3].valueAsText
         elevation = parameters[4].valueAsText.split(';')
         filename = parameters[5].valueAsText
 
         results = []
-        with tidegates.utils.WorkSpace(workspace):
+        with utils.WorkSpace(workspace):
             for _elev in elevation:
                 elev = float(_elev)
-                self._show_header(elev)
-                res = tidegates.flood_area(
-                    dem=dem,
-                    polygons=polygons,
-                    tidegate_column=tidegate_column,
-                    elevation_feet=elev,
-                    filename=None,
-                    verbose=True,
-                    asMessage=True
-                )
-
-                self._add_elevation_column(res, elev)
+                base_msg = "Analyzing flood elevation: {} ft".format(elev)
+                self._show_header(base_msg)
+                res = self._do_flood(dem, polygons, id_col, elev)
                 results.append(res.getOutput(0))
 
         arcpy.management.Merge(results, filename)
@@ -272,7 +286,53 @@ class Flooder(BaseFlooder_Mixin):
         return results
 
 
-""" ESRI Documentation
-parameter types  http://resources.arcgis.com/en/help/main/10.2/index.html#/Defining_parameter_data_types_in_a_Python_toolbox/001500000035000000/
+class StandardScenarios(BaseFlooder_Mixin):
+    def __init__(self):
+        """Define the tool (tool name is the name of the class)."""
+        # std attributes
+        super(StandardScenarios, self).__init__()
+        self.label = "2 - Evaluate all standard scenarios"
 
-"""
+        self.description = dedent("""
+        Allows the user to recreate the standard scenarios with their
+        own input.
+
+        The standard scenarios are each combination of storm surges
+        (MHHW, 10-yr, 50-yr, 100-yr) and sea level rise up to 6 feet in
+        1-ft increments.
+        """)
+
+    def getParameterInfo(self):
+        """ Returns all parameter definitions"""
+        params = [
+            self.workspace,
+            self.dem,
+            self.polygons,
+            self.tidegate_column,
+            self.filename
+        ]
+        return params
+
+    def execute(self, parameters, messages):
+        """The source code of the tool."""
+
+        workspace = parameters[0].valueAsText
+        dem = parameters[1].valueAsText
+        polygons = parameters[2].valueAsText
+        id_col = parameters[3].valueAsText
+        filename = parameters[4].valueAsText
+
+        results = []
+        with utils.WorkSpace(workspace):
+            for surge, surge_elev in SURGES.items():
+                for slr in SEALEVELRISE:
+                    elev = surge_elev + slr
+                    base_msg = "Analyzing Storm Surge ({}) + SLR ({}) = {} ft".format(surge, slr, elev)
+                    self._show_header(base_msg)
+                    res = self._do_flood(dem, polygons, id_col, elev, surge=surge, slr=slr)
+                    results.append(res.getOutput(0))
+
+        arcpy.management.Merge(results, filename)
+        self._add_results_to_map("CURRENT", filename)
+
+        return results
