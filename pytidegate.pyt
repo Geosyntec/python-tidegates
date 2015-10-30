@@ -80,20 +80,6 @@ class Flooder(BaseTool_Mixin):
         self._elevation = None
         self._filename = None
 
-    def updateParameters(self, parameters):
-        """ Automatically called when any parameter is updated in the
-        GUI.
-
-        Flow is like this:
-            1. User interacts with GUI, filling out some input element
-            2. self.getParameterInfo is called
-            3. Parameteter are fed to this method as a list
-
-        """
-
-        # tidegate_columns looks into the polygons layer to get a list of fields
-        self._set_parameter_dependency(self.tidegate_column, self.polygons)
-
     @property
     def workspace(self):
         if self._workspace is None:
@@ -102,7 +88,8 @@ class Flooder(BaseTool_Mixin):
                 name='workspace',
                 datatype="DEWorkspace",
                 parameterType="Required",
-                direction="Input"
+                direction="Input",
+                multiValue=False
             )
         return self._workspace
 
@@ -114,7 +101,8 @@ class Flooder(BaseTool_Mixin):
                 name="dem",
                 datatype="DERasterDataset",
                 parameterType="Required",
-                direction="Input"
+                direction="Input",
+                multiValue=False
             )
         return self._dem
 
@@ -126,7 +114,8 @@ class Flooder(BaseTool_Mixin):
                 name="polygons",
                 datatype="DEFeatureClass",
                 parameterType="Required",
-                direction="Input"
+                direction="Input",
+                multiValue=False
             )
         return self._polygons
 
@@ -138,9 +127,9 @@ class Flooder(BaseTool_Mixin):
                 name="tidegate_column",
                 datatype="Field",
                 parameterType="Required",
-                direction="Input"
+                direction="Input",
+                multiValue=False
             )
-            self._set_parameter_dependency(self.tidegate_column, self.polygons)
         return self._tidegate_column
 
     @property
@@ -152,7 +141,7 @@ class Flooder(BaseTool_Mixin):
                 datatype="GPDouble",
                 parameterType="Required",
                 direction="Input",
-                multiValue=False
+                multiValue=True
             )
         return self._elevation
 
@@ -167,6 +156,23 @@ class Flooder(BaseTool_Mixin):
                 direction="Input"
             )
         return self._filename
+
+    def updateParameters(self, parameters):
+        """ Automatically called when any parameter is updated in the
+        GUI.
+
+        Flow is like this:
+            1. User interacts with GUI, filling out some input element
+            2. self.getParameterInfo is called
+            3. Parameteter are fed to this method as a list
+
+        """
+
+        # tidegate_columns looks into the polygons layer to get a list of fields
+        self._set_parameter_dependency(self.tidegate_column, self.polygons)
+        self._set_parameter_dependency(self.polygons, self.workspace)
+        self._set_parameter_dependency(self.dem, self.workspace)
+
 
     def getParameterInfo(self):
         """ Returns all parameter definitions"""
@@ -187,7 +193,7 @@ class Flooder(BaseTool_Mixin):
         dem = parameters[1].valueAsText
         polygons = parameters[2].valueAsText
         tidegate_column = parameters[3].valueAsText
-        elevation = parameters[4].value
+        elevations = parameters[4].value
         filename = parameters[5].valueAsText
 
         tidegates.utils.progress_print("""
@@ -200,11 +206,11 @@ class Flooder(BaseTool_Mixin):
         """.format(workspace, dem, polygons, tidegate_column, elevation, filename))
 
         with tidegates.utils.WorkSpace(workspace):
-            x = tidegates.flood_area(
-                dem,
-                polygons,
-                tidegate_column,
-                elevation,
+            layer = tidegates.flood_area(
+                dem=dem,
+                polygons=polygons,
+                tidegate_column=tidegate_column,
+                elevation=elevation,
                 filename=filename,
                 verbose=True,
                 asMessage=True
