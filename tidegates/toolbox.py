@@ -80,16 +80,19 @@ class BaseFlooder_Mixin(object):
         downstream.parameterDependencies = [u.name for u in upstream]
 
     @staticmethod
-    def _show_header(base_msg):
+    def _show_header(base_msg, verbose=True):
         underline = ''.join(['-'] * len(base_msg))
         header = '\n{}\n{}'.format(base_msg, underline)
-        utils._status(header, verbose=True, asMessage=True, addTab=False)
+        utils._status(header, verbose=verbose, asMessage=True, addTab=False)
+        return header
 
     @staticmethod
     def _add_results_to_map(mapname, filename):
         ezmd = utils.EasyMapDoc(mapname)
         if ezmd.mapdoc is not None:
             ezmd.add_layer(filename)
+
+        return ezmd
 
     @staticmethod
     def _add_scenario_columns(result, elev=None, surge=None, slr=None):
@@ -263,12 +266,12 @@ class Flooder(BaseFlooder_Mixin):
             for _elev in elevation:
                 elev = float(_elev)
                 base_msg = "Analyzing flood elevation: {} ft".format(elev)
-                self._show_header(base_msg)
+                header = self._show_header(base_msg)
                 res = self._do_flood(dem, polygons, id_col, elev)
                 results.append(res.getOutput(0))
 
         arcpy.management.Merge(results, filename)
-        self._add_results_to_map("CURRENT", filename)
+        ezmd = self._add_results_to_map("CURRENT", filename)
 
         return results
 
@@ -315,11 +318,11 @@ class StandardScenarios(BaseFlooder_Mixin):
                 for slr in SEALEVELRISE:
                     elev = surge_elev + slr
                     base_msg = "Analyzing Storm Surge ({}) + SLR ({}) = {} ft".format(surge, slr, elev)
-                    self._show_header(base_msg)
+                    header = self._show_header(base_msg)
                     res = self._do_flood(dem, polygons, id_col, elev, surge=surge, slr=slr)
                     results.append(res.getOutput(0))
 
         arcpy.management.Merge(results, filename)
-        self._add_results_to_map("CURRENT", filename)
+        ezmd = self._add_results_to_map("CURRENT", filename)
 
         return results
