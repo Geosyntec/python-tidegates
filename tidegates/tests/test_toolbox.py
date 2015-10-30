@@ -158,7 +158,6 @@ class Test_BaseFlooder_Mixin(CheckToolbox_Mixin):
         nt.assert_equal(self.tbx.elevation.name, 'elevation')
 
     def test_getParameterInfo(self):
-        """ Returns all parameter definitions"""
         params = self.tbx.getParameterInfo()
         names = [str(p.name) for p in params]
         known_names = ['workspace', 'dem', 'polygons', 'tidegate_column',
@@ -171,7 +170,6 @@ class Test_StandardScenarios(CheckToolbox_Mixin):
         self.tbx = toolbox.StandardScenarios()
 
     def test_getParameterInfo(self):
-        """ Returns all parameter definitions"""
         params = self.tbx.getParameterInfo()
         names = [str(p.name) for p in params]
         known_names = ['workspace', 'dem', 'polygons',
