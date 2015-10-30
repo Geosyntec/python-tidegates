@@ -270,8 +270,8 @@ def load_data(datapath, datatype, greedyRasters=True, **verbosity):
     return data
 
 
-def process_polygons(polygons, tidegate_column, cellsize=4):
 @update_status()
+def process_polygons(polygons, ID_column, cellsize=4):
     """ Prepare tidegates' areas of influence polygons for flooding
     by converting to a raster.
 
@@ -280,7 +280,7 @@ def process_polygons(polygons, tidegate_column, cellsize=4):
     polygons : str or arcpy.mapping.Layer
         The (filepath to the) zones that will be flooded. If a string,
         a Layer will be created.
-    tidegate_column : str
+    ID_column : str
         Name of the column in the ``polygons`` layer that associates
         each geomstry with a tidegate.
     cellsize : int
@@ -301,7 +301,7 @@ def process_polygons(polygons, tidegate_column, cellsize=4):
     with OverwriteState(True), Extension("spatial"):
         result = arcpy.conversion.PolygonToRaster(
             in_features=_zones,
-            value_field=tidegate_column,
+            value_field=ID_column,
             cellsize=cellsize,
         )
 
