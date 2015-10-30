@@ -143,6 +143,21 @@ class CheckToolbox_Mixin(object):
         nt.assert_equal(self.tbx.filename.datatype, "String")
         nt.assert_equal(self.tbx.filename.name, 'filename')
 
+    def test__do_flood(self):
+        with mock.patch.object(tidegates.tidegates, 'flood_area') as fa:
+            with mock.patch.object(self.tbx, '_add_scenario_columns') as asc:
+                res = self.tbx._do_flood('dem', 'poly', 'tgid', 5.7, surge='surge', slr=2)
+                fa.assert_called_once_with(
+                    dem='dem',
+                    polygons='poly',
+                    tidegate_column='tgid',
+                    elevation_feet=5.7,
+                    filename=None,
+                    verbose=True,
+                    asMessage=True
+                )
+                asc.assert_called_once_with(res, elev=5.7, surge='surge', slr=2)
+
 
 class Test_BaseFlooder_Mixin(CheckToolbox_Mixin):
     def setup(self):
