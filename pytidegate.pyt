@@ -2,6 +2,7 @@ import os
 import sys
 import glob
 import datetime
+from textwrap import dedent
 
 import numpy
 
@@ -17,8 +18,8 @@ class Toolbox(object):
 
         """
 
-        self.label = "pytidegates"
-        self.alias = "pytidegates"
+        self.label = "Python-Tidegates"
+        self.alias = "python-tidegates"
 
         # List of tool classes associated with this toolbox
         self.tools = [Flooder]
@@ -34,7 +35,7 @@ class BaseFlooder_Mixin(object):
         self._dem = None
         self._polygons = None
         self._tidegate_column = None
-        self._elevation = None
+        self._filename = None
 
     def isLicensed(self):
         """Set whether tool is licensed to execute."""
@@ -81,6 +82,52 @@ class BaseFlooder_Mixin(object):
         """
 
         downstream.parameterDependencies = [u.name for u in upstream]
+
+    @staticmethod
+    def _show_header(elev):
+        base_msg = "Analyzing flood elevation: {} ft".format(elev)
+        underline = ''.join(['-'] * len(base_msg))
+        header = '\n{}\n{}'.format(base_msg, underline)
+        tidegates.utils._status(header, verbose=True, asMessage=True, addTab=False)
+
+    @staticmethod
+    def _add_results_to_map(mapname, filename):
+        ezmd = tidegates.utils.EasyMapDoc(mapname)
+        if ezmd.mapdoc is not None:
+            ezmd.add_layer(filename)
+
+    @staticmethod
+    def _add_scenario_columns(result, elev=None, surge=None, slr=None):
+        if elev is not None:
+            utils.add_field_with_value(
+                table=result.getOutput(0),
+                field_name="flood_elev",
+                field_value=float(elev),
+                msg="Adding 'flood_elev' field to ouput",
+                verbose=True,
+                asMessage=True
+            )
+
+        if surge is not None:
+            utils.add_field_with_value(
+                table=result.getOutput(0),
+                field_name="surge",
+                field_value=str(surge),
+                field_length=10,
+                msg="Adding storm surge field to ouput",
+                verbose=True,
+                asMessage=True
+            )
+
+        if slr is not None:
+            utils.add_field_with_value(
+                table=result.getOutput(0),
+                field_name="slr",
+                field_value=int(slr),
+                msg="Adding sea level rise field to ouput",
+                verbose=True,
+                asMessage=True
+            )
 
     @property
     def workspace(self):
@@ -150,16 +197,21 @@ class BaseFlooder_Mixin(object):
         return self._tidegate_column
 
 
-class Flooder(BaseTool_Mixin):
+class Flooder(BaseFlooder_Mixin):
     def __init__(self):
-        """Define the tool (tool name is the name of the class)."""
         # std attributes
         super(Flooder, self).__init__()
         self.label = "1 - Create Flood Scenarios"
-        self.description = ""
+        self.description = dedent("""
+        Allows the user to create a custom flooding scenario given the
+        following:
+            - A DEM of the coastal area
+            - A polygon layer describing the zones of influence of each
+              tidegate
+        """)
 
         # lazy properties
-        self._filename = None
+        self._elevation = None
 
     @property
     def elevation(self):
@@ -200,16 +252,7 @@ class Flooder(BaseTool_Mixin):
         with tidegates.utils.WorkSpace(workspace):
             for _elev in elevation:
                 elev = float(_elev)
-                base_msg = "Analyzing flood elevation: {} ft".format(filename, elev)
-                underline = ''.join(['-'] * len(base_msg))
-                header = '\n{}\n{}'.format(base_msg, underline)
-                tidegates.utils._status(
-                    header,
-                    verbose=True,
-                    asMessage=True,
-                    addTab=False
-                )
-
+                self._show_header(elev)
                 res = tidegates.flood_area(
                     dem=dem,
                     polygons=polygons,
@@ -220,20 +263,11 @@ class Flooder(BaseTool_Mixin):
                     asMessage=True
                 )
 
-                tidegates.utils.add_field_with_value(
-                    table=res.getOutput(0),
-                    field_name="flood_elev",
-                    field_value=elev,
-                    msg="Adding 'flood_elev' field to ouput",
-                    verbose=True,
-                    asMessage=True
-                )
+                self._add_elevation_column(res, elev)
                 results.append(res.getOutput(0))
 
-        ezmd = tidegates.utils.EasyMapDoc("CURRENT")
-        if ezmd.mapdoc is not None:
-            arcpy.management.Merge(results, filename)
-            ezmd.add_layer(filename)
+        arcpy.management.Merge(results, filename)
+        self._add_results_to_map("CURRENT", filename)
 
         return results
 
