@@ -36,8 +36,9 @@ class BaseTool_Mixin(object):
         return
 
     def updateMessages(self, parameters):
-        """Modify the messages created by internal validation for each tool
-        parameter.  This method is called after internal validation."""
+        """Modify the messages created by internal validation for each
+        parameter of the tool.  This method is called after internal
+        validation."""
         return
 
     @staticmethod
@@ -139,7 +140,7 @@ class Flooder(BaseTool_Mixin):
                 parameterType="Required",
                 direction="Input"
             )
-            self._set_parameter_dependency(self.tidegate_column, self._polygons)
+            self._set_parameter_dependency(self.tidegate_column, self.polygons)
         return self._tidegate_column
 
     @property
