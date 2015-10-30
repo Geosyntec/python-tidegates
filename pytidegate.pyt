@@ -21,7 +21,7 @@ class Toolbox(object):
         self.alias = "pytidegates"
 
         # List of tool classes associated with this toolbox
-        self.tools = [Flooder, Assessor]
+        self.tools = [Flooder]
 
 
 class BaseTool_Mixin(object):
@@ -56,6 +56,10 @@ class BaseTool_Mixin(object):
         -------
         None
 
+        See Also
+        --------
+        http://goo.gl/HcR6WJ
+
         """
 
         downstream.parameterDependencies = [u.name for u in upstream]
@@ -69,6 +73,7 @@ class Flooder(BaseTool_Mixin):
         self.canRunInBackground = True
 
         self._workspace = None
+        self._dem = None
         self._polygons = None
         self._tidegate_column = None
         self._elevation = None
@@ -99,6 +104,18 @@ class Flooder(BaseTool_Mixin):
                 direction="Input"
             )
         return self._workspace
+
+    @property
+    def dem(self):
+        if self._dem is None:
+            self._dem = arcpy.Parameter(
+                displayName="Digital Elevation Model",
+                name="dem",
+                datatype="DERasterDataset",
+                parameterType="Required",
+                direction="Input"
+            )
+        return self._dem
 
     @property
     def polygons(self):
@@ -154,6 +171,7 @@ class Flooder(BaseTool_Mixin):
         """ Returns all parameter definitions"""
         params = [
             self.workspace,
+            self.dem,
             self.polygons,
             self.tidegate_column,
             self.elevation,
@@ -192,19 +210,6 @@ class Flooder(BaseTool_Mixin):
             )
 
         return x
-
-
-
-class Assessor(BaseTool_Mixin):
-    def __init__(self):
-        """Define the tool (tool name is the name of the class)."""
-        self.label = "2 - Assess Flood Impacts"
-        self.description = ""
-        self.canRunInBackground = True
-
-    def execute(self, parameters, messages):
-        """The source code of the tool."""
-        return tidegate.assess_impact(*parameters)
 
 
 """ ESRI Documentation
