@@ -77,58 +77,88 @@ def flood_area(dem, polygons, tidegate_column, elevation_feet,
     else:
         temp_filename = '_temp_' + filename
 
-    utils.progress_print('1/9 Working in {}'.format(arcpy.env.workspace), **verbose_options)
+    utils._status('WorkSpace set to {}'.format(arcpy.env.workspace), **verbose_options)
 
     # load the raw DEM (topo data)
-    raw_topo = utils.load_data(dem, "raster")
-    utils.progress_print('2/9 {} raster loaded'.format(dem), **verbose_options)
+    raw_topo = utils.load_data(
+        datapath=dem,
+        datatype="raster",
+        msg='Loading DEM {}'.format(dem),
+        **verbose_options
+    )
 
     # load the zones of influence, converting to a raster
     zones_r, zone_res = utils.process_polygons(
-        polygons,
-        tidegate_column,
-        cellsize=raw_topo.meanCellWidth
+        polygons=polygons,
+        ID_column=tidegate_column,
+        cellsize=raw_topo.meanCellWidth,
+        msg='Processing {} polygons'.format(polygons),
+        **verbose_options
     )
-    utils.progress_print('3/9 {} polygon processed'.format(polygons), **verbose_options)
 
     # clip the DEM to the zones raster
-    topo_r, topo_res = utils.clip_dem_to_zones(raw_topo, zones_r)
-    utils.progress_print('4/9 topo clipped', **verbose_options)
+    topo_r, topo_res = utils.clip_dem_to_zones(
+        dem=raw_topo,
+        zones=zones_r,
+        msg='Clipping DEM to extent of polygons',
+        **verbose_options
+    )
 
     # convert the clipped DEM and zones to numpy arrays
-    zones_a, topo_a = utils.rasters_to_arrays(zones_r, topo_r)
-    utils.progress_print('5/9 rasters to arrays', **verbose_options)
+    zones_a, topo_a = utils.rasters_to_arrays(
+        zones_r,
+        topo_r,
+        msg='Converting rasters to arrays',
+        **verbose_options
+    )
 
     # compute floods of zoned areas of topo
-    flooded_a = utils.flood_zones(zones_a, topo_a, elevation_meters)
-    utils.progress_print('6/9 flood things', **verbose_options)
+    flooded_a = utils.flood_zones(
+        zones_array=zones_a,
+        topo_array=topo_a,
+        elevation=elevation_meters,
+        msg='Flooding areas up to {} ft'.format(elevation_feet),
+        **verbose_options
+    )
 
     # convert flooded zone array back into a Raster
-    flooded_r = utils.array_to_raster(array=flooded_a, template=zones_r)
+    flooded_r = utils.array_to_raster(
+        array=flooded_a,
+        template=zones_r,
+        msg='Covering flooded array to a raster dataset',
+        **verbose_options
+    )
     with utils.OverwriteState(True):
         flooded_r.save('tempraster')
-        utils.progress_print('7/9 coverted back to raster and saved', **verbose_options)
 
     # convert raster into polygons
-    utils.progress_print('8/9 convert to polygon in {}'.format(arcpy.env.workspace), **verbose_options)
+    utils._status(msg='Convert raster of floods to polygons', **verbose_options)
     temp_result = arcpy.conversion.RasterToPolygon(
         in_raster=flooded_r,
         out_polygon_features=temp_filename,
         simplify="SIMPLIFY",
-        raster_field="Value"
+        raster_field="Value",
     )
 
     # dissolve (merge) broken polygons for each tidegate
+    utils._status("Dissolving polygons", **verbose_options)
     flood_polygons = arcpy.management.Dissolve(
         in_features=utils.result_to_layer(temp_result),
         out_feature_class=filename,
         dissolve_field="gridcode",
         statistics_fields='#'
     )
-    utils.progress_print('9/9 dissolve', **verbose_options)
 
     if cleanup:
-        utils.cleanup_temp_results(temp_result, flooded_r, topo_r, zones_r)
+        _temp_files = []
+        utils.cleanup_temp_results(
+            temp_result,
+            flooded_r,
+            topo_r,
+            zones_r,
+            msg="Removing intermediate files",
+            **verbose_options
+        )
 
     return flood_polygons
 
@@ -139,28 +169,28 @@ def assess_impact(flood_layer, input_gdb, overwrite=False, **verbose_options):
 
     with utils.OverwriteState(overwrite):
         with utils.WorkSpace(input_gdb):
-            utils.progress_print(arcpy.env.workspace, **verbose_options)
+            utils._status(arcpy.env.workspace, **verbose_options)
             input_layer = utils.load_data(flood_layer, "shape")
             # loop through the selected assets
             for asset in assetnames:
                 # create the asset layer object
-                utils.progress_print('load asset layer {}'.format(asset), **verbose_options)
+                utils._status('load asset layer {}'.format(asset), **verbose_options)
                 assetlayer = utils.load_data(asset, "shape")
 
                 # intersect the flooding with the asset
                 outputpath = '{}_{}'.format(flood_layer, asset)
-                utils.progress_print("save intersection to {}".format(outputpath), **verbose_options)
+                utils._status("save intersection to {}".format(outputpath), **verbose_options)
                 result = arcpy.analysis.Intersect([input_layer, assetlayer], outputpath)
 
                 # append instersetected layer to the output list
-                utils.progress_print("save results", **verbose_options)
+                utils._status("save results", **verbose_options)
                 outputlayers.append(utils.result_to_layer(result))
 
     return outputlayers
 
 
 def _assess_impact(inputspace, outputspace, SLR, surge, overwrite, assetnames):
-    utils.progress_print(assetnames, **verbose_options)
+    utils._status(assetnames, **verbose_options)
     INPUT_FLOOD_LAYER = "FloodScenarios"
     outputlayers = []
 
