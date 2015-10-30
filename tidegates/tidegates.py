@@ -84,8 +84,11 @@ def flood_area(dem, polygons, tidegate_column, elevation_feet,
     utils.progress_print('2/9 {} raster loaded'.format(dem), **verbose_options)
 
     # load the zones of influence, converting to a raster
-    cellsize = raw_topo.meanCellWidth
-    zones_r, zone_res = utils.process_polygons(polygons, tidegate_column, cellsize=cellsize)
+    zones_r, zone_res = utils.process_polygons(
+        polygons,
+        tidegate_column,
+        cellsize=raw_topo.meanCellWidth
+    )
     utils.progress_print('3/9 {} polygon processed'.format(polygons), **verbose_options)
 
     # clip the DEM to the zones raster
@@ -137,7 +140,6 @@ def flood_area(dem, polygons, tidegate_column, elevation_feet,
 def assess_impact(flood_layer, input_gdb, overwrite=False, **verbose_options):
     outputlayers = []
     assetnames = ["Landuse", "SaltMarsh", "Wetlands"]
-
 
     with utils.OverwriteState(overwrite):
         with utils.WorkSpace(input_gdb):
