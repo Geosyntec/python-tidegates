@@ -192,6 +192,16 @@ class Flooder(BaseTool_Mixin):
         with tidegates.utils.WorkSpace(workspace):
             for _elev in elevation:
                 elev = float(_elev)
+                base_msg = "Analyzing flood elevation: {} ft".format(filename, elev)
+                underline = ''.join(['-'] * len(base_msg))
+                header = '\n{}\n{}'.format(base_msg, underline)
+                tidegates.utils._status(
+                    header,
+                    verbose=True,
+                    asMessage=True,
+                    addTab=False
+                )
+
                 res = tidegates.flood_area(
                     dem=dem,
                     polygons=polygons,
@@ -202,8 +212,14 @@ class Flooder(BaseTool_Mixin):
                     asMessage=True
                 )
 
-                tidegates.utils.add_field_with_value(res.getOutput(0), "flood_elev",
-                                                     field_value=elev)
+                tidegates.utils.add_field_with_value(
+                    table=res.getOutput(0),
+                    field_name="flood_elev",
+                    field_value=elev,
+                    msg="Adding 'flood_elev' field to ouput",
+                    verbose=True,
+                    asMessage=True
+                )
                 results.append(res.getOutput(0))
 
         ezmd = tidegates.utils.EasyMapDoc("CURRENT")
