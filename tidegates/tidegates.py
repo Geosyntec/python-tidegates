@@ -24,9 +24,7 @@ SURGES = {
     '100-yr': 10.5 * METERS_PER_FOOT, # 100-yr (guess
 }
 
-
-
-def flood_area(dem, polygons, tidegate_column, elevation_feet,
+def flood_area(dem, polygons, ID_column, elevation_feet,
                filename=None, cleanup=True, **verbose_options):
     """ Mask out portions of a a tidegates area of influence below
     a certain elevation.
@@ -38,7 +36,7 @@ def flood_area(dem, polygons, tidegate_column, elevation_feet,
     polygons : str or arcpy.mapping.Layer
         The (filepath to the) zones that will be flooded. If a string,
         a Layer will be created.
-    tidegate_column : str
+    ID_column : str
         Name of the column in the ``polygons`` layer that associates
         each geomstry with a tidegate.
     elevation_feet: float
@@ -90,7 +88,7 @@ def flood_area(dem, polygons, tidegate_column, elevation_feet,
     # load the zones of influence, converting to a raster
     zones_r, zone_res = utils.process_polygons(
         polygons=polygons,
-        ID_column=tidegate_column,
+        ID_column=ID_column,
         cellsize=raw_topo.meanCellWidth,
         msg='Processing {} polygons'.format(polygons),
         **verbose_options
