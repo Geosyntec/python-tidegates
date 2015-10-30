@@ -2,18 +2,36 @@ import os
 import sys
 import glob
 import datetime
+from functools import wraps
 
 import numpy
 
 import arcpy
 
 
-def progress_print(msg, verbose=False, asMessage=False):
+def _status(msg, verbose=False, asMessage=False, addTab=True):
     if verbose:
+        if addTab:
+            msg = '\t' + msg
         if asMessage:
             arcpy.AddMessage(msg)
         else:
             print(msg)
+
+
+def update_status():
+    def decorate(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            msg = kwargs.pop("msg", None)
+            verbose = kwargs.pop("verbose", False)
+            asMessage = kwargs.pop("asMessage", False)
+            addTab = kwargs.pop("addTab", True)
+            _status(msg, verbose=verbose, asMessage=asMessage, addTab=addTab)
+
+            return func(*args, **kwargs)
+        return wrapper
+    return decorate
 
 
 class EasyMapDoc(object):
@@ -145,16 +163,19 @@ class WorkSpace(object):
         arcpy.env.workspace = self.orig_workspace
 
 
+@update_status()
 def result_to_raster(result):
     """ Gets the actual raster from an arcpy.Result object """
     return arcpy.Raster(result.getOutput(0))
 
 
+@update_status()
 def result_to_layer(result):
     """ Gets the actual layer from an arcpy.Result object """
     return arcpy.mapping.Layer(result.getOutput(0))
 
 
+@update_status()
 def rasters_to_arrays(*rasters, **kwargs):
     """ Converts an arbitrary number of rasters to numpy arrays"""
     squeeze = kwargs.pop("squeeze", False)
@@ -169,6 +190,7 @@ def rasters_to_arrays(*rasters, **kwargs):
     return arrays
 
 
+@update_status()
 def array_to_raster(array, template):
     """ Create an arcpy.Raster from a numpy.ndarray based on a template.
 
@@ -197,7 +219,8 @@ def array_to_raster(array, template):
     return newraster
 
 
-def load_data(datapath, datatype, greedyRasters=True):
+@update_status()
+def load_data(datapath, datatype, greedyRasters=True, **verbosity):
     """ Prepare a DEM or other raster for masking floods
 
     Parameters
@@ -248,6 +271,7 @@ def load_data(datapath, datatype, greedyRasters=True):
 
 
 def process_polygons(polygons, tidegate_column, cellsize=4):
+@update_status()
     """ Prepare tidegates' areas of influence polygons for flooding
     by converting to a raster.
 
@@ -289,6 +313,7 @@ def process_polygons(polygons, tidegate_column, cellsize=4):
     return zones, result
 
 
+@update_status()
 def clip_dem_to_zones(dem, zones):
     """ Limits the extent of the topographic data (``dem``) to that of
     the zones of influence  so that we can easily use array
@@ -329,6 +354,7 @@ def clip_dem_to_zones(dem, zones):
     return dem_clipped, result
 
 
+@update_status()
 def flood_zones(zones_array, topo_array, elevation):
     """ Mask out non-flooded portions of rasters.
 
@@ -365,6 +391,7 @@ def flood_zones(zones_array, topo_array, elevation):
     return flooded_array
 
 
+@update_status()
 def add_field_with_value(table, field_name, field_value=None,
                          overwrite=False, **field_opts):
     """ Adds a numeric or text field to an attribute table and sets it
@@ -440,6 +467,7 @@ def add_field_with_value(table, field_name, field_value=None,
                 cur.updateRow(row)
 
 
+@update_status()
 def cleanup_temp_results(*results):
     for r in results:
         arcpy.management.Delete(r)
