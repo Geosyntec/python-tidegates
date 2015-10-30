@@ -9,7 +9,7 @@ import numpy
 import arcpy
 
 
-def _status(msg, verbose=False, asMessage=False, addTab=False):
+def _status(msg, verbose=False, asMessage=False, addTab=False): # pragma: no cover
     if verbose:
         if addTab:
             msg = '\t' + msg
@@ -19,7 +19,7 @@ def _status(msg, verbose=False, asMessage=False, addTab=False):
             print(msg)
 
 
-def update_status():
+def update_status(): # pragma: no cover
     def decorate(func):
         @wraps(func)
         def wrapper(*args, **kwargs):

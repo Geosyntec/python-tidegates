@@ -70,7 +70,7 @@ def flood_area(dem, polygons, tidegate_column, elevation_feet,
     # convert the elevation to meters to match the DEM
     elevation_meters = elevation_feet * METERS_PER_FOOT
 
-    if filename is None:
+    if filename is None: # pragma: no cover
         datefmt = '%Y%m%d_%H%M'
         datestring = datetime.datetime.now().strftime(datefmt)
         temp_filename = "_temp_FloodedZones_" + datestring

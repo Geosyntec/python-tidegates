@@ -37,13 +37,13 @@ class BaseFlooder_Mixin(object):
         """Set whether tool is licensed to execute."""
         return True
 
-    def updateMessages(self, parameters):
+    def updateMessages(self, parameters): # pragma: no cover
         """Modify the messages created by internal validation for each
         parameter of the tool.  This method is called after internal
         validation."""
         return
 
-    def updateParameters(self, parameters):
+    def updateParameters(self, parameters): # pragma: no cover
         """ Automatically called when any parameter is updated in the
         GUI.
 
