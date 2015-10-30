@@ -130,10 +130,6 @@ def flood_area(dem, polygons, tidegate_column, elevation_feet,
     if cleanup:
         utils.cleanup_temp_results(temp_result, flooded_r, topo_r, zones_r)
 
-    ezmd = utils.EasyMapDoc("CURRENT")
-    if ezmd.mapdoc is not None and filename is not None:
-        ezmd.add_layer(filename)
-
     return flood_polygons
 
 

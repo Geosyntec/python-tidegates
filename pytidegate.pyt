@@ -29,16 +29,22 @@ class BaseTool_Mixin(object):
         """Set whether tool is licensed to execute."""
         return True
 
-    def updateParameters(self, parameters):
-        """Modify the values and properties of parameters before internal
-        validation is performed.  This method is called whenever a parameter
-        has been changed."""
-        return
-
     def updateMessages(self, parameters):
         """Modify the messages created by internal validation for each
         parameter of the tool.  This method is called after internal
         validation."""
+        return
+
+    def updateParameters(self, parameters):
+        """ Automatically called when any parameter is updated in the
+        GUI.
+
+        Flow is like this:
+            1. User interacts with GUI, filling out some input element
+            2. self.getParameterInfo is called
+            3. Parameteter are fed to this method as a list
+
+        """
         return
 
     @staticmethod
@@ -80,20 +86,6 @@ class Flooder(BaseTool_Mixin):
         self._elevation = None
         self._filename = None
 
-    def updateParameters(self, parameters):
-        """ Automatically called when any parameter is updated in the
-        GUI.
-
-        Flow is like this:
-            1. User interacts with GUI, filling out some input element
-            2. self.getParameterInfo is called
-            3. Parameteter are fed to this method as a list
-
-        """
-
-        # tidegate_columns looks into the polygons layer to get a list of fields
-        self._set_parameter_dependency(self.tidegate_column, self.polygons)
-
     @property
     def workspace(self):
         if self._workspace is None:
@@ -102,7 +94,8 @@ class Flooder(BaseTool_Mixin):
                 name='workspace',
                 datatype="DEWorkspace",
                 parameterType="Required",
-                direction="Input"
+                direction="Input",
+                multiValue=False
             )
         return self._workspace
 
@@ -114,8 +107,10 @@ class Flooder(BaseTool_Mixin):
                 name="dem",
                 datatype="DERasterDataset",
                 parameterType="Required",
-                direction="Input"
+                direction="Input",
+                multiValue=False
             )
+            self._set_parameter_dependency(self._dem, self.workspace)
         return self._dem
 
     @property
@@ -126,8 +121,10 @@ class Flooder(BaseTool_Mixin):
                 name="polygons",
                 datatype="DEFeatureClass",
                 parameterType="Required",
-                direction="Input"
+                direction="Input",
+                multiValue=False
             )
+            self._set_parameter_dependency(self._polygons, self.workspace)
         return self._polygons
 
     @property
@@ -138,9 +135,10 @@ class Flooder(BaseTool_Mixin):
                 name="tidegate_column",
                 datatype="Field",
                 parameterType="Required",
-                direction="Input"
+                direction="Input",
+                multiValue=False
             )
-            self._set_parameter_dependency(self.tidegate_column, self.polygons)
+            self._set_parameter_dependency(self._tidegate_column, self.polygons)
         return self._tidegate_column
 
     @property
@@ -152,7 +150,7 @@ class Flooder(BaseTool_Mixin):
                 datatype="GPDouble",
                 parameterType="Required",
                 direction="Input",
-                multiValue=False
+                multiValue=True
             )
         return self._elevation
 
@@ -187,30 +185,33 @@ class Flooder(BaseTool_Mixin):
         dem = parameters[1].valueAsText
         polygons = parameters[2].valueAsText
         tidegate_column = parameters[3].valueAsText
-        elevation = parameters[4].value
+        elevation = parameters[4].valueAsText.split(';')
         filename = parameters[5].valueAsText
 
-        tidegates.utils.progress_print("""
-            workspace: {}
-            dem: {}
-            polygons: {}
-            tidegate_column: {}
-            elevation: {}
-            filename: {}
-        """.format(workspace, dem, polygons, tidegate_column, elevation, filename))
-
+        results = []
         with tidegates.utils.WorkSpace(workspace):
-            x = tidegates.flood_area(
-                dem,
-                polygons,
-                tidegate_column,
-                elevation,
-                filename=filename,
-                verbose=True,
-                asMessage=True
-            )
+            for _elev in elevation:
+                elev = float(_elev)
+                res = tidegates.flood_area(
+                    dem=dem,
+                    polygons=polygons,
+                    tidegate_column=tidegate_column,
+                    elevation_feet=elev,
+                    filename=None,
+                    verbose=True,
+                    asMessage=True
+                )
 
-        return x
+                tidegates.utils.add_field_with_value(res.getOutput(0), "flood_elev",
+                                                     field_value=elev)
+                results.append(res.getOutput(0))
+
+        ezmd = tidegates.utils.EasyMapDoc("CURRENT")
+        if ezmd.mapdoc is not None:
+            arcpy.management.Merge(results, filename)
+            ezmd.add_layer(filename)
+
+        return results
 
 
 """ ESRI Documentation

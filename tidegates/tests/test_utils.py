@@ -13,9 +13,6 @@ import tidegates
 from tidegates import utils
 
 
-
-
-
 class Test_EasyMapDoc(object):
     def setup(self):
         self.mxd = resource_filename("tidegates.testing", "test.mxd")
@@ -309,6 +306,7 @@ class Test_process_polygons_x02(_process_polygons_mixin):
         self.known_shape = (1709, 1322)
         self.known_counts = numpy.array([381211, 146710])
 
+
 class Test_process_polygons_x08(_process_polygons_mixin):
     def setup(self):
         self.kwargs = {'cellsize': 8}
@@ -396,4 +394,93 @@ def test_mask_array_with_flood():
 
     flooded = utils.flood_zones(zones, topo, 6.0)
     nptest.assert_array_almost_equal(flooded, known_flooded)
+
+
+class Test_add_field_with_value(object):
+    def setup(self):
+        self.shapefile = resource_filename("tidegates.testing", 'test_field_adder.shp')
+        self.fields_added = ["_text", "_unicode", "_int", "_float", '_no_valstr', '_no_valnum']
+
+    def teardown(self):
+        field_names = [f.name for f in arcpy.ListFields(self.shapefile)]
+        for field in self.fields_added:
+            if field in field_names:
+                arcpy.management.DeleteField(self.shapefile, field)
+
+    def test_float(self):
+        name = "_float"
+        utils.add_field_with_value(self.shapefile, name,
+                                   field_value=5.0)
+        nt.assert_true(name in [f.name for f in arcpy.ListFields(self.shapefile)])
+
+        newfield = arcpy.ListFields(self.shapefile, name)[0]
+        nt.assert_equal(newfield.type, u'Double')
+
+    def test_int(self):
+        name = "_int"
+        utils.add_field_with_value(self.shapefile, name,
+                                   field_value=5)
+        nt.assert_true(name in [f.name for f in arcpy.ListFields(self.shapefile)])
+
+        newfield = arcpy.ListFields(self.shapefile, name)[0]
+        nt.assert_equal(newfield.type, u'Integer')
+
+    def test_string(self):
+        name = "_text"
+        utils.add_field_with_value(self.shapefile, name,
+                                   field_value="example_value",
+                                   field_length=15)
+
+        nt.assert_true(name in [f.name for f in arcpy.ListFields(self.shapefile)])
+
+        newfield = arcpy.ListFields(self.shapefile, name)[0]
+        nt.assert_equal(newfield.type, u'String')
+        nt.assert_true(newfield.length, 15)
+
+    def test_unicode(self):
+        name = "_unicode"
+        utils.add_field_with_value(self.shapefile, name,
+                                   field_value=u"example_value",
+                                   field_length=15)
+
+        nt.assert_true(name in [f.name for f in arcpy.ListFields(self.shapefile)])
+
+        newfield = arcpy.ListFields(self.shapefile, name)[0]
+        nt.assert_equal(newfield.type, u'String')
+        nt.assert_true(newfield.length, 15)
+
+    def test_no_value_string(self):
+        name = "_no_valstr"
+        utils.add_field_with_value(self.shapefile, name,
+                                   field_type='TEXT',
+                                   field_length=15)
+
+        nt.assert_true(name in [f.name for f in arcpy.ListFields(self.shapefile)])
+
+        newfield = arcpy.ListFields(self.shapefile, name)[0]
+        nt.assert_equal(newfield.type, u'String')
+        nt.assert_true(newfield.length, 15)
+
+    def test_no_value_number(self):
+        name = "_no_valnum"
+        utils.add_field_with_value(self.shapefile, name,
+                                   field_type='DOUBLE')
+
+        nt.assert_true(name in [f.name for f in arcpy.ListFields(self.shapefile)])
+
+        newfield = arcpy.ListFields(self.shapefile, name)[0]
+        nt.assert_equal(newfield.type, u'Double')
+
+    @nt.raises(ValueError)
+    def test_no_value_no_field_type(self):
+        utils.add_field_with_value(self.shapefile, "_willfail")
+
+    @nt.raises(ValueError)
+    def test_overwrite_existing_no(self):
+        utils.add_field_with_value(self.shapefile, "existing")
+
+    def test_overwrite_existing_yes(self):
+        utils.add_field_with_value(self.shapefile, "existing",
+                                   overwrite=True,
+                                   field_type="LONG")
 
