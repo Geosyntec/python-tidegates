@@ -161,7 +161,7 @@ class Flooder(BaseTool_Mixin):
                 displayName="Output layer/filename",
                 name="filename",
                 datatype="GPString",
-                parameterType="Optional",
+                parameterType="Required",
                 direction="Input"
             )
         return self._filename
