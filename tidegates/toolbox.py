@@ -166,18 +166,6 @@ class BaseFlooder_Mixin(object):
         return self._polygons
 
     @property
-    def filename(self):
-        if self._filename is None:
-            self._filename = arcpy.Parameter(
-                displayName="Output layer/filename",
-                name="filename",
-                datatype="GPString",
-                parameterType="Required",
-                direction="Input"
-            )
-        return self._filename
-
-    @property
     def tidegate_column(self):
         if self._tidegate_column is None:
             self._tidegate_column = arcpy.Parameter(
@@ -190,6 +178,19 @@ class BaseFlooder_Mixin(object):
             )
             self._set_parameter_dependency(self._tidegate_column, self.polygons)
         return self._tidegate_column
+
+    @property
+    def filename(self):
+        if self._filename is None:
+            self._filename = arcpy.Parameter(
+                displayName="Output layer/filename",
+                name="filename",
+                datatype="GPString",
+                parameterType="Required",
+                direction="Input"
+            )
+        return self._filename
+
 
     def _do_flood(self, dem, poly, idcol, elev, surge=None, slr=None):
         res = tidegates.flood_area(
