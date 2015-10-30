@@ -24,7 +24,6 @@ class MockResult(object):
 class CheckToolbox_Mixin(object):
     mockMap = mock.Mock(spec=utils.EasyMapDoc)
     mockLayer = mock.Mock(spec=arcpy.mapping.Layer)
-    #MockResult = mock.Mock(spec=arcpy.Result)
     mockUtils = mock.Mock(spec=utils)
     mxd = resource_filename("tidegates.testing", "test.mxd")
     simple_shp = resource_filename("tidegates.testing", "test_zones.shp")
@@ -35,24 +34,24 @@ class CheckToolbox_Mixin(object):
 
     def test__set_parameter_dependency_single(self):
         self.tbx._set_parameter_dependency(
-            self.tbx.tidegate_column,
+            self.tbx.ID_column,
             self.tbx.polygons
         )
 
         nt.assert_list_equal(
-            self.tbx.tidegate_column.parameterDependencies,
+            self.tbx.ID_column.parameterDependencies,
             [self.tbx.polygons.name]
         )
 
     def test__set_parameter_dependency_many(self):
         self.tbx._set_parameter_dependency(
-            self.tbx.tidegate_column,
+            self.tbx.ID_column,
             self.tbx.workspace,
             self.tbx.polygons,
         )
 
         nt.assert_list_equal(
-            self.tbx.tidegate_column.parameterDependencies,
+            self.tbx.ID_column.parameterDependencies,
             [self.tbx.workspace.name, self.tbx.polygons.name]
         )
 
@@ -91,7 +90,7 @@ class CheckToolbox_Mixin(object):
                 asMessage=True
             )
 
-    def test__add_scenario_columns_slr(self):
+    def test__add_scenario_columns_surge(self):
         with mock.patch.object(utils, 'add_field_with_value') as afwv:
             self.tbx._add_scenario_columns(MockResult, surge='TESTING')
             afwv.assert_called_once_with(
@@ -128,13 +127,13 @@ class CheckToolbox_Mixin(object):
         nt.assert_equal(self.tbx.polygons.datatype, "Feature Class")
         nt.assert_equal(self.tbx.polygons.name, 'polygons')
 
-    def test_tidegate_column(self):
-        nt.assert_true(hasattr(self.tbx, 'tidegate_column'))
-        nt.assert_true(isinstance(self.tbx.tidegate_column, arcpy.Parameter))
-        nt.assert_equal(self.tbx.tidegate_column.parameterType, "Required")
-        nt.assert_equal(self.tbx.tidegate_column.direction, "Input")
-        nt.assert_equal(self.tbx.tidegate_column.datatype, "Field")
-        nt.assert_equal(self.tbx.tidegate_column.name, 'tidegate_column')
+    def test_ID_column(self):
+        nt.assert_true(hasattr(self.tbx, 'ID_column'))
+        nt.assert_true(isinstance(self.tbx.ID_column, arcpy.Parameter))
+        nt.assert_equal(self.tbx.ID_column.parameterType, "Required")
+        nt.assert_equal(self.tbx.ID_column.direction, "Input")
+        nt.assert_equal(self.tbx.ID_column.datatype, "Field")
+        nt.assert_equal(self.tbx.ID_column.name, 'ID_column')
 
     def test_filename(self):
         nt.assert_true(hasattr(self.tbx, 'filename'))
@@ -144,8 +143,23 @@ class CheckToolbox_Mixin(object):
         nt.assert_equal(self.tbx.filename.datatype, "String")
         nt.assert_equal(self.tbx.filename.name, 'filename')
 
+    def test__do_flood(self):
+        with mock.patch.object(tidegates.tidegates, 'flood_area') as fa:
+            with mock.patch.object(self.tbx, '_add_scenario_columns') as asc:
+                res = self.tbx._do_flood('dem', 'poly', 'tgid', 5.7, surge='surge', slr=2)
+                fa.assert_called_once_with(
+                    dem='dem',
+                    polygons='poly',
+                    ID_column='tgid',
+                    elevation_feet=5.7,
+                    filename=None,
+                    verbose=True,
+                    asMessage=True
+                )
+                asc.assert_called_once_with(res, elev=5.7, surge='surge', slr=2)
 
-class Test_BaseFlooder_Mixin(CheckToolbox_Mixin):
+
+class Test_Flooder(CheckToolbox_Mixin):
     def setup(self):
         self.tbx = toolbox.Flooder()
 
@@ -158,10 +172,9 @@ class Test_BaseFlooder_Mixin(CheckToolbox_Mixin):
         nt.assert_equal(self.tbx.elevation.name, 'elevation')
 
     def test_getParameterInfo(self):
-        """ Returns all parameter definitions"""
         params = self.tbx.getParameterInfo()
         names = [str(p.name) for p in params]
-        known_names = ['workspace', 'dem', 'polygons', 'tidegate_column',
+        known_names = ['workspace', 'dem', 'polygons', 'ID_column',
                        'elevation', 'filename']
         nt.assert_list_equal(names, known_names)
 
@@ -171,9 +184,8 @@ class Test_StandardScenarios(CheckToolbox_Mixin):
         self.tbx = toolbox.StandardScenarios()
 
     def test_getParameterInfo(self):
-        """ Returns all parameter definitions"""
         params = self.tbx.getParameterInfo()
         names = [str(p.name) for p in params]
         known_names = ['workspace', 'dem', 'polygons',
-                       'tidegate_column', 'filename']
+                       'ID_column', 'filename']
         nt.assert_list_equal(names, known_names)

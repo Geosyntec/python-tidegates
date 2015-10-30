@@ -30,20 +30,20 @@ class BaseFlooder_Mixin(object):
         self._workspace = None
         self._dem = None
         self._polygons = None
-        self._tidegate_column = None
+        self._ID_column = None
         self._filename = None
 
     def isLicensed(self):
         """Set whether tool is licensed to execute."""
         return True
 
-    def updateMessages(self, parameters):
+    def updateMessages(self, parameters): # pragma: no cover
         """Modify the messages created by internal validation for each
         parameter of the tool.  This method is called after internal
         validation."""
         return
 
-    def updateParameters(self, parameters):
+    def updateParameters(self, parameters): # pragma: no cover
         """ Automatically called when any parameter is updated in the
         GUI.
 
@@ -169,18 +169,18 @@ class BaseFlooder_Mixin(object):
         return self._polygons
 
     @property
-    def tidegate_column(self):
-        if self._tidegate_column is None:
-            self._tidegate_column = arcpy.Parameter(
+    def ID_column(self):
+        if self._ID_column is None:
+            self._ID_column = arcpy.Parameter(
                 displayName="Column with Tidegate IDs",
-                name="tidegate_column",
+                name="ID_column",
                 datatype="Field",
                 parameterType="Required",
                 direction="Input",
                 multiValue=False
             )
-            self._set_parameter_dependency(self._tidegate_column, self.polygons)
-        return self._tidegate_column
+            self._set_parameter_dependency(self._ID_column, self.polygons)
+        return self._ID_column
 
     @property
     def filename(self):
@@ -199,7 +199,7 @@ class BaseFlooder_Mixin(object):
         res = tidegates.flood_area(
             dem=dem,
             polygons=poly,
-            tidegate_column=idcol,
+            ID_column=idcol,
             elevation_feet=elev,
             filename=None,
             verbose=True,
@@ -245,7 +245,7 @@ class Flooder(BaseFlooder_Mixin):
             self.workspace,
             self.dem,
             self.polygons,
-            self.tidegate_column,
+            self.ID_column,
             self.elevation,
             self.filename
         ]
@@ -298,7 +298,7 @@ class StandardScenarios(BaseFlooder_Mixin):
             self.workspace,
             self.dem,
             self.polygons,
-            self.tidegate_column,
+            self.ID_column,
             self.filename
         ]
         return params

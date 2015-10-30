@@ -1,5 +1,5 @@
 import nose.tools as nt
-from numpy import errstate
+from numpy import errstate, hstack, array
 import numpy.testing as nptest
 
 from warnings import simplefilter
@@ -8,18 +8,32 @@ import sys
 import subprocess
 from pkg_resources import resource_string
 
+try:
+    import fiona
+    has_fiona = True
+except ImportError:
+    fiona = None
+    has_fiona = False
 
-def assert_shapefiles_are_close(baselinefile, outputfile, atol=0.001):
+
+def assert_shapefiles_are_close(baselinefile, outputfile, atol=0.001, ngeom=5):
     with fiona.open(outputfile, 'r') as result:
         result_records = list(result)
 
     with fiona.open(baselinefile, 'r') as baseline:
-        base_records = list(baseline)
+        known_records = list(baseline)
 
-    for rr, br in zip(result_records, base_records):
-        nt.assert_dict_equal(rr['properties'], br['properties'])
-        nt.assert_equal(rr['geometry']['type'], br['geometry']['type'])
-        nptest.assert_allclose(rr['geometry']['coordinates'], br['geometry']['coordinates'], atol=atol)
+    for rr, kr in zip(result_records, known_records):
+        nt.assert_dict_equal(rr['properties'], kr['properties'])
+        nt.assert_equal(rr['geometry']['type'], kr['geometry']['type'])
+        nt.assert_equal(len(rr['geometry']['coordinates']), len(kr['geometry']['coordinates']))
+
+        _ngeom = min(len(rr['geometry']['coordinates']), ngeom)
+        nptest.assert_allclose(
+            hstack([array(r) for r in rr['geometry']['coordinates'][:_ngeom]]),
+            hstack([array(k) for k in kr['geometry']['coordinates'][:_ngeom]]),
+            atol=atol
+        )
 
 
 def _show_package_info(package, name):
@@ -29,19 +43,21 @@ def _show_package_info(package, name):
 
 def _show_system_info():
     import nose
+    import arcpy
 
     pyversion = sys.version.replace('\n','')
     print("Python version %s" % pyversion)
     print("nose version %d.%d.%d" % nose.__versioninfo__)
 
-    import arcpy
     _show_package_info(numpy, 'arcpy')
 
     import numpy
     _show_package_info(scipy, 'numpy')
 
-    # import fiona
-    # _show_package_info(matplotlib, 'fiona')
+    if has_fiona:
+        _show_package_info(fiona, 'fiona')
+    else:
+        print("fiona not installed")
 
 
 class NoseWrapper(nptest.Tester):
