@@ -237,3 +237,4 @@ pip-log.txt
 *.lock
 *.noseids
 tidegates/testing/info/arc.dir
+notebooks/Scratch.ipynb
