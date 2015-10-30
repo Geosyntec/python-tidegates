@@ -9,7 +9,7 @@ import numpy
 import arcpy
 
 
-def _status(msg, verbose=False, asMessage=False, addTab=True):
+def _status(msg, verbose=False, asMessage=False, addTab=False):
     if verbose:
         if addTab:
             msg = '\t' + msg
@@ -26,7 +26,7 @@ def update_status():
             msg = kwargs.pop("msg", None)
             verbose = kwargs.pop("verbose", False)
             asMessage = kwargs.pop("asMessage", False)
-            addTab = kwargs.pop("addTab", True)
+            addTab = kwargs.pop("addTab", False)
             _status(msg, verbose=verbose, asMessage=asMessage, addTab=addTab)
 
             return func(*args, **kwargs)
