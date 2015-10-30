@@ -24,7 +24,18 @@ class Toolbox(object):
         self.tools = [Flooder]
 
 
-class BaseTool_Mixin(object):
+class BaseFlooder_Mixin(object):
+    def __init__(self):
+        #std attributes
+        self.canRunInBackground = True
+
+        # lazy properties
+        self._workspace = None
+        self._dem = None
+        self._polygons = None
+        self._tidegate_column = None
+        self._elevation = None
+
     def isLicensed(self):
         """Set whether tool is licensed to execute."""
         return True
@@ -71,21 +82,6 @@ class BaseTool_Mixin(object):
 
         downstream.parameterDependencies = [u.name for u in upstream]
 
-
-class Flooder(BaseTool_Mixin):
-    def __init__(self):
-        """Define the tool (tool name is the name of the class)."""
-        self.label = "1 - Create Flood Scenarios"
-        self.description = ""
-        self.canRunInBackground = True
-
-        self._workspace = None
-        self._dem = None
-        self._polygons = None
-        self._tidegate_column = None
-        self._elevation = None
-        self._filename = None
-
     @property
     def workspace(self):
         if self._workspace is None:
@@ -128,6 +124,18 @@ class Flooder(BaseTool_Mixin):
         return self._polygons
 
     @property
+    def filename(self):
+        if self._filename is None:
+            self._filename = arcpy.Parameter(
+                displayName="Output layer/filename",
+                name="filename",
+                datatype="GPString",
+                parameterType="Required",
+                direction="Input"
+            )
+        return self._filename
+
+    @property
     def tidegate_column(self):
         if self._tidegate_column is None:
             self._tidegate_column = arcpy.Parameter(
@@ -141,6 +149,18 @@ class Flooder(BaseTool_Mixin):
             self._set_parameter_dependency(self._tidegate_column, self.polygons)
         return self._tidegate_column
 
+
+class Flooder(BaseTool_Mixin):
+    def __init__(self):
+        """Define the tool (tool name is the name of the class)."""
+        # std attributes
+        super(Flooder, self).__init__()
+        self.label = "1 - Create Flood Scenarios"
+        self.description = ""
+
+        # lazy properties
+        self._filename = None
+
     @property
     def elevation(self):
         if self._elevation is None:
@@ -153,18 +173,6 @@ class Flooder(BaseTool_Mixin):
                 multiValue=True
             )
         return self._elevation
-
-    @property
-    def filename(self):
-        if self._filename is None:
-            self._filename = arcpy.Parameter(
-                displayName="Output layer/filename",
-                name="filename",
-                datatype="GPString",
-                parameterType="Required",
-                direction="Input"
-            )
-        return self._filename
 
     def getParameterInfo(self):
         """ Returns all parameter definitions"""
