@@ -365,6 +365,81 @@ def flood_zones(zones_array, topo_array, elevation):
     return flooded_array
 
 
+def add_field_with_value(table, field_name, field_value=None,
+                         overwrite=False, **field_opts):
+    """ Adds a numeric or text field to an attribute table and sets it
+    to a constant value. Operates in-place.
+
+    Parameters
+    ----------
+    table : Layer, table, or file path
+        This is the layer/file that will have a new field created.
+    field_name : string
+        The name of the field to be created.
+    field_value : float or string, optional
+        The value of the new field. If provided, it will be used to
+        infer the ``field_type`` parameter required by
+        `arcpy.management.AddField` if ``field_type`` is itself not
+        explicitly provided.
+    **field_opts : keyword options
+        Keyword arguments that are passed directly to
+        `arcpy.management.AddField`.
+
+    Returns
+    -------
+    None
+
+    See Also
+    --------
+    `arcpy.management.AddField`
+
+    Examples
+    --------
+    >>> # add a text field to shapefile (text fields need a length speci)
+    >>> utils.add_field_with_value("mypolygons.shp", "storm_event",
+                                   "100-yr", field_length=10)
+    >>> # add a numeric field (doesn't require additional options)
+    >>> utils.add_field_with_value("polygons.shp", "flood_level", 3.14)
+
+    """
+
+    # how Esri map python types to field types
+    typemap = {
+        int: 'LONG',
+        float: 'DOUBLE',
+        unicode: 'TEXT',
+        str: 'TEXT',
+        type(None): None
+    }
+
+    # pull the field type from the options if it was specified,
+    # otherwise lookup a type based on the `type(field_value)`.
+    field_type = field_opts.pop("field_type", typemap[type(field_value)])
+
+    if not overwrite:
+        existing_fields = [field.name for field in arcpy.ListFields(table)]
+        if field_name in existing_fields:
+            msg = "'{}' already exists and `overwrite` is False"
+            raise ValueError(msg.format(field_name))
+
+    if field_value is None and field_type is None:
+        raise ValueError("must provide a `field_type` if not providing a value.")
+
+    # see http://goo.gl/66QD8c
+    arcpy.management.AddField(
+        in_table=table,
+        field_name=field_name,
+        field_type=field_type,
+        **field_opts)
+
+    # set the value in all rows
+    if field_value is not None:
+        with arcpy.da.UpdateCursor(table, [field_name]) as cur:
+            for row in cur:
+                row[0] = field_value
+                cur.updateRow(row)
+
+
 def cleanup_temp_results(*results):
     for r in results:
         arcpy.management.Delete(r)
