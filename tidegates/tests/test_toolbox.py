@@ -24,7 +24,6 @@ class MockResult(object):
 class CheckToolbox_Mixin(object):
     mockMap = mock.Mock(spec=utils.EasyMapDoc)
     mockLayer = mock.Mock(spec=arcpy.mapping.Layer)
-    #MockResult = mock.Mock(spec=arcpy.Result)
     mockUtils = mock.Mock(spec=utils)
     mxd = resource_filename("tidegates.testing", "test.mxd")
     simple_shp = resource_filename("tidegates.testing", "test_zones.shp")
@@ -91,7 +90,7 @@ class CheckToolbox_Mixin(object):
                 asMessage=True
             )
 
-    def test__add_scenario_columns_slr(self):
+    def test__add_scenario_columns_surge(self):
         with mock.patch.object(utils, 'add_field_with_value') as afwv:
             self.tbx._add_scenario_columns(MockResult, surge='TESTING')
             afwv.assert_called_once_with(
