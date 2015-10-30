@@ -61,7 +61,7 @@ class Test_EasyMapDoc(object):
 class Test_Extension(object):
     def setup(self):
         self.known_available = 'spatial'
-        self.known_unavailable = '3d'
+        self.known_unavailable = 'Datareviewer'
 
     @nt.raises(RuntimeError)
     def test_unlicensed_extension(self):
@@ -272,6 +272,18 @@ class Test_load_data(object):
     def test_vector_as_layer_with_caps(self):
         x = utils.load_data(self.vectorpath, 'LAyeR')
         nt.assert_true(isinstance(x, arcpy.mapping.Layer))
+
+    def test_already_a_layer(self):
+        lyr = arcpy.mapping.Layer(self.vectorpath)
+        x = utils.load_data(lyr, 'layer')
+        nt.assert_equal(x, lyr)
+
+    def test_already_a_raster(self):
+        raster = arcpy.Raster(self.rasterpath)
+        x = utils.load_data(raster, 'raster')
+        nt.assert_true(isinstance(x, arcpy.Raster))
+
+        nptest.assert_array_almost_equal(*utils.rasters_to_arrays(x, raster))
 
 
 class _process_polygons_mixin(object):
@@ -484,3 +496,16 @@ class Test_add_field_with_value(object):
                                    overwrite=True,
                                    field_type="LONG")
 
+
+def test_cleanup_temp_results():
+    template_file = resource_filename("tidegates.testing", 'test_dem.tif')
+    template = utils.load_data(template_file, "raster")
+    raster1 = utils.array_to_raster(numpy.random.normal(size=(30, 30)), template)
+    raster2 = utils.array_to_raster(numpy.random.normal(size=(60, 60)), template)
+
+    raster1.save("temp_1")
+    raster2.save("temp_2")
+
+    utils.cleanup_temp_results(raster1, raster2)
+    nt.assert_false(os.path.exists("temp_1"))
+    nt.assert_false(os.path.exists("temp_2"))
