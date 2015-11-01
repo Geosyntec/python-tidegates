@@ -121,27 +121,26 @@ def flood_area(dem, polygons, ID_column, elevation_feet,
         flooded_r.save('tempraster')
 
     # convert raster into polygons
-    utils._status(msg='Convert raster of floods to polygons', **verbose_options)
-    temp_result = arcpy.conversion.RasterToPolygon(
-        in_raster=flooded_r,
-        out_polygon_features=temp_filename,
-        simplify="SIMPLIFY",
-        raster_field="Value",
+    temp_polygons = utils.raster_to_polygons(
+        flooded_r,
+        temp_filename,
+        msg='Convert raster of floods to polygons',
+        **verbose_options
     )
 
     # dissolve (merge) broken polygons for each tidegate
-    utils._status("Dissolving polygons", **verbose_options)
-    flood_polygons = arcpy.management.Dissolve(
-        in_features=utils.result_to_layer(temp_result),
-        out_feature_class=filename,
-        dissolve_field="gridcode",
-        statistics_fields='#'
+    flood_polygons = utils.aggregate_polygons(
+        polygons=temp_polygons,
+        ID_field="gridcode",
+        filename=filename,
+        msg="Dissolving polygons",
+        **verbose_options
     )
 
     if cleanup:
         _temp_files = []
         utils.cleanup_temp_results(
-            temp_result,
+            temp_polygons,
             flooded_r,
             topo_r,
             zones_r,

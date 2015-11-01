@@ -361,6 +361,34 @@ def test_clip_dem_to_zones():
     nt.assert_tuple_equal(dem_a.shape, zone_a.shape)
 
 
+def test_raster_to_polygons():
+    zonefile = resource_filename("tidegates.testing", "test_raster_to_polygon.tif")
+    knownfile = resource_filename("tidegates.testing", "known_polygons_from_raster.shp")
+    testfile = resource_filename("tidegates.testing", "test_polygons_from_raster.shp")
+
+    with utils.OverwriteState(True):
+        zones = utils.load_data(zonefile, 'raster')
+        known = utils.load_data(knownfile, 'layer')
+        test = utils.raster_to_polygons(zones, testfile)
+
+    tgtest.assert_shapefiles_are_close(test.dataSource, known.dataSource)
+    utils.cleanup_temp_results(testfile)
+
+def test_aggregate_polygons():
+    rawfile = resource_filename("tidegates.testing", "known_polygons_from_raster.shp")
+    knownfile = resource_filename("tidegates.testing", "known_dissolved_polygons.shp")
+    testfile = resource_filename("tidegates.testing", "test_dissolved_polygons.shp")
+
+    with utils.OverwriteState(True):
+        raw = utils.load_data(rawfile, 'layer')
+        known = utils.load_data(knownfile, 'layer')
+        test = utils.aggregate_polygons(raw, "gridcode", testfile)
+
+    tgtest.assert_shapefiles_are_close(test.getOutput(0), known.dataSource)
+
+    utils.cleanup_temp_results(testfile)
+
+
 def test_mask_array_with_flood():
     zones = numpy.array([
         [  1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   0],
