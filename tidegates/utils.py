@@ -355,6 +355,77 @@ def clip_dem_to_zones(dem, zones):
 
 
 @update_status()
+def raster_to_polygons(zonal_raster, filename):
+    """
+    Converts zonal rasters to polygons layers. This is basically just
+    a thing wrapper around arcpy.conversion.RasterToPolygon. The
+    returned layers will have a field "gridcode" that corresponds to the
+    values of the raster.
+
+    Parameters
+    ----------
+    zonal_raster : arcpy.Raster
+        An integer raster of reasonably small set distinct values.
+    filename : str
+        Path to where the polygons will be saved.
+
+    Returns
+    -------
+    polygons : arcpy.mapping.Layer
+        The converted polygons.
+
+    See Also
+    --------
+    arcpy.conversion.RasterToPolygon
+
+    """
+
+    results = arcpy.conversion.RasterToPolygon(
+        in_raster=zonal_raster,
+        out_polygon_features=filename,
+        simplify="SIMPLIFY",
+        raster_field="Value",
+    )
+
+    polygons = result_to_layer(results)
+    return polygons
+
+
+@update_status()
+def aggregate_polygons(polygons, ID_field, filename):
+    """
+    Dissolves (aggregates) polygons into a single feature the unique
+    values in the provided field. This is basically just a thim wrapper
+    around `arcpy.management.Dissolve`.
+
+    Parameters
+    ----------
+    polygons : arcpy.mapping.Layer
+        The layer of polygons to be aggregated.
+    ID_field : string
+        The name of the field in ``polygons`` on which the individual
+        polygons will be grouped.
+    filename : string
+        Path to where the aggregated polygons will be saved.
+
+    Returns
+    -------
+    dissolved : arcpy.mapping.Layer
+        The aggregated polygons.
+
+    """
+
+    dissolved = arcpy.management.Dissolve(
+        in_features=polygons,
+        dissolve_field=ID_field,
+        out_feature_class=filename,
+        statistics_fields='#'
+    )
+
+    return dissolved
+
+
+@update_status()
 def flood_zones(zones_array, topo_array, elevation):
     """ Mask out non-flooded portions of rasters.
 
