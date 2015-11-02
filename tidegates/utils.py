@@ -542,3 +542,9 @@ def add_field_with_value(table, field_name, field_value=None,
 def cleanup_temp_results(*results):
     for r in results:
         arcpy.management.Delete(r)
+
+
+def create_temp_filename(filepath, prefix='_temp_'):
+    file_with_ext = os.path.basename(filepath)
+    folder = os.path.dirname(filepath)
+    return os.path.join(folder, prefix + file_with_ext)

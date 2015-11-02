@@ -18,15 +18,15 @@ class MockResult(object):
     @staticmethod
     def getOutput(index):
         if index == 0:
-            return resource_filename("tidegates.testing", "test_zones.shp")
+            return resource_filename("tidegates.testing.input", "test_zones.shp")
 
 
 class CheckToolbox_Mixin(object):
     mockMap = mock.Mock(spec=utils.EasyMapDoc)
     mockLayer = mock.Mock(spec=arcpy.mapping.Layer)
     mockUtils = mock.Mock(spec=utils)
-    mxd = resource_filename("tidegates.testing", "test.mxd")
-    simple_shp = resource_filename("tidegates.testing", "test_zones.shp")
+    mxd = resource_filename("tidegates.testing.input", "test.mxd")
+    simple_shp = resource_filename("tidegates.testing.input", "test_zones.shp")
 
     def test_isLicensed(self):
         # every toolbox should be always licensed!
