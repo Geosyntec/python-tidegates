@@ -194,7 +194,6 @@ class BaseFlooder_Mixin(object):
             )
         return self._filename
 
-
     def _do_flood(self, dem, poly, idcol, elev, surge=None, slr=None):
         res = tidegates.flood_area(
             dem=dem,

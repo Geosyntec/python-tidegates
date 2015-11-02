@@ -64,7 +64,7 @@ def flood_area(dem, polygons, ID_column, elevation_feet,
         datestring = datetime.datetime.now().strftime(datefmt)
         temp_filename = "_temp_FloodedZones_" + datestring
     else:
-        temp_filename = '_temp_' + filename
+        temp_filename = utils.create_temp_filename(filename)
 
     utils._status('WorkSpace set to {}'.format(arcpy.env.workspace), **verbose_options)
 
