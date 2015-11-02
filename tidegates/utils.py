@@ -9,31 +9,6 @@ import numpy
 import arcpy
 
 
-def _status(msg, verbose=False, asMessage=False, addTab=False): # pragma: no cover
-    if verbose:
-        if addTab:
-            msg = '\t' + msg
-        if asMessage:
-            arcpy.AddMessage(msg)
-        else:
-            print(msg)
-
-
-def update_status(): # pragma: no cover
-    def decorate(func):
-        @wraps(func)
-        def wrapper(*args, **kwargs):
-            msg = kwargs.pop("msg", None)
-            verbose = kwargs.pop("verbose", False)
-            asMessage = kwargs.pop("asMessage", False)
-            addTab = kwargs.pop("addTab", False)
-            _status(msg, verbose=verbose, asMessage=asMessage, addTab=addTab)
-
-            return func(*args, **kwargs)
-        return wrapper
-    return decorate
-
-
 class EasyMapDoc(object):
     def __init__(self, *args, **kwargs):
         try:
@@ -163,19 +138,50 @@ class WorkSpace(object):
         arcpy.env.workspace = self.orig_workspace
 
 
-@update_status()
+def _status(msg, verbose=False, asMessage=False, addTab=False): # pragma: no cover
+    if verbose:
+        if addTab:
+            msg = '\t' + msg
+        if asMessage:
+            arcpy.AddMessage(msg)
+        else:
+            print(msg)
+
+
+def update_status(): # pragma: no cover
+    def decorate(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            msg = kwargs.pop("msg", None)
+            verbose = kwargs.pop("verbose", False)
+            asMessage = kwargs.pop("asMessage", False)
+            addTab = kwargs.pop("addTab", False)
+            _status(msg, verbose=verbose, asMessage=asMessage, addTab=addTab)
+
+            return func(*args, **kwargs)
+        return wrapper
+    return decorate
+
+
+def create_temp_filename(filepath, prefix='_temp_'):
+    file_with_ext = os.path.basename(filepath)
+    folder = os.path.dirname(filepath)
+    return os.path.join(folder, prefix + file_with_ext)
+
+
+@update_status() # raster
 def result_to_raster(result):
     """ Gets the actual raster from an arcpy.Result object """
     return arcpy.Raster(result.getOutput(0))
 
 
-@update_status()
+@update_status() # layer
 def result_to_layer(result):
     """ Gets the actual layer from an arcpy.Result object """
     return arcpy.mapping.Layer(result.getOutput(0))
 
 
-@update_status()
+@update_status() # list of arrays
 def rasters_to_arrays(*rasters, **kwargs):
     """ Converts an arbitrary number of rasters to numpy arrays"""
     squeeze = kwargs.pop("squeeze", False)
@@ -190,7 +196,7 @@ def rasters_to_arrays(*rasters, **kwargs):
     return arrays
 
 
-@update_status()
+@update_status() # raster
 def array_to_raster(array, template):
     """ Create an arcpy.Raster from a numpy.ndarray based on a template.
 
@@ -219,7 +225,7 @@ def array_to_raster(array, template):
     return newraster
 
 
-@update_status()
+@update_status() # raster or layer
 def load_data(datapath, datatype, greedyRasters=True, **verbosity):
     """ Prepare a DEM or other raster for masking floods
 
@@ -270,7 +276,7 @@ def load_data(datapath, datatype, greedyRasters=True, **verbosity):
     return data
 
 
-@update_status()
+@update_status() # raster and result
 def process_polygons(polygons, ID_column, cellsize=4):
     """ Prepare tidegates' areas of influence polygons for flooding
     by converting to a raster.
@@ -313,7 +319,7 @@ def process_polygons(polygons, ID_column, cellsize=4):
     return zones, result
 
 
-@update_status()
+@update_status() # raster and result
 def clip_dem_to_zones(dem, zones):
     """ Limits the extent of the topographic data (``dem``) to that of
     the zones of influence  so that we can easily use array
@@ -354,7 +360,7 @@ def clip_dem_to_zones(dem, zones):
     return dem_clipped, result
 
 
-@update_status()
+@update_status() # layer
 def raster_to_polygons(zonal_raster, filename):
     """
     Converts zonal rasters to polygons layers. This is basically just
@@ -391,7 +397,7 @@ def raster_to_polygons(zonal_raster, filename):
     return polygons
 
 
-@update_status()
+@update_status() # layer
 def aggregate_polygons(polygons, ID_field, filename):
     """
     Dissolves (aggregates) polygons into a single feature the unique
@@ -415,17 +421,18 @@ def aggregate_polygons(polygons, ID_field, filename):
 
     """
 
-    dissolved = arcpy.management.Dissolve(
+    results = arcpy.management.Dissolve(
         in_features=polygons,
         dissolve_field=ID_field,
         out_feature_class=filename,
         statistics_fields='#'
     )
 
+    dissolved = result_to_layer(results)
     return dissolved
 
 
-@update_status()
+@update_status() # array
 def flood_zones(zones_array, topo_array, elevation):
     """ Mask out non-flooded portions of rasters.
 
@@ -462,11 +469,12 @@ def flood_zones(zones_array, topo_array, elevation):
     return flooded_array
 
 
-@update_status()
+@update_status() # None
 def add_field_with_value(table, field_name, field_value=None,
                          overwrite=False, **field_opts):
     """ Adds a numeric or text field to an attribute table and sets it
-    to a constant value. Operates in-place.
+    to a constant value. Operates in-place and therefore does not
+    return anything.
 
     Parameters
     ----------
@@ -528,7 +536,8 @@ def add_field_with_value(table, field_name, field_value=None,
         in_table=table,
         field_name=field_name,
         field_type=field_type,
-        **field_opts)
+        **field_opts
+    )
 
     # set the value in all rows
     if field_value is not None:
@@ -538,13 +547,56 @@ def add_field_with_value(table, field_name, field_value=None,
                 cur.updateRow(row)
 
 
-@update_status()
+@update_status() # None
 def cleanup_temp_results(*results):
     for r in results:
         arcpy.management.Delete(r)
 
 
-def create_temp_filename(filepath, prefix='_temp_'):
-    file_with_ext = os.path.basename(filepath)
-    folder = os.path.dirname(filepath)
-    return os.path.join(folder, prefix + file_with_ext)
+@update_status() # layer
+def intersect_polygon_layers(*layers, **intersect_options):
+    """
+    Intersect polygon layers with each other. Basically a thin wrapper
+    around `arcpy.analysis.Intersect`.
+
+    Parameters
+    ----------
+    *layers : string or `arcpy.Mapping.layers
+        The polyong layers (or their paths) that will be intersected
+        with each other.
+    filename : str
+        Filepath where the intersected output will be saved.
+    **intersect_options : keyword arguments
+        Additional arguments that will be passed directly to
+        `arcpy.analysis.Intersect`.
+
+    Returns
+    -------
+    intersected : arcpy.mapping.Layer
+        The arcpy Layer of the intersected polygons.
+
+    Example
+    -------
+    >>> from tidedates import utils
+    >>> blobs = utils.intersect_polygon_layers(
+    >>> ...     "floods.shp",
+    >>> ...     "wetlands.shp",
+    >>> ...     "buildings.shp"
+    >>> ...     filename="flood_damage.shp"
+    >>> ... )
+
+    """
+
+    output = intersect_options.pop("filename", None)
+    if output is None:
+        msg = "named argument `filename` required for intersect_polygon_layers"
+        raise ValueError(msg)
+
+    result = arcpy.analysis.Intersect(
+        in_features=layers,
+        out_feature_class=output,
+        **intersect_options
+    )
+
+    intersected = result_to_layer(result)
+    return intersected

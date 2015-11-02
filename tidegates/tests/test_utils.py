@@ -385,7 +385,7 @@ def test_aggregate_polygons():
         known = utils.load_data(knownfile, 'layer')
         test = utils.aggregate_polygons(raw, "gridcode", testfile)
 
-    tgtest.assert_shapefiles_are_close(test.getOutput(0), known.dataSource)
+    tgtest.assert_shapefiles_are_close(test.dataSource, known.dataSource)
 
     utils.cleanup_temp_results(testfile)
 
@@ -554,3 +554,31 @@ def test_create_temp_filename():
     nt.assert_equal(utils.create_temp_filename(filepath), known_filepath)
     nt.assert_equal(utils.create_temp_filename(geodbfile), known_geodbfile)
     nt.assert_equal(utils.create_temp_filename(geodbfile, prefix='_other_'), known_geodbfile_prefix)
+
+
+class Test_intersect_polygon_layers(object):
+    input1_file = resource_filename("tidegates.testing.input", "intersect_input1.shp")
+    input2_file = resource_filename("tidegates.testing.input", "intersect_input2.shp")
+    known_file = resource_filename("tidegates.testing.known", "intersect_output.shp")
+    output_file = resource_filename("tidegates.testing.output", "intersect_output.shp")
+
+    def test_normal(self):
+        with utils.OverwriteState(True):
+            output = utils.intersect_polygon_layers(
+                self.input1_file,
+                self.input2_file,
+                filename=self.output_file
+            )
+
+        nt.assert_true(isinstance(output, arcpy.mapping.Layer))
+        tgtest.assert_shapefiles_are_close(self.output_file, self.known_file)
+
+        utils.cleanup_temp_results(output)
+
+    @nt.raises(ValueError)
+    def test_no_filename(self):
+        output = utils.intersect_polygon_layers(
+            self.input1_file,
+            self.input2_file,
+        )
+

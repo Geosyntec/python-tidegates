@@ -13,7 +13,7 @@ def test_flood_area():
     ws = resource_filename("tidegates", "testing")
     with utils.WorkSpace(ws), utils.OverwriteState(True):
         filename = os.path.join("output", "test_flood_area_output.shp")
-        result = tidegates.flood_area(
+        floods = tidegates.flood_area(
             dem=os.path.join('input', 'test_dem.tif'),
             polygons=os.path.join('input', 'test_zones.shp'),
             ID_column="GeoID",
@@ -22,10 +22,10 @@ def test_flood_area():
             verbose=False
         )
 
-    nt.assert_true(isinstance(result, arcpy.Result))
+    nt.assert_true(isinstance(floods, arcpy.mapping.Layer))
     tgtest.assert_shapefiles_are_close(
         resource_filename("tidegates.testing.known", "known_flood_area_output.shp"),
         resource_filename("tidegates.testing", filename)
     )
 
-    utils.cleanup_temp_results(result)
+    utils.cleanup_temp_results(floods)
