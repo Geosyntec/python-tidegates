@@ -415,13 +415,14 @@ def aggregate_polygons(polygons, ID_field, filename):
 
     """
 
-    dissolved = arcpy.management.Dissolve(
+    results = arcpy.management.Dissolve(
         in_features=polygons,
         dissolve_field=ID_field,
         out_feature_class=filename,
         statistics_fields='#'
     )
 
+    dissolved = result_to_layer(results)
     return dissolved
 
 

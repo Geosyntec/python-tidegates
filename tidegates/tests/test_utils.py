@@ -385,7 +385,7 @@ def test_aggregate_polygons():
         known = utils.load_data(knownfile, 'layer')
         test = utils.aggregate_polygons(raw, "gridcode", testfile)
 
-    tgtest.assert_shapefiles_are_close(test.getOutput(0), known.dataSource)
+    tgtest.assert_shapefiles_are_close(test.dataSource, known.dataSource)
 
     utils.cleanup_temp_results(testfile)
 
