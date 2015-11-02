@@ -3,10 +3,8 @@ from numpy import errstate, hstack, array
 import numpy.testing as nptest
 
 from warnings import simplefilter
-import distutils
 import sys
-import subprocess
-from pkg_resources import resource_string
+import os
 
 try:
     import fiona
@@ -44,15 +42,15 @@ def _show_package_info(package, name):
 def _show_system_info():
     import nose
     import arcpy
+    import numpy
 
     pyversion = sys.version.replace('\n','')
     print("Python version %s" % pyversion)
     print("nose version %d.%d.%d" % nose.__versioninfo__)
 
-    _show_package_info(numpy, 'arcpy')
+    _show_package_info(arcpy, 'arcpy')
 
-    import numpy
-    _show_package_info(scipy, 'numpy')
+    _show_package_info(numpy, 'numpy')
 
     if has_fiona:
         _show_package_info(fiona, 'fiona')
@@ -70,7 +68,7 @@ class NoseWrapper(nptest.Tester):
 
 
     def test(self, label='fast', verbose=1, with_id=True, exe=True,
-             doctests=False, coverage=False, packageinfo=True, extra_argv=[],
+             doctests=False, coverage=False, packageinfo=True, extra_argv=None,
              **kwargs):
         '''
         Run tests for module using nose
