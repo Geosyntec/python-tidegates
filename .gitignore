@@ -14,6 +14,8 @@ tidegates/testing/log
 tidegates/testing/test_zones_PolygonToRaster*
 tidegates/testing/_temp_clipped
 tidegates/testing/_temp*
+tidegates/testing/output/*
+tidegates/testing/*/*.shp.xml
 
 
 
@@ -238,3 +240,5 @@ pip-log.txt
 *.noseids
 tidegates/testing/info/arc.dir
 notebooks/Scratch.ipynb
+tidegates/testing/output/log
+*.dir
