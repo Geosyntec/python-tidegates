@@ -69,11 +69,11 @@ class Test_Extension(object):
             pass
 
     def test_licensed_extension(self):
-        nt.assert_equal(arcpy.CheckExtension(self.known_available), 'Available')
+        nt.assert_equal(arcpy.CheckExtension(self.known_available), u'Available')
         with utils.Extension(self.known_available) as ext:
             nt.assert_equal(ext, 'CheckedOut')
 
-        nt.assert_equal(arcpy.CheckExtension(self.known_available), 'Available')
+        nt.assert_equal(arcpy.CheckExtension(self.known_available), u'Available')
 
     def teardown(self):
         arcpy.CheckExtension(self.known_available)

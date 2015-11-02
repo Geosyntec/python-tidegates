@@ -72,7 +72,7 @@ class Extension(object):
         self.name = name
 
     def __enter__(self):
-        if arcpy.CheckExtension(self.name) == "Available":
+        if arcpy.CheckExtension(self.name) == u"Available":
             status = arcpy.CheckOutExtension(self.name)
             return status
         else:
