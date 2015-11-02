@@ -15,12 +15,12 @@ from tidegates import utils
 
 class Test_EasyMapDoc(object):
     def setup(self):
-        self.mxd = resource_filename("tidegates.testing", "test.mxd")
+        self.mxd = resource_filename("tidegates.testing.input", "test.mxd")
         self.ezmd = utils.EasyMapDoc(self.mxd)
 
         self.knownlayer_names = ['ZOI', 'wetlands', 'ZOI_first_few', 'wetlands_first_few']
         self.knowndataframe_names = ['Main', 'Subset']
-        self.add_layer_path = resource_filename("tidegates.testing", "ZOI.shp")
+        self.add_layer_path = resource_filename("tidegates.testing.input", "ZOI.shp")
 
     def test_layers(self):
         nt.assert_true(hasattr(self.ezmd, 'layers'))
@@ -172,9 +172,9 @@ class Test_rasters_to_arrays(object):
             [1500, 1600, 1700, 1800, 1900]
         ])
 
-        self.rasterfile1 = resource_filename("tidegates.testing", 'test_raster1')
-        self.rasterfile2 = resource_filename("tidegates.testing", 'test_raster2')
-        self.rasterfile3 = resource_filename("tidegates.testing", 'test_raster3')
+        self.rasterfile1 = resource_filename("tidegates.testing.input", 'test_raster1')
+        self.rasterfile2 = resource_filename("tidegates.testing.input", 'test_raster2')
+        self.rasterfile3 = resource_filename("tidegates.testing.input", 'test_raster3')
 
     def test_one_raster(self):
         array = utils.rasters_to_arrays(self.rasterfile1)
@@ -214,7 +214,7 @@ class Test_rasters_to_arrays(object):
 
 
 def test_array_to_raster():
-    template_file = resource_filename("tidegates.testing", 'test_raster2')
+    template_file = resource_filename("tidegates.testing.input", 'test_raster2')
     template = arcpy.Raster(template_file)
     array = numpy.arange(5, 25).reshape(4, 5).astype(float)
 
@@ -226,8 +226,8 @@ def test_array_to_raster():
 
 
 class Test_load_data(object):
-    rasterpath = resource_filename("tidegates.testing", 'test_dem.tif')
-    vectorpath = resource_filename("tidegates.testing", 'test_wetlands.shp')
+    rasterpath = resource_filename("tidegates.testing.input", 'test_dem.tif')
+    vectorpath = resource_filename("tidegates.testing.input", 'test_wetlands.shp')
 
     @nt.raises(ValueError)
     def test_bad_datatype(self):
@@ -287,7 +287,7 @@ class Test_load_data(object):
 
 
 class _process_polygons_mixin(object):
-    testfile = resource_filename("tidegates.testing", "test_zones.shp")
+    testfile = resource_filename("tidegates.testing.input", "test_zones.shp")
     known_values = numpy.array([-999, 16, 150])
 
     def test_process(self):
@@ -326,7 +326,7 @@ class Test_process_polygons_x08(_process_polygons_mixin):
         self.known_counts = numpy.array([23828,  9172])
 
     def test_actual_arrays(self):
-        known_raster_file = resource_filename("tidegates.testing", "test_zones_raster.tif")
+        known_raster_file = resource_filename("tidegates.testing.input", "test_zones_raster.tif")
         known_raster = utils.load_data(known_raster_file, 'raster')
         raster, result = utils.process_polygons(self.testfile, "GeoID", **self.kwargs)
         arrays = utils.rasters_to_arrays(raster, known_raster)
@@ -343,8 +343,8 @@ class Test_process_polygons_x16(_process_polygons_mixin):
 
 
 def test_clip_dem_to_zones():
-    demfile = resource_filename("tidegates.testing", 'test_dem.tif')
-    zonefile = resource_filename("tidegates.testing", "test_zones_raster_small.tif")
+    demfile = resource_filename("tidegates.testing.input", 'test_dem.tif')
+    zonefile = resource_filename("tidegates.testing.input", "test_zones_raster_small.tif")
     raster, result = utils.clip_dem_to_zones(demfile, zonefile)
 
     zone_r = utils.load_data(zonefile, 'raster')
@@ -362,9 +362,9 @@ def test_clip_dem_to_zones():
 
 
 def test_raster_to_polygons():
-    zonefile = resource_filename("tidegates.testing", "test_raster_to_polygon.tif")
-    knownfile = resource_filename("tidegates.testing", "known_polygons_from_raster.shp")
-    testfile = resource_filename("tidegates.testing", "test_polygons_from_raster.shp")
+    zonefile = resource_filename("tidegates.testing.input", "test_raster_to_polygon.tif")
+    knownfile = resource_filename("tidegates.testing.known", "known_polygons_from_raster.shp")
+    testfile = resource_filename("tidegates.testing.output", "test_polygons_from_raster.shp")
 
     with utils.OverwriteState(True):
         zones = utils.load_data(zonefile, 'raster')
@@ -374,10 +374,11 @@ def test_raster_to_polygons():
     tgtest.assert_shapefiles_are_close(test.dataSource, known.dataSource)
     utils.cleanup_temp_results(testfile)
 
+
 def test_aggregate_polygons():
-    rawfile = resource_filename("tidegates.testing", "known_polygons_from_raster.shp")
-    knownfile = resource_filename("tidegates.testing", "known_dissolved_polygons.shp")
-    testfile = resource_filename("tidegates.testing", "test_dissolved_polygons.shp")
+    rawfile = resource_filename("tidegates.testing.known", "known_polygons_from_raster.shp")
+    knownfile = resource_filename("tidegates.testing.known", "known_dissolved_polygons.shp")
+    testfile = resource_filename("tidegates.testing.output", "test_dissolved_polygons.shp")
 
     with utils.OverwriteState(True):
         raw = utils.load_data(rawfile, 'layer')
@@ -438,7 +439,7 @@ def test_mask_array_with_flood():
 
 class Test_add_field_with_value(object):
     def setup(self):
-        self.shapefile = resource_filename("tidegates.testing", 'test_field_adder.shp')
+        self.shapefile = resource_filename("tidegates.testing.input", 'test_field_adder.shp')
         self.fields_added = ["_text", "_unicode", "_int", "_float", '_no_valstr', '_no_valnum']
 
     def teardown(self):
@@ -526,7 +527,7 @@ class Test_add_field_with_value(object):
 
 
 def test_cleanup_temp_results():
-    template_file = resource_filename("tidegates.testing", 'test_dem.tif')
+    template_file = resource_filename("tidegates.testing.input", 'test_dem.tif')
     template = utils.load_data(template_file, "raster")
     raster1 = utils.array_to_raster(numpy.random.normal(size=(30, 30)), template)
     raster2 = utils.array_to_raster(numpy.random.normal(size=(60, 60)), template)
