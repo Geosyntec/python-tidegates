@@ -553,3 +553,50 @@ def cleanup_temp_results(*results):
         arcpy.management.Delete(r)
 
 
+@update_status() # layer
+def intersect_polygon_layers(*layers, **intersect_options):
+    """
+    Intersect polygon layers with each other. Basically a thin wrapper
+    around `arcpy.analysis.Intersect`.
+
+    Parameters
+    ----------
+    *layers : string or `arcpy.Mapping.layers
+        The polyong layers (or their paths) that will be intersected
+        with each other.
+    filename : str
+        Filepath where the intersected output will be saved.
+    **intersect_options : keyword arguments
+        Additional arguments that will be passed directly to
+        `arcpy.analysis.Intersect`.
+
+    Returns
+    -------
+    intersected : arcpy.mapping.Layer
+        The arcpy Layer of the intersected polygons.
+
+    Example
+    -------
+    >>> from tidedates import utils
+    >>> blobs = utils.intersect_polygon_layers(
+    >>> ...     "floods.shp",
+    >>> ...     "wetlands.shp",
+    >>> ...     "buildings.shp"
+    >>> ...     filename="flood_damage.shp"
+    >>> ... )
+
+    """
+
+    output = intersect_options.pop("filename", None)
+    if output is None:
+        msg = "named argument `filename` required for intersect_polygon_layers"
+        raise ValueError(msg)
+
+    result = arcpy.analysis.Intersect(
+        in_features=layers,
+        out_feature_class=output,
+        **intersect_options
+    )
+
+    intersected = result_to_layer(result)
+    return intersected
