@@ -538,3 +538,19 @@ def test_cleanup_temp_results():
     utils.cleanup_temp_results(raster1, raster2)
     nt.assert_false(os.path.exists("temp_1"))
     nt.assert_false(os.path.exists("temp_2"))
+
+
+def test_create_temp_filename():
+    barefile = os.path.join("test.shp")
+    filepath = os.path.join("folder", "subfolder", "test.shp")
+    geodbfile = os.path.join("folder", "geodb.gdb", "test")
+
+    known_barefile = os.path.join("_temp_test.shp")
+    known_filepath = os.path.join("folder", "subfolder", "_temp_test.shp")
+    known_geodbfile = os.path.join("folder", "geodb.gdb", "_temp_test")
+    known_geodbfile_prefix = os.path.join("folder", "geodb.gdb", "_other_test")
+
+    nt.assert_equal(utils.create_temp_filename(barefile), known_barefile)
+    nt.assert_equal(utils.create_temp_filename(filepath), known_filepath)
+    nt.assert_equal(utils.create_temp_filename(geodbfile), known_geodbfile)
+    nt.assert_equal(utils.create_temp_filename(geodbfile, prefix='_other_'), known_geodbfile_prefix)
