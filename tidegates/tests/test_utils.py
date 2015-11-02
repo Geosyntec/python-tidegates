@@ -585,3 +585,34 @@ class Test_intersect_polygon_layers(object):
             self.input2_file,
         )
 
+
+class Test_count_shapes_in_zones():
+    known_counts = {16.0: 32, 150.0: 2}
+    input_path = resource_filename("tidegates.testing.known", "flooded_buildings.shp")
+    group_col = 'GRIDCODE'
+    count_col = 'FID_buildi'
+
+    def test_normal(self):
+        counts = utils.groupby_and_count(
+            self.input_path,
+            self.group_col,
+            self.count_col
+        )
+
+        nt.assert_dict_equal(counts, self.known_counts)
+
+    @nt.raises(ValueError)
+    def test_bad_group_col(self):
+        counts = utils.groupby_and_count(
+            self.input_path,
+            "JUNK",
+            self.count_col
+        )
+
+    @nt.raises(ValueError)
+    def test_bad_count_col(self):
+        counts = utils.groupby_and_count(
+            self.input_path,
+            self.group_col,
+            "JUNK"
+        )

@@ -3,6 +3,7 @@ import sys
 import glob
 import datetime
 from functools import wraps
+import itertools
 
 import numpy
 
@@ -600,3 +601,59 @@ def intersect_polygon_layers(*layers, **intersect_options):
 
     intersected = result_to_layer(result)
     return intersected
+
+
+@update_status()
+def groupby_and_count(input_path, group_col, count_col):
+    """
+    Counts the number of distinct values of `count_col` are associated
+    with each value of `group_col` in a data source found at
+    `input_path`.
+
+    Parameters
+    ----------
+    input_path : str
+        File path to a shapefile or feature class whose attribute table
+        can be loaded with `arcpy.da.TableToNumPyArray`.
+    group_col : str
+        The field name that would be used to group all of the records.
+    count_col : str
+        The field name whose distinct values will be counted in each
+        group defined by `group_col`.
+
+    Returns
+    -------
+    counts : dict
+        A dictionary whose keys are the distinct values of `group_col`
+        and values are the number of distinct records in each group.
+
+    See Also
+    --------
+    `arcpy.da.TableToNumPyArray`
+    `itertools.groupby`
+
+    """
+
+    # load the data
+    layer = load_data(input_path, "layer")
+
+    # check that fields are valid
+    existing_fields = [field.name for field in arcpy.ListFields(layer.dataSource)]
+    msg = "`{}` field not found in '{}'"
+    if group_col not in existing_fields:
+        raise ValueError(msg.format(group_col, input_path))
+
+    if count_col not in existing_fields:
+        raise ValueError(msg.format(count_col, input_path))
+
+    table = arcpy.da.TableToNumPyArray(layer, [group_col, count_col])
+    table.sort(order=group_col)
+
+    counts = {}
+    for groupname, shapes in itertools.groupby(table, lambda row: row[group_col]):
+        values  = numpy.unique(list(shapes))
+        counts[groupname] = values.shape[0]
+
+    return counts
+
+
