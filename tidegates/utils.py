@@ -170,6 +170,46 @@ def create_temp_filename(filepath, prefix='_temp_'):
     return os.path.join(folder, prefix + file_with_ext)
 
 
+def _check_fields(table, *fieldnames, **kwargs):
+    """
+    Checks that field are (or are not) in a table. The check fails, a
+    `ValueError` is raised.
+
+    Parameters
+    ----------
+    table : arcpy.mapping.Layer or similar
+        Any table-like that we can pass to `arcpy.ListFields`.
+    *fieldnames : str arguments
+        optional string arguments that whose existance in `table` will
+        be checked.
+    should_exist : bool, optional (False)
+        Whether we're testing for for absense (False) or existance
+        (True) of the provided field names.
+
+    Returns
+    -------
+    None
+
+    """
+
+    should_exist = kwargs.pop('should_exist', False)
+
+    existing_fields = [field.name for field in arcpy.ListFields(table)]
+    bad_names = []
+    for name in fieldnames:
+        exists = name in existing_fields
+        if should_exist != exists and name != 'SHAPE@AREA':
+            bad_names.append(name)
+
+    if not should_exist:
+        qual = " not "
+    else:
+        qual = ' '
+
+    if len(bad_names) > 0:
+        raise ValueError('fields {} are{}in {}'.format(bad_names, qual, table))
+
+
 @update_status() # raster
 def result_to_raster(result):
     """ Gets the actual raster from an arcpy.Result object """
@@ -524,10 +564,7 @@ def add_field_with_value(table, field_name, field_value=None,
     field_type = field_opts.pop("field_type", typemap[type(field_value)])
 
     if not overwrite:
-        existing_fields = [field.name for field in arcpy.ListFields(table)]
-        if field_name in existing_fields:
-            msg = "'{}' already exists and `overwrite` is False"
-            raise ValueError(msg.format(field_name))
+        _check_fields(table, field_name, should_exist=False)
 
     if field_value is None and field_type is None:
         raise ValueError("must provide a `field_type` if not providing a value.")
@@ -638,13 +675,7 @@ def groupby_and_count(input_path, group_col, count_col):
     layer = load_data(input_path, "layer")
 
     # check that fields are valid
-    existing_fields = [field.name for field in arcpy.ListFields(layer.dataSource)]
-    msg = "`{}` field not found in '{}'"
-    if group_col not in existing_fields:
-        raise ValueError(msg.format(group_col, input_path))
-
-    if count_col not in existing_fields:
-        raise ValueError(msg.format(count_col, input_path))
+    _check_fields(layer.dataSource, groupfield, countfield, should_exist=True)
 
     table = arcpy.da.TableToNumPyArray(layer, [group_col, count_col])
     table.sort(order=group_col)

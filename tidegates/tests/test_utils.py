@@ -132,6 +132,52 @@ class Test_WorkSpace(object):
         nt.assert_equal(arcpy.env.workspace, self.baseline)
 
 
+def test_create_temp_filename():
+    barefile = os.path.join("test.shp")
+    filepath = os.path.join("folder", "subfolder", "test.shp")
+    geodbfile = os.path.join("folder", "geodb.gdb", "test")
+
+    known_barefile = os.path.join("_temp_test.shp")
+    known_filepath = os.path.join("folder", "subfolder", "_temp_test.shp")
+    known_geodbfile = os.path.join("folder", "geodb.gdb", "_temp_test")
+    known_geodbfile_prefix = os.path.join("folder", "geodb.gdb", "_other_test")
+
+    nt.assert_equal(utils.create_temp_filename(barefile), known_barefile)
+    nt.assert_equal(utils.create_temp_filename(filepath), known_filepath)
+    nt.assert_equal(utils.create_temp_filename(geodbfile), known_geodbfile)
+    nt.assert_equal(utils.create_temp_filename(geodbfile, prefix='_other_'), known_geodbfile_prefix)
+
+
+class Test__check_fields(object):
+    table = resource_filename("tidegates.testing.input", "test_field_adder.shp")
+
+    def test_should_exist_uni(self):
+        utils._check_fields(self.table, "Id", should_exist=True)
+
+    def test_should_exist_multi(self):
+        utils._check_fields(self.table, "Id", "existing", should_exist=True)
+
+    def test_should_exist_multi_witharea(self):
+        utils._check_fields(self.table, "Id", "existing", "SHAPE@AREA", should_exist=True)
+
+    @nt.raises(ValueError)
+    def test_should_exist_bad_vals(self):
+        utils._check_fields(self.table, "Id", "existing", "JUNK", "GARBAGE", should_exist=True)
+
+    def test_should_not_exist_uni(self):
+        utils._check_fields(self.table, "NEWFIELD", should_exist=False)
+
+    def test_should_not_exist_multi(self):
+        utils._check_fields(self.table, "NEWFIELD", "YANFIELD", should_exist=False)
+
+    def test_should_not_exist_multi_witharea(self):
+        utils._check_fields(self.table, "NEWFIELD", "YANFIELD", "SHAPE@AREA", should_exist=False)
+
+    @nt.raises(ValueError)
+    def test_should_not_exist_bad_vals(self):
+        utils._check_fields(self.table, "NEWFIELD", "YANFIELD", "existing", should_exist=False)
+
+
 def test_result_to_raster():
     mockResult = mock.Mock(spec=arcpy.Result)
     mockRaster = mock.Mock(spec=arcpy.Raster)
@@ -542,22 +588,6 @@ def test_cleanup_temp_results():
     nt.assert_false(os.path.exists("temp_2"))
 
 
-def test_create_temp_filename():
-    barefile = os.path.join("test.shp")
-    filepath = os.path.join("folder", "subfolder", "test.shp")
-    geodbfile = os.path.join("folder", "geodb.gdb", "test")
-
-    known_barefile = os.path.join("_temp_test.shp")
-    known_filepath = os.path.join("folder", "subfolder", "_temp_test.shp")
-    known_geodbfile = os.path.join("folder", "geodb.gdb", "_temp_test")
-    known_geodbfile_prefix = os.path.join("folder", "geodb.gdb", "_other_test")
-
-    nt.assert_equal(utils.create_temp_filename(barefile), known_barefile)
-    nt.assert_equal(utils.create_temp_filename(filepath), known_filepath)
-    nt.assert_equal(utils.create_temp_filename(geodbfile), known_geodbfile)
-    nt.assert_equal(utils.create_temp_filename(geodbfile, prefix='_other_'), known_geodbfile_prefix)
-
-
 class Test_intersect_polygon_layers(object):
     input1_file = resource_filename("tidegates.testing.input", "intersect_input1.shp")
     input2_file = resource_filename("tidegates.testing.input", "intersect_input2.shp")
@@ -590,7 +620,7 @@ class Test_count_shapes_in_zones():
     known_counts = {16.0: 32, 150.0: 2}
     input_path = resource_filename("tidegates.testing.known", "flooded_buildings.shp")
     group_col = 'GRIDCODE'
-    count_col = 'FID_buildi'
+    count_col = 'STRUCT_ID'
 
     def test_normal(self):
         counts = utils.groupby_and_count(
