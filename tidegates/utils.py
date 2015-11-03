@@ -745,3 +745,45 @@ def populate_field(table, value_fxn, valuefield, *keyfields):
         for row in cur:
             row[-1] = value_fxn(row)
             cur.updateRow(row)
+
+
+@update_status() # layers
+def copy_data(destfolder, *source_layers, **kwargs):
+    """ Copies an arbitrary number of spatial files to a new folder.
+
+    Parameters
+    ----------
+    destfolder : str
+        Path the folder that is the destination for the files.
+    *source_layers : str
+        Paths to the files that need to be copied
+    squeeze : bool, optional (False)
+        When one layer is copied and this is True, the copied layer is
+        returned. Otherwise, this function returns a list of layers.
+
+    Returns
+    -------
+    copied : list of arcpy.mapping Layers or just a single Layer.
+
+    See Also
+    --------
+    arcpy.conversion.FeatureClassToShapefile
+
+    """
+
+    squeeze = kwargs.pop("squeeze", False)
+    arcpy.conversion.FeatureClassToShapefile(
+        Input_Features=source_layers,
+        Output_Folder=destfolder
+    )
+
+    outputnames = [
+        os.path.join(destfolder, os.path.basename(lyr))
+        for lyr in source_layers
+    ]
+
+    copied = [load_data(name, "layer") for name in outputnames]
+    if squeeze and len(copied) == 1:
+        copied = copied[0]
+
+    return copied

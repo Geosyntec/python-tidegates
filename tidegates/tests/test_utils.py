@@ -700,3 +700,50 @@ class Test_populate_field(object):
         with arcpy.da.SearchCursor(self.shapefile, [self.field_added, "FID"]) as cur:
             for row in cur:
                 nt.assert_equal(row[0], row[1] ** 2)
+
+
+class Test_copy_data(object):
+    destfolder = resource_filename("tidegates.testing", "output")
+    srclayers = [
+        resource_filename("tidegates.testing.input", "buildings.shp"),
+        resource_filename("tidegates.testing.known", "flooded_buildings.shp"),
+        resource_filename("tidegates.testing.input", "intersect_input1.shp"),
+    ]
+
+    output = [
+        resource_filename("tidegates.testing.output", "buildings.shp"),
+        resource_filename("tidegates.testing.output", "flooded_buildings.shp"),
+        resource_filename("tidegates.testing.output", "intersect_input1.shp"),
+    ]
+
+    def teardown(self):
+        utils.cleanup_temp_results(*self.output)
+
+    def test_list(self):
+        with utils.OverwriteState(True):
+            newlayers = utils.copy_data(self.destfolder, *self.srclayers)
+
+        nt.assert_true(isinstance(newlayers, list))
+
+        for newlyr, newname, oldname in zip(newlayers, self.output, self.srclayers):
+            nt.assert_true(isinstance(newlyr, arcpy.mapping.Layer))
+            tgtest.assert_shapefiles_are_close(newname, oldname)
+
+    def test_single_squeeze_false(self):
+        with utils.OverwriteState(True):
+            newlayers = utils.copy_data(self.destfolder, *self.srclayers[:1])
+
+        nt.assert_true(isinstance(newlayers, list))
+
+        for newlyr, newname, oldname in zip(newlayers[:1], self.output[:1], self.srclayers[:1]):
+            nt.assert_true(isinstance(newlyr, arcpy.mapping.Layer))
+            tgtest.assert_shapefiles_are_close(newname, oldname)
+
+    def test_single_squeeze_true(self):
+        with utils.OverwriteState(True):
+            newlayer = utils.copy_data(self.destfolder, *self.srclayers[:1], squeeze=True)
+
+        nt.assert_true(isinstance(newlayer, arcpy.mapping.Layer))
+
+        nt.assert_true(isinstance(newlayer, arcpy.mapping.Layer))
+        tgtest.assert_shapefiles_are_close(self.output[0], self.srclayers[0])
