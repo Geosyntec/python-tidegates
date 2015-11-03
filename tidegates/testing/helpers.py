@@ -82,6 +82,9 @@ class NoseWrapper(nptest.Tester):
         kwargs
             Passed to numpy.errstate.  See its documentation for details.
         '''
+        if extra_argv is None:
+            extra_argv = []
+
         if with_id:
             extra_argv.extend(['--with-id'])
 
