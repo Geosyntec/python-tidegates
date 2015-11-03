@@ -69,11 +69,11 @@ class Test_Extension(object):
             pass
 
     def test_licensed_extension(self):
-        nt.assert_equal(arcpy.CheckExtension(self.known_available), 'Available')
+        nt.assert_equal(arcpy.CheckExtension(self.known_available), u'Available')
         with utils.Extension(self.known_available) as ext:
             nt.assert_equal(ext, 'CheckedOut')
 
-        nt.assert_equal(arcpy.CheckExtension(self.known_available), 'Available')
+        nt.assert_equal(arcpy.CheckExtension(self.known_available), u'Available')
 
     def teardown(self):
         arcpy.CheckExtension(self.known_available)
@@ -361,6 +361,7 @@ def test_clip_dem_to_zones():
     nt.assert_tuple_equal(dem_a.shape, zone_a.shape)
 
 
+@nptest.dec.skipif(not tgtest.has_fiona)
 def test_raster_to_polygons():
     zonefile = resource_filename("tidegates.testing.input", "test_raster_to_polygon.tif")
     knownfile = resource_filename("tidegates.testing.known", "known_polygons_from_raster.shp")
@@ -375,6 +376,7 @@ def test_raster_to_polygons():
     utils.cleanup_temp_results(testfile)
 
 
+@nptest.dec.skipif(not tgtest.has_fiona)
 def test_aggregate_polygons():
     rawfile = resource_filename("tidegates.testing.known", "known_polygons_from_raster.shp")
     knownfile = resource_filename("tidegates.testing.known", "known_dissolved_polygons.shp")
@@ -562,6 +564,7 @@ class Test_intersect_polygon_layers(object):
     known_file = resource_filename("tidegates.testing.known", "intersect_output.shp")
     output_file = resource_filename("tidegates.testing.output", "intersect_output.shp")
 
+    @nptest.dec.skipif(not tgtest.has_fiona)
     def test_normal(self):
         with utils.OverwriteState(True):
             output = utils.intersect_polygon_layers(

@@ -9,7 +9,7 @@ An ArcGIS python toolbox and library for analyzing extent of flooding and damage
   1. numpy: an open source numerical extension to python that provides the basis for must scientific libraries in python.
   1. arcpy: a proprietary Python-based interface to some of the geoprocessing functionality of ArcGIS.
   1. nose: an open source unit test runner for python.
-  1. juptyer: an open source, programming language-agnostic suite tools aimed at facilitating reproducible scientific work.
+  1. jupyter: an open source, programming language-agnostic suite tools aimed at facilitating reproducible scientific work.
      The name stands for "Julia", "Python", and "R", the names of three of the dominating scientific computing languages.
   1. git: A distributed version control software. See https://git-scm.com/ for more details.
 
@@ -68,7 +68,7 @@ The input data required to run the tool are the following:
 ## Small Sample Dataset
 This repository contains a very small sample dataset that is used to:
   1. Run the test suite
-  1. Provide a minimal demostration of the toolbox
+  1. Provide a minimal demonstration of the toolbox
 
 ### Running the test suite
 The code base that powers the GIS toolboxes is uses a code QC technique known as [unit testing](https://en.wikipedia.org/wiki/Unit_testing).
@@ -106,12 +106,11 @@ The main advantage of building `python-tidegates` as a python library instead of
 One basic way would be to write your own python files, call it "my_analysis.py", and to run that file with:
 ```
 > python my_analysis.py
-```.
+```
 
 As an example, the contents of "my_analysis.py" could be as simple as:
+```
 import tidegates
-
-```python
 workspace = r"F:\phobson\Tidegates\python-tidegates\tidegates\testing"
 dem = r"python-tidegates\tidegates\testing\test_dem.tif "
 ZOI = r"python-tidegates\tidegates\testing\test_zones.shp "
@@ -124,7 +123,7 @@ with tidegates.utils.WorkSpace(workspace), tidegates.utils.OverwriteState(True):
 
 Alternatively, you can use some of the jupyter notebook provided with the source code.
 
-To install jupyter, execute `pip install jupyer` in a terminal.
+To install jupyter, execute `pip install jupyter` in a terminal.
 
 To launch the notebooks bundled with the source code, navigate to the directory and execute `jupyter notebook`.
 In a newly opened terminal, this looks like:
@@ -136,7 +135,7 @@ C:\Users\phobson
 $ cd C:\Users\phobson\Downloads\python-tidegates-master\notebooks
 
 $ C:\Users\phobson\Downloads\python-tidegates-master\notebooks
-juptyer notebook
+jupyter notebook
 ```
 
 ...and then a browser window will pop up with a list of example notebooks to run.

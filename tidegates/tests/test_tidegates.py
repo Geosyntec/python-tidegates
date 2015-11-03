@@ -9,6 +9,7 @@ import arcpy
 from tidegates import tidegates, utils
 
 
+@nptest.dec.skipif(not tgtest.has_fiona)
 def test_flood_area():
     ws = resource_filename("tidegates", "testing")
     with utils.WorkSpace(ws), utils.OverwriteState(True):
