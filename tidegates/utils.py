@@ -202,7 +202,7 @@ def _check_fields(table, *fieldnames, **kwargs):
             bad_names.append(name)
 
     if not should_exist:
-        qual = " not "
+        qual = ' not '
     else:
         qual = ' '
 
@@ -638,9 +638,10 @@ def intersect_polygon_layers(*layers, **intersect_options):
 
 
 @update_status() # dict
-def groupby_and_count(input_path, groupfield, countfield):
+def groupby_and_aggregate(input_path, groupfield, valuefield,
+                          aggfxn=None):
     """
-    Counts the number of distinct values of `countfield` are associated
+    Counts the number of distinct values of `valuefield` are associated
     with each value of `groupfield` in a data source found at
     `input_path`.
 
@@ -651,9 +652,14 @@ def groupby_and_count(input_path, groupfield, countfield):
         can be loaded with `arcpy.da.TableToNumPyArray`.
     groupfield : str
         The field name that would be used to group all of the records.
-    countfield : str
+    valuefield : str
         The field name whose distinct values will be counted in each
         group defined by `groupfield`.
+    aggfxn : callable, optional.
+        Function to aggregate the values in each group to a single group.
+        This function should accept an `itertools._grouper` as its only
+        input. If not provided, unique number of value in the group will
+        be returned.
 
     Returns
     -------
@@ -668,19 +674,22 @@ def groupby_and_count(input_path, groupfield, countfield):
 
     """
 
+    if aggfxn is None:
+        aggfxn = lambda x: int(numpy.unique(list(x)).shape[0])
+
     # load the data
     layer = load_data(input_path, "layer")
 
     # check that fields are valid
-    _check_fields(layer.dataSource, groupfield, countfield, should_exist=True)
+    _check_fields(layer.dataSource, groupfield, valuefield, should_exist=True)
 
-    table = arcpy.da.TableToNumPyArray(layer, [groupfield, countfield])
+    table = arcpy.da.TableToNumPyArray(layer, [groupfield, valuefield])
     table.sort(order=groupfield)
 
     counts = {}
     for groupname, shapes in itertools.groupby(table, lambda row: row[groupfield]):
-        values  = numpy.unique(list(shapes))
-        counts[groupname] = int(values.shape[0])
+        #values  = numpy.unique(list(shapes))
+        counts[groupname] = aggfxn(shapes)
 
     return counts
 

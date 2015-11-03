@@ -616,33 +616,52 @@ class Test_intersect_polygon_layers(object):
         )
 
 
-class Test_count_shapes_in_zones():
+class Test_groupby_and_aggregate():
     known_counts = {16.0: 32, 150.0: 2}
-    input_path = resource_filename("tidegates.testing.known", "flooded_buildings.shp")
+    buildings = resource_filename("tidegates.testing.known", "flooded_buildings.shp")
     group_col = 'GRIDCODE'
     count_col = 'STRUCT_ID'
 
-    def test_normal(self):
-        counts = utils.groupby_and_count(
-            self.input_path,
+    areas = resource_filename("tidegates.testing.input", "intersect_input1.shp")
+    known_areas = {2: 1327042.1024, 7: 1355433.0192, 12: 1054529.2882}
+
+    def test_defaults(self):
+        counts = utils.groupby_and_aggregate(
+            self.buildings,
             self.group_col,
-            self.count_col
+            self.count_col,
+            aggfxn=None
         )
 
         nt.assert_dict_equal(counts, self.known_counts)
 
+    def test_area(self):
+        areadict = utils.groupby_and_aggregate(
+            self.areas,
+            "GeoID",
+            "SHAPE@AREA",
+            aggfxn=lambda g: sum([row[1] for row in g])
+        )
+        for key in areadict.keys():
+            nt.assert_almost_equal(
+                areadict[key],
+                self.known_areas[key],
+                delta=0.01
+            )
+
+
     @nt.raises(ValueError)
     def test_bad_group_col(self):
-        counts = utils.groupby_and_count(
-            self.input_path,
+        counts = utils.groupby_and_aggregate(
+            self.buildings,
             "JUNK",
             self.count_col
         )
 
     @nt.raises(ValueError)
     def test_bad_count_col(self):
-        counts = utils.groupby_and_count(
-            self.input_path,
+        counts = utils.groupby_and_aggregate(
+            self.buildings,
             self.group_col,
             "JUNK"
         )
