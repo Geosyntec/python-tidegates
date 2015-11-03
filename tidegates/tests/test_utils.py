@@ -646,3 +646,57 @@ class Test_count_shapes_in_zones():
             self.group_col,
             "JUNK"
         )
+
+@nt.raises(NotImplementedError)
+def test_rename_column():
+    layer = resource_filename("tidegates.testing.input", "test_field_adder.dbf")
+    oldname = "existing"
+    newname = "exists"
+
+    #layer = utils.load_data(inputfile, "layer")
+
+    utils.rename_column(layer, oldname, newname)
+    utils._check_fields(layer, newname, should_exist=True)
+    utils._check_fields(layer, oldname, should_exist=False)
+
+    utils.rename_column(layer, newname, oldname)
+    utils._check_fields(layer, newname, should_exist=False)
+    utils._check_fields(layer, oldname, should_exist=True)
+
+
+class Test_populate_field(object):
+    def setup(self):
+        self.shapefile = resource_filename("tidegates.testing.input", 'test_field_adder.shp')
+        self.field_added = "newfield"
+
+    def teardown(self):
+        arcpy.management.DeleteField(self.shapefile, self.field_added)
+
+    def test_with_dictionary(self):
+        value_dict = {n: n for n in range(7)}
+        value_fxn = lambda row: value_dict.get(row[0], -1)
+        utils.add_field_with_value(self.shapefile, self.field_added, field_type="LONG")
+
+        utils.populate_field(
+            self.shapefile,
+            lambda row: value_dict.get(row[0], -1),
+            self.field_added,
+            "FID"
+        )
+
+        with arcpy.da.SearchCursor(self.shapefile, [self.field_added, "FID"]) as cur:
+            for row in cur:
+                nt.assert_equal(row[0], row[1])
+
+    def test_with_general_function(self):
+        utils.add_field_with_value(self.shapefile, self.field_added, field_type="LONG")
+        utils.populate_field(
+            self.shapefile,
+            lambda row: row[0]**2,
+            self.field_added,
+            "FID"
+        )
+
+        with arcpy.da.SearchCursor(self.shapefile, [self.field_added, "FID"]) as cur:
+            for row in cur:
+                nt.assert_equal(row[0], row[1] ** 2)

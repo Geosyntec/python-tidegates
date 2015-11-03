@@ -579,10 +579,7 @@ def add_field_with_value(table, field_name, field_value=None,
 
     # set the value in all rows
     if field_value is not None:
-        with arcpy.da.UpdateCursor(table, [field_name]) as cur:
-            for row in cur:
-                row[0] = field_value
-                cur.updateRow(row)
+        populate_field(table, lambda row: field_value, field_name)
 
 
 @update_status() # None
@@ -688,3 +685,63 @@ def groupby_and_count(input_path, groupfield, countfield):
     return counts
 
 
+@update_status() # None
+def rename_column(table, oldname, newname, newalias=None): # pragma: no cover
+    raise NotImplementedError
+    if newalias is None:
+        newalias = newname
+
+    oldfield = filter(
+        lambda f: f.name == oldname,
+        arcpy.ListFields(table)
+    )[0]
+
+    arcpy.management.AlterField(
+        in_table=table,
+        field=oldfield,
+        new_field_name=newname,
+        new_field_alias=newalias
+    )
+
+
+@update_status() # None
+def populate_field(table, value_fxn, valuefield, *keyfields):
+    """
+    Loops through the records of a table and populates the value of one
+    field (`valuefield`) based on another field (`keyfield`) by passing
+    the entire row through a function (`value_fxn`).
+
+    Parameters
+    ----------
+    table : Layer, table, or file path
+        This is the layer/file that will have a new field created.
+    value_fxn : callable
+        Any function that accepts a row from an `arcpy.da.SearchCursor`
+        and returns a *single* value.
+    valuefield : string
+        The name of the field to be computed.
+    *keyfields : strings, optional
+        The other fields that need to be present in the rows of the
+        cursor.
+
+    Returns
+    -------
+    None
+
+    Notes
+    -----
+    In the row object, the `valuefield` will be the last item. In other
+    words, `row[0]` will return the first values in `*keyfields` and
+    `row[-1]` will return the existing value of `valuefield` in that
+    row.
+
+    """
+
+    fields = list(keyfields)
+    fields.append(valuefield)
+    _check_fields(table, *fields, should_exist=True)
+
+    with arcpy.da.UpdateCursor(table, fields) as cur:
+        for row in cur:
+            row[-1] = value_fxn(row)
+            cur.updateRow(row)
