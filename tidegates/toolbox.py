@@ -97,10 +97,10 @@ class BaseFlooder_Mixin(object):
         return ezmd
 
     @staticmethod
-    def _add_scenario_columns(result, elev=None, surge=None, slr=None):
+    def _add_scenario_columns(layer, elev=None, surge=None, slr=None):
         if elev is not None:
             utils.add_field_with_value(
-                table=result.getOutput(0),
+                table=layer,
                 field_name="flood_elev",
                 field_value=float(elev),
                 msg="Adding 'flood_elev' field to ouput",
@@ -110,7 +110,7 @@ class BaseFlooder_Mixin(object):
 
         if surge is not None:
             utils.add_field_with_value(
-                table=result.getOutput(0),
+                table=layer,
                 field_name="surge",
                 field_value=str(surge),
                 field_length=10,
@@ -121,7 +121,7 @@ class BaseFlooder_Mixin(object):
 
         if slr is not None:
             utils.add_field_with_value(
-                table=result.getOutput(0),
+                table=layer,
                 field_name="slr",
                 field_value=int(slr),
                 msg="Adding sea level rise field to ouput",
@@ -224,13 +224,13 @@ class BaseFlooder_Mixin(object):
             self._set_parameter_dependency(self._buildings, self.workspace)
         return self._buildings
 
-    def _do_flood(self, dem, poly, idcol, elev, surge=None, slr=None):
+    def _do_flood(self, dem, poly, idcol, elev, filename, surge=None, slr=None):
         res = tidegates.flood_area(
             dem=dem,
             polygons=poly,
             ID_column=idcol,
             elevation_feet=elev,
-            filename=None,
+            filename=filename,
             verbose=True,
             asMessage=True
         )

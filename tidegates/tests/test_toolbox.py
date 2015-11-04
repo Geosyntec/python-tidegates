@@ -27,6 +27,7 @@ class CheckToolbox_Mixin(object):
     mockUtils = mock.Mock(spec=utils)
     mxd = resource_filename("tidegates.testing.input", "test.mxd")
     simple_shp = resource_filename("tidegates.testing.input", "test_zones.shp")
+    outfile = "output.shp"
 
     def test_isLicensed(self):
         # every toolbox should be always licensed!
@@ -70,7 +71,7 @@ class CheckToolbox_Mixin(object):
         with mock.patch.object(utils, 'add_field_with_value') as afwv:
             self.tbx._add_scenario_columns(MockResult, elev=5.0)
             afwv.assert_called_once_with(
-                table=self.simple_shp,
+                table=MockResult,
                 field_name='flood_elev',
                 field_value=5.0,
                 msg="Adding 'flood_elev' field to ouput",
@@ -82,7 +83,7 @@ class CheckToolbox_Mixin(object):
         with mock.patch.object(utils, 'add_field_with_value') as afwv:
             self.tbx._add_scenario_columns(MockResult, slr=5)
             afwv.assert_called_once_with(
-                table=self.simple_shp,
+                table=MockResult,
                 field_name='slr',
                 field_value=5,
                 msg="Adding sea level rise field to ouput",
@@ -94,7 +95,7 @@ class CheckToolbox_Mixin(object):
         with mock.patch.object(utils, 'add_field_with_value') as afwv:
             self.tbx._add_scenario_columns(MockResult, surge='TESTING')
             afwv.assert_called_once_with(
-                table=self.simple_shp,
+                table=MockResult,
                 field_name="surge",
                 field_value='TESTING',
                 field_length=10,
@@ -146,13 +147,13 @@ class CheckToolbox_Mixin(object):
     def test__do_flood(self):
         with mock.patch.object(tidegates.tidegates, 'flood_area') as fa:
             with mock.patch.object(self.tbx, '_add_scenario_columns') as asc:
-                res = self.tbx._do_flood('dem', 'poly', 'tgid', 5.7, surge='surge', slr=2)
+                res = self.tbx._do_flood('dem', 'poly', 'tgid', 5.7, self.outfile, surge='surge', slr=2)
                 fa.assert_called_once_with(
                     dem='dem',
                     polygons='poly',
                     ID_column='tgid',
                     elevation_feet=5.7,
-                    filename=None,
+                    filename=self.outfile,
                     verbose=True,
                     asMessage=True
                 )
