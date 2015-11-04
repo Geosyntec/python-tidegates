@@ -202,12 +202,12 @@ def _check_fields(table, *fieldnames, **kwargs):
             bad_names.append(name)
 
     if not should_exist:
-        qual = ' not '
+        qual = 'already'
     else:
-        qual = ' '
+        qual = 'not'
 
     if len(bad_names) > 0:
-        raise ValueError('fields {} are{}in {}'.format(bad_names, qual, table))
+        raise ValueError('fields {} are {} in {}'.format(bad_names, qual, table))
 
 
 @update_status() # raster
