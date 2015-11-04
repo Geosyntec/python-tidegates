@@ -124,6 +124,7 @@ def flood_area(dem, polygons, ID_column, elevation_feet,
     temp_polygons = utils.raster_to_polygons(
         flooded_r,
         temp_filename,
+        newfield=ID_column,
         msg='Convert raster of floods to polygons',
         **verbose_options
     )
@@ -131,7 +132,7 @@ def flood_area(dem, polygons, ID_column, elevation_feet,
     # dissolve (merge) broken polygons for each tidegate
     flood_polygons = utils.aggregate_polygons(
         polygons=temp_polygons,
-        ID_field="gridcode",
+        ID_field=ID_column,
         filename=filename,
         msg="Dissolving polygons",
         **verbose_options
