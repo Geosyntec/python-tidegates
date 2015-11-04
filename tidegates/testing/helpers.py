@@ -35,8 +35,14 @@ def assert_shapefiles_are_close(baselinefile, outputfile, atol=0.001, ngeom=5):
 
 
 def _show_package_info(package, name):
-    packagedir = os.path.dirname(package.__file__)
-    print("%s version %s is installed in %s" % (name, package.__version__, packagedir))
+    if name == 'arcpy':
+        version = package.GetInstallInfo()['Version']
+        packagedir = package.GetInstallInfo()['SourceDir']
+    else:
+        version = package.__version__
+        packagedir = os.path.dirname(package.__file__)
+
+    print("%s version %s is installed in %s" % (name, version, packagedir))
 
 
 def _show_system_info():

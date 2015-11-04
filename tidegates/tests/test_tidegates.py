@@ -30,3 +30,24 @@ def test_flood_area():
     )
 
     utils.cleanup_temp_results(floods)
+
+
+@nptest.dec.skipif(not tgtest.has_fiona)
+def test_assess_impact():
+    ws = resource_filename("tidegates", "testing")
+    floods = r"output\flood_impacts.shp"
+    known = r"known\flood_impacts.shp"
+    wetlands = r"input\test_wetlands.shp"
+    buildings = r"input\buildings.shp"
+    with utils.WorkSpace(ws), utils.OverwriteState(True):
+        layer = tidegates.assess_impact(
+            floods, wetlands, buildings, cleanup=True,
+            buildingoutput=r"output\flooded_buildings.shp",
+            wetlandoutput=r"output\flooded_wetlands.shp",
+        )
+
+    nt.assert_true(isinstance(layer, arcpy.mapping.Layer))
+    tgtest.assert_shapefiles_are_close(
+        resource_filename("tidegates.testing.output", "flood_impacts.shp"),
+        resource_filename("tidegates.testing.known", "flood_impacts.shp")
+    )

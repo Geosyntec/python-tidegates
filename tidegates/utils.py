@@ -3,6 +3,7 @@ import sys
 import glob
 import datetime
 from functools import wraps
+import itertools
 
 import numpy
 
@@ -167,6 +168,46 @@ def create_temp_filename(filepath, prefix='_temp_'):
     file_with_ext = os.path.basename(filepath)
     folder = os.path.dirname(filepath)
     return os.path.join(folder, prefix + file_with_ext)
+
+
+def _check_fields(table, *fieldnames, **kwargs):
+    """
+    Checks that field are (or are not) in a table. The check fails, a
+    `ValueError` is raised.
+
+    Parameters
+    ----------
+    table : arcpy.mapping.Layer or similar
+        Any table-like that we can pass to `arcpy.ListFields`.
+    *fieldnames : str arguments
+        optional string arguments that whose existance in `table` will
+        be checked.
+    should_exist : bool, optional (False)
+        Whether we're testing for for absense (False) or existance
+        (True) of the provided field names.
+
+    Returns
+    -------
+    None
+
+    """
+
+    should_exist = kwargs.pop('should_exist', False)
+
+    existing_fields = [field.name for field in arcpy.ListFields(table)]
+    bad_names = []
+    for name in fieldnames:
+        exists = name in existing_fields
+        if should_exist != exists and name != 'SHAPE@AREA':
+            bad_names.append(name)
+
+    if not should_exist:
+        qual = ' not '
+    else:
+        qual = ' '
+
+    if len(bad_names) > 0:
+        raise ValueError('fields {} are{}in {}'.format(bad_names, qual, table))
 
 
 @update_status() # raster
@@ -523,10 +564,7 @@ def add_field_with_value(table, field_name, field_value=None,
     field_type = field_opts.pop("field_type", typemap[type(field_value)])
 
     if not overwrite:
-        existing_fields = [field.name for field in arcpy.ListFields(table)]
-        if field_name in existing_fields:
-            msg = "'{}' already exists and `overwrite` is False"
-            raise ValueError(msg.format(field_name))
+        _check_fields(table, field_name, should_exist=False)
 
     if field_value is None and field_type is None:
         raise ValueError("must provide a `field_type` if not providing a value.")
@@ -541,10 +579,7 @@ def add_field_with_value(table, field_name, field_value=None,
 
     # set the value in all rows
     if field_value is not None:
-        with arcpy.da.UpdateCursor(table, [field_name]) as cur:
-            for row in cur:
-                row[0] = field_value
-                cur.updateRow(row)
+        populate_field(table, lambda row: field_value, field_name)
 
 
 @update_status() # None
@@ -600,3 +635,164 @@ def intersect_polygon_layers(*layers, **intersect_options):
 
     intersected = result_to_layer(result)
     return intersected
+
+
+@update_status() # dict
+def groupby_and_aggregate(input_path, groupfield, valuefield,
+                          aggfxn=None):
+    """
+    Counts the number of distinct values of `valuefield` are associated
+    with each value of `groupfield` in a data source found at
+    `input_path`.
+
+    Parameters
+    ----------
+    input_path : str
+        File path to a shapefile or feature class whose attribute table
+        can be loaded with `arcpy.da.TableToNumPyArray`.
+    groupfield : str
+        The field name that would be used to group all of the records.
+    valuefield : str
+        The field name whose distinct values will be counted in each
+        group defined by `groupfield`.
+    aggfxn : callable, optional.
+        Function to aggregate the values in each group to a single group.
+        This function should accept an `itertools._grouper` as its only
+        input. If not provided, unique number of value in the group will
+        be returned.
+
+    Returns
+    -------
+    counts : dict
+        A dictionary whose keys are the distinct values of `groupfield`
+        and values are the number of distinct records in each group.
+
+    See Also
+    --------
+    `arcpy.da.TableToNumPyArray`
+    `itertools.groupby`
+
+    """
+
+    if aggfxn is None:
+        aggfxn = lambda x: int(numpy.unique(list(x)).shape[0])
+
+    # load the data
+    layer = load_data(input_path, "layer")
+
+    # check that fields are valid
+    _check_fields(layer.dataSource, groupfield, valuefield, should_exist=True)
+
+    table = arcpy.da.TableToNumPyArray(layer, [groupfield, valuefield])
+    table.sort(order=groupfield)
+
+    counts = {}
+    for groupname, shapes in itertools.groupby(table, lambda row: row[groupfield]):
+        #values  = numpy.unique(list(shapes))
+        counts[groupname] = aggfxn(shapes)
+
+    return counts
+
+
+@update_status() # None
+def rename_column(table, oldname, newname, newalias=None): # pragma: no cover
+    raise NotImplementedError
+    if newalias is None:
+        newalias = newname
+
+    oldfield = filter(
+        lambda f: f.name == oldname,
+        arcpy.ListFields(table)
+    )[0]
+
+    arcpy.management.AlterField(
+        in_table=table,
+        field=oldfield,
+        new_field_name=newname,
+        new_field_alias=newalias
+    )
+
+
+@update_status() # None
+def populate_field(table, value_fxn, valuefield, *keyfields):
+    """
+    Loops through the records of a table and populates the value of one
+    field (`valuefield`) based on another field (`keyfield`) by passing
+    the entire row through a function (`value_fxn`).
+
+    Parameters
+    ----------
+    table : Layer, table, or file path
+        This is the layer/file that will have a new field created.
+    value_fxn : callable
+        Any function that accepts a row from an `arcpy.da.SearchCursor`
+        and returns a *single* value.
+    valuefield : string
+        The name of the field to be computed.
+    *keyfields : strings, optional
+        The other fields that need to be present in the rows of the
+        cursor.
+
+    Returns
+    -------
+    None
+
+    Notes
+    -----
+    In the row object, the `valuefield` will be the last item. In other
+    words, `row[0]` will return the first values in `*keyfields` and
+    `row[-1]` will return the existing value of `valuefield` in that
+    row.
+
+    """
+
+    fields = list(keyfields)
+    fields.append(valuefield)
+    _check_fields(table, *fields, should_exist=True)
+
+    with arcpy.da.UpdateCursor(table, fields) as cur:
+        for row in cur:
+            row[-1] = value_fxn(row)
+            cur.updateRow(row)
+
+
+@update_status() # layers
+def copy_data(destfolder, *source_layers, **kwargs):
+    """ Copies an arbitrary number of spatial files to a new folder.
+
+    Parameters
+    ----------
+    destfolder : str
+        Path the folder that is the destination for the files.
+    *source_layers : str
+        Paths to the files that need to be copied
+    squeeze : bool, optional (False)
+        When one layer is copied and this is True, the copied layer is
+        returned. Otherwise, this function returns a list of layers.
+
+    Returns
+    -------
+    copied : list of arcpy.mapping Layers or just a single Layer.
+
+    See Also
+    --------
+    arcpy.conversion.FeatureClassToShapefile
+
+    """
+
+    squeeze = kwargs.pop("squeeze", False)
+    arcpy.conversion.FeatureClassToShapefile(
+        Input_Features=source_layers,
+        Output_Folder=destfolder
+    )
+
+    outputnames = [
+        os.path.join(destfolder, os.path.basename(lyr))
+        for lyr in source_layers
+    ]
+
+    copied = [load_data(name, "layer") for name in outputnames]
+    if squeeze and len(copied) == 1:
+        copied = copied[0]
+
+    return copied

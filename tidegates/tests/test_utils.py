@@ -132,6 +132,52 @@ class Test_WorkSpace(object):
         nt.assert_equal(arcpy.env.workspace, self.baseline)
 
 
+def test_create_temp_filename():
+    barefile = os.path.join("test.shp")
+    filepath = os.path.join("folder", "subfolder", "test.shp")
+    geodbfile = os.path.join("folder", "geodb.gdb", "test")
+
+    known_barefile = os.path.join("_temp_test.shp")
+    known_filepath = os.path.join("folder", "subfolder", "_temp_test.shp")
+    known_geodbfile = os.path.join("folder", "geodb.gdb", "_temp_test")
+    known_geodbfile_prefix = os.path.join("folder", "geodb.gdb", "_other_test")
+
+    nt.assert_equal(utils.create_temp_filename(barefile), known_barefile)
+    nt.assert_equal(utils.create_temp_filename(filepath), known_filepath)
+    nt.assert_equal(utils.create_temp_filename(geodbfile), known_geodbfile)
+    nt.assert_equal(utils.create_temp_filename(geodbfile, prefix='_other_'), known_geodbfile_prefix)
+
+
+class Test__check_fields(object):
+    table = resource_filename("tidegates.testing.input", "test_field_adder.shp")
+
+    def test_should_exist_uni(self):
+        utils._check_fields(self.table, "Id", should_exist=True)
+
+    def test_should_exist_multi(self):
+        utils._check_fields(self.table, "Id", "existing", should_exist=True)
+
+    def test_should_exist_multi_witharea(self):
+        utils._check_fields(self.table, "Id", "existing", "SHAPE@AREA", should_exist=True)
+
+    @nt.raises(ValueError)
+    def test_should_exist_bad_vals(self):
+        utils._check_fields(self.table, "Id", "existing", "JUNK", "GARBAGE", should_exist=True)
+
+    def test_should_not_exist_uni(self):
+        utils._check_fields(self.table, "NEWFIELD", should_exist=False)
+
+    def test_should_not_exist_multi(self):
+        utils._check_fields(self.table, "NEWFIELD", "YANFIELD", should_exist=False)
+
+    def test_should_not_exist_multi_witharea(self):
+        utils._check_fields(self.table, "NEWFIELD", "YANFIELD", "SHAPE@AREA", should_exist=False)
+
+    @nt.raises(ValueError)
+    def test_should_not_exist_bad_vals(self):
+        utils._check_fields(self.table, "NEWFIELD", "YANFIELD", "existing", should_exist=False)
+
+
 def test_result_to_raster():
     mockResult = mock.Mock(spec=arcpy.Result)
     mockRaster = mock.Mock(spec=arcpy.Raster)
@@ -542,22 +588,6 @@ def test_cleanup_temp_results():
     nt.assert_false(os.path.exists("temp_2"))
 
 
-def test_create_temp_filename():
-    barefile = os.path.join("test.shp")
-    filepath = os.path.join("folder", "subfolder", "test.shp")
-    geodbfile = os.path.join("folder", "geodb.gdb", "test")
-
-    known_barefile = os.path.join("_temp_test.shp")
-    known_filepath = os.path.join("folder", "subfolder", "_temp_test.shp")
-    known_geodbfile = os.path.join("folder", "geodb.gdb", "_temp_test")
-    known_geodbfile_prefix = os.path.join("folder", "geodb.gdb", "_other_test")
-
-    nt.assert_equal(utils.create_temp_filename(barefile), known_barefile)
-    nt.assert_equal(utils.create_temp_filename(filepath), known_filepath)
-    nt.assert_equal(utils.create_temp_filename(geodbfile), known_geodbfile)
-    nt.assert_equal(utils.create_temp_filename(geodbfile, prefix='_other_'), known_geodbfile_prefix)
-
-
 class Test_intersect_polygon_layers(object):
     input1_file = resource_filename("tidegates.testing.input", "intersect_input1.shp")
     input2_file = resource_filename("tidegates.testing.input", "intersect_input2.shp")
@@ -585,3 +615,154 @@ class Test_intersect_polygon_layers(object):
             self.input2_file,
         )
 
+
+class Test_groupby_and_aggregate():
+    known_counts = {16.0: 32, 150.0: 2}
+    buildings = resource_filename("tidegates.testing.known", "flooded_buildings.shp")
+    group_col = 'GRIDCODE'
+    count_col = 'STRUCT_ID'
+
+    areas = resource_filename("tidegates.testing.input", "intersect_input1.shp")
+    known_areas = {2: 1327042.1024, 7: 1355433.0192, 12: 1054529.2882}
+
+    def test_defaults(self):
+        counts = utils.groupby_and_aggregate(
+            self.buildings,
+            self.group_col,
+            self.count_col,
+            aggfxn=None
+        )
+
+        nt.assert_dict_equal(counts, self.known_counts)
+
+    def test_area(self):
+        areadict = utils.groupby_and_aggregate(
+            self.areas,
+            "GeoID",
+            "SHAPE@AREA",
+            aggfxn=lambda g: sum([row[1] for row in g])
+        )
+        for key in areadict.keys():
+            nt.assert_almost_equal(
+                areadict[key],
+                self.known_areas[key],
+                delta=0.01
+            )
+
+
+    @nt.raises(ValueError)
+    def test_bad_group_col(self):
+        counts = utils.groupby_and_aggregate(
+            self.buildings,
+            "JUNK",
+            self.count_col
+        )
+
+    @nt.raises(ValueError)
+    def test_bad_count_col(self):
+        counts = utils.groupby_and_aggregate(
+            self.buildings,
+            self.group_col,
+            "JUNK"
+        )
+
+@nt.raises(NotImplementedError)
+def test_rename_column():
+    layer = resource_filename("tidegates.testing.input", "test_field_adder.dbf")
+    oldname = "existing"
+    newname = "exists"
+
+    #layer = utils.load_data(inputfile, "layer")
+
+    utils.rename_column(layer, oldname, newname)
+    utils._check_fields(layer, newname, should_exist=True)
+    utils._check_fields(layer, oldname, should_exist=False)
+
+    utils.rename_column(layer, newname, oldname)
+    utils._check_fields(layer, newname, should_exist=False)
+    utils._check_fields(layer, oldname, should_exist=True)
+
+
+class Test_populate_field(object):
+    def setup(self):
+        self.shapefile = resource_filename("tidegates.testing.input", 'test_field_adder.shp')
+        self.field_added = "newfield"
+
+    def teardown(self):
+        arcpy.management.DeleteField(self.shapefile, self.field_added)
+
+    def test_with_dictionary(self):
+        value_dict = {n: n for n in range(7)}
+        value_fxn = lambda row: value_dict.get(row[0], -1)
+        utils.add_field_with_value(self.shapefile, self.field_added, field_type="LONG")
+
+        utils.populate_field(
+            self.shapefile,
+            lambda row: value_dict.get(row[0], -1),
+            self.field_added,
+            "FID"
+        )
+
+        with arcpy.da.SearchCursor(self.shapefile, [self.field_added, "FID"]) as cur:
+            for row in cur:
+                nt.assert_equal(row[0], row[1])
+
+    def test_with_general_function(self):
+        utils.add_field_with_value(self.shapefile, self.field_added, field_type="LONG")
+        utils.populate_field(
+            self.shapefile,
+            lambda row: row[0]**2,
+            self.field_added,
+            "FID"
+        )
+
+        with arcpy.da.SearchCursor(self.shapefile, [self.field_added, "FID"]) as cur:
+            for row in cur:
+                nt.assert_equal(row[0], row[1] ** 2)
+
+
+class Test_copy_data(object):
+    destfolder = resource_filename("tidegates.testing", "output")
+    srclayers = [
+        resource_filename("tidegates.testing.input", "buildings.shp"),
+        resource_filename("tidegates.testing.known", "flooded_buildings.shp"),
+        resource_filename("tidegates.testing.input", "intersect_input1.shp"),
+    ]
+
+    output = [
+        resource_filename("tidegates.testing.output", "buildings.shp"),
+        resource_filename("tidegates.testing.output", "flooded_buildings.shp"),
+        resource_filename("tidegates.testing.output", "intersect_input1.shp"),
+    ]
+
+    def teardown(self):
+        utils.cleanup_temp_results(*self.output)
+
+    def test_list(self):
+        with utils.OverwriteState(True):
+            newlayers = utils.copy_data(self.destfolder, *self.srclayers)
+
+        nt.assert_true(isinstance(newlayers, list))
+
+        for newlyr, newname, oldname in zip(newlayers, self.output, self.srclayers):
+            nt.assert_true(isinstance(newlyr, arcpy.mapping.Layer))
+            tgtest.assert_shapefiles_are_close(newname, oldname)
+
+    def test_single_squeeze_false(self):
+        with utils.OverwriteState(True):
+            newlayers = utils.copy_data(self.destfolder, *self.srclayers[:1])
+
+        nt.assert_true(isinstance(newlayers, list))
+
+        for newlyr, newname, oldname in zip(newlayers[:1], self.output[:1], self.srclayers[:1]):
+            nt.assert_true(isinstance(newlyr, arcpy.mapping.Layer))
+            tgtest.assert_shapefiles_are_close(newname, oldname)
+
+    def test_single_squeeze_true(self):
+        with utils.OverwriteState(True):
+            newlayer = utils.copy_data(self.destfolder, *self.srclayers[:1], squeeze=True)
+
+        nt.assert_true(isinstance(newlayer, arcpy.mapping.Layer))
+
+        nt.assert_true(isinstance(newlayer, arcpy.mapping.Layer))
+        tgtest.assert_shapefiles_are_close(self.output[0], self.srclayers[0])
