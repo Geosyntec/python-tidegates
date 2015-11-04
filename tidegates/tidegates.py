@@ -152,9 +152,9 @@ def flood_area(dem, polygons, ID_column, elevation_feet,
     return flood_polygons
 
 
-def assess_impact(floods_path, wetlands_path=None, buildings_path=None,
-                  wetlandsoutput=None, buildingsoutput=None,
-                  cleanup=False, **verbose_options):
+def assess_impact(floods_path, ID_column, wetlands_path=None, wetlandsoutput=None,
+                  buildings_path=None, buildingsoutput=None, cleanup=False,
+                  **verbose_options):
 
     # add total area_column and populate
     utils.add_field_with_value(floods_path, 'totalarea', field_type='DOUBLE', overwrite=True)
@@ -168,6 +168,7 @@ def assess_impact(floods_path, wetlands_path=None, buildings_path=None,
     if wetlands_path is not None:
         flooded_wetlands = _impact_to_wetlands(
             floods_path=floods_path,
+            ID_column=ID_column,
             wetlands_path=wetlands_path,
             wetlandsoutput=wetlandsoutput,
             msg='Assessing impact to wetlands',
@@ -180,6 +181,7 @@ def assess_impact(floods_path, wetlands_path=None, buildings_path=None,
     if buildings_path is not None:
         flooded_buildings = _impact_to_buildings(
             floods_path=floods_path,
+            ID_column=ID_column,
             buildings_path=buildings_path,
             buildingsoutput=buildingsoutput,
             msg='Assessing impact to Buildings',
@@ -192,7 +194,7 @@ def assess_impact(floods_path, wetlands_path=None, buildings_path=None,
 
 
 @utils.update_status()
-def _impact_to_wetlands(floods_path, wetlands_path, wetlandsoutput=None,
+def _impact_to_wetlands(floods_path, ID_column, wetlands_path, wetlandsoutput=None,
                         **verbose_options):
     if wetlandsoutput is None:
         wetlandsoutput = 'flooded_wetlands'
@@ -208,14 +210,14 @@ def _impact_to_wetlands(floods_path, wetlands_path, wetlandsoutput=None,
     # aggregate the wetlands based on the flood zone
     flooded_wetlands = utils.aggregate_polygons(
         flooded_wetlands,
-        "GRIDCODE",
+        ID_column,
         wetlandsoutput
     )
 
     # get area of flooded wetlands
     wetland_areas = utils.groupby_and_aggregate(
         input_path=wetlandsoutput,
-        groupfield='GRIDCODE',
+        groupfield=ID_column,
         valuefield='SHAPE@AREA',
         aggfxn=lambda group: sum([row[1] for row in group])
     )
@@ -225,14 +227,14 @@ def _impact_to_wetlands(floods_path, wetlands_path, wetlandsoutput=None,
         floods_path,
         lambda row: wetland_areas.get(row[0], -999),
         'wetlands',
-        'GRIDCODE',
+        ID_column,
     )
 
     return flooded_wetlands
 
 
 @utils.update_status()
-def _impact_to_buildings(floods_path, buildings_path, buildingsoutput=None,
+def _impact_to_buildings(floods_path, ID_column, buildings_path, buildingsoutput=None,
                          **verbose_options):
 
     if buildingsoutput is None:
@@ -250,7 +252,7 @@ def _impact_to_buildings(floods_path, buildings_path, buildingsoutput=None,
     # count the number of flooding buildings in each flood zone
     building_counts = utils.groupby_and_aggregate(
         input_path=buildingsoutput,
-        groupfield='GRIDCODE',
+        groupfield=ID_column,
         valuefield='STRUCT_ID'
     )
 
@@ -260,7 +262,7 @@ def _impact_to_buildings(floods_path, buildings_path, buildingsoutput=None,
         floods_path,
         lambda row: building_counts.get(row[0], -1),
         'buildings',
-        'GRIDCODE',
+        ID_column,
     )
 
     return flooded_buildings

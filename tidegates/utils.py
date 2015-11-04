@@ -41,10 +41,7 @@ class EasyMapDoc(object):
             raise ValueError('Position: %s is not in %s' % (position.lower, valid_positions))
 
         # layer can be a path to a file. if so, convert to a Layer object
-        if isinstance(layer, basestring):
-            layer = arcpy.mapping.Layer(layer)
-        elif not isinstance(layer, arcpy.mapping.Layer):
-            raise ValueError("``layer`` be an arcpy Layer or a path to a file")
+        layer = load_data(layer, 'layer')
 
         # add the layer to the map
         arcpy.mapping.AddLayer(df, layer, position.upper())
@@ -436,8 +433,12 @@ def raster_to_polygons(zonal_raster, filename, newfield=None):
 
 
     if newfield is not None:
+        for field in arcpy.ListFields(filename):
+            if field.name.lower() == 'gridcode':
+                gridfield = field.name
+
         add_field_with_value(filename, newfield, field_type="LONG")
-        populate_field(filename, lambda x: x[0], newfield, "GRIDCODE")
+        populate_field(filename, lambda x: x[0], newfield, gridfield)
 
     polygons = result_to_layer(results)
     return polygons
