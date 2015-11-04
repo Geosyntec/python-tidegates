@@ -151,27 +151,83 @@ def flood_area(dem, polygons, ID_column, elevation_feet,
     return flood_polygons
 
 
-def assess_impact(flood_layer, input_gdb, overwrite=False, **verbose_options):
-    outputlayers = []
-    assetnames = ["Landuse", "SaltMarsh", "Wetlands"]
+def assess_impact(floods_path, wetlands_path, buildings_path,
+                  wetlandoutput=None, buildingoutput=None,
+                  cleanup=False, **verbose_options):
 
-    with utils.OverwriteState(overwrite):
-        with utils.WorkSpace(input_gdb):
-            utils._status(arcpy.env.workspace, **verbose_options)
-            input_layer = utils.load_data(flood_layer, "shape")
-            # loop through the selected assets
-            for asset in assetnames:
-                # create the asset layer object
-                utils._status('load asset layer {}'.format(asset), **verbose_options)
-                assetlayer = utils.load_data(asset, "shape")
+    if wetlandoutput is None: # pragma
+        wetlandoutput = 'flooded_wetlands'
 
-                # intersect the flooding with the asset
-                outputpath = '{}_{}'.format(flood_layer, asset)
-                utils._status("save intersection to {}".format(outputpath), **verbose_options)
-                result = arcpy.analysis.Intersect([input_layer, assetlayer], outputpath)
+    if buildingoutput is None:
+        buildingoutput = 'flooded_buildings'
 
-                # append instersetected layer to the output list
-                utils._status("save results", **verbose_options)
-                outputlayers.append(utils.result_to_layer(result))
+    # add total area_column and populate
+    utils.add_field_with_value(floods_path, 'totalarea', field_type='DOUBLE', overwrite=True)
+    utils.populate_field(
+        floods_path,
+        lambda row: row[0],
+        'totalarea',
+        'SHAPE@AREA',
+    )
 
-    return outputlayers
+    # intersect wetlands with the floods
+    flooded_wetlands = utils.intersect_polygon_layers(
+        utils.load_data(floods_path, 'layer'),
+        utils.load_data(wetlands_path, 'layer'),
+        filename=utils.create_temp_filename(wetlandoutput),
+        msg='Assessing impact to wetlands',
+        **verbose_options
+    )
+
+    # aggregate the wetlands based on the flood zone
+    flooded_wetlands = utils.aggregate_polygons(
+        flooded_wetlands,
+        "GRIDCODE",
+        wetlandoutput
+    )
+
+    # get area of flooded wetlands
+    wetland_areas = utils.groupby_and_aggregate(
+        input_path=wetlandoutput,
+        groupfield='GRIDCODE',
+        valuefield='SHAPE@AREA',
+        aggfxn=lambda group: sum([row[1] for row in group])
+    )
+    # add a wetlands area field and populate
+    utils.add_field_with_value(floods_path, 'wetlands', field_type='DOUBLE', overwrite=True)
+    utils.populate_field(
+        floods_path,
+        lambda row: wetland_areas.get(row[0], -999),
+        'wetlands',
+        'GRIDCODE',
+    )
+
+    # intersect the buildings with the floods
+    flooded_buildings = utils.intersect_polygon_layers(
+        utils.load_data(floods_path, 'layer'),
+        utils.load_data(buildings_path, 'layer'),
+        filename=buildingoutput,
+        msg='Assessing impact to buildings',
+        **verbose_options
+    )
+
+    # count the number of flooding buildings in each flood zone
+    building_counts = utils.groupby_and_aggregate(
+        input_path=buildingoutput,
+        groupfield='GRIDCODE',
+        valuefield='STRUCT_ID'
+    )
+
+    # add a building count column and populate
+    utils.add_field_with_value(floods_path, 'buildings', field_type='LONG', overwrite=True)
+    utils.populate_field(
+        floods_path,
+        lambda row: building_counts.get(row[0], -1),
+        'buildings',
+        'GRIDCODE',
+    )
+
+    if cleanup:
+        utils.cleanup_temp_results(wetlandoutput, buildingoutput)
+
+    return utils.load_data(floods_path, "layer")
