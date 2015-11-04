@@ -402,7 +402,7 @@ def clip_dem_to_zones(dem, zones):
 
 
 @update_status() # layer
-def raster_to_polygons(zonal_raster, filename):
+def raster_to_polygons(zonal_raster, filename, newfield=None):
     """
     Converts zonal rasters to polygons layers. This is basically just
     a thing wrapper around arcpy.conversion.RasterToPolygon. The
@@ -433,6 +433,11 @@ def raster_to_polygons(zonal_raster, filename):
         simplify="SIMPLIFY",
         raster_field="Value",
     )
+
+
+    if newfield is not None:
+        add_field_with_value(filename, newfield, field_type="LONG")
+        populate_field(filename, lambda x: x[0], newfield, "GRIDCODE")
 
     polygons = result_to_layer(results)
     return polygons

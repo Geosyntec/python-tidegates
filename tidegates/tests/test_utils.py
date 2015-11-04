@@ -422,6 +422,22 @@ def test_raster_to_polygons():
     utils.cleanup_temp_results(testfile)
 
 
+
+@nptest.dec.skipif(not tgtest.has_fiona)
+def test_raster_to_polygons_with_new_field():
+    zonefile = resource_filename("tidegates.testing.input", "test_raster_to_polygon.tif")
+    knownfile = resource_filename("tidegates.testing.known", "known_polygons_from_raster_2.shp")
+    testfile = resource_filename("tidegates.testing.output", "test_polygons_from_raster_2.shp")
+
+    with utils.OverwriteState(True):
+        zones = utils.load_data(zonefile, 'raster')
+        known = utils.load_data(knownfile, 'layer')
+        test = utils.raster_to_polygons(zones, testfile, newfield="GeoID")
+
+    tgtest.assert_shapefiles_are_close(test.dataSource, known.dataSource)
+    utils.cleanup_temp_results(testfile)
+
+
 @nptest.dec.skipif(not tgtest.has_fiona)
 def test_aggregate_polygons():
     rawfile = resource_filename("tidegates.testing.known", "known_polygons_from_raster.shp")
