@@ -175,7 +175,7 @@ class Test_Flooder(CheckToolbox_Mixin):
         params = self.tbx.getParameterInfo()
         names = [str(p.name) for p in params]
         known_names = ['workspace', 'dem', 'polygons', 'ID_column',
-                       'elevation', 'filename']
+                       'elevation', 'filename', 'wetlands', 'buildings']
         nt.assert_list_equal(names, known_names)
 
 
@@ -186,6 +186,6 @@ class Test_StandardScenarios(CheckToolbox_Mixin):
     def test_getParameterInfo(self):
         params = self.tbx.getParameterInfo()
         names = [str(p.name) for p in params]
-        known_names = ['workspace', 'dem', 'polygons',
-                       'ID_column', 'filename']
+        known_names = ['workspace', 'dem', 'polygons', 'ID_column',
+                       'filename', 'wetlands', 'buildings']
         nt.assert_list_equal(names, known_names)

@@ -32,6 +32,8 @@ class BaseFlooder_Mixin(object):
         self._polygons = None
         self._ID_column = None
         self._filename = None
+        self._wetlands = None
+        self._buildings = None
 
     def isLicensed(self):
         """Set whether tool is licensed to execute."""
@@ -194,6 +196,34 @@ class BaseFlooder_Mixin(object):
             )
         return self._filename
 
+    @property
+    def wetlands(self):
+        if self._wetlands is None:
+            self._wetlands = arcpy.Parameter(
+                displayName="Wetlands",
+                name="wetlands",
+                datatype="DEFeatureClass",
+                parameterType="Optional",
+                direction="Input",
+                multiValue=False
+            )
+            self._set_parameter_dependency(self._wetlands, self.workspace)
+        return self._wetlands
+
+    @property
+    def buildings(self):
+        if self._buildings is None:
+            self._buildings = arcpy.Parameter(
+                displayName="Buildings footprints",
+                name="buildings",
+                datatype="DEFeatureClass",
+                parameterType="Optional",
+                direction="Input",
+                multiValue=False
+            )
+            self._set_parameter_dependency(self._buildings, self.workspace)
+        return self._buildings
+
     def _do_flood(self, dem, poly, idcol, elev, surge=None, slr=None):
         res = tidegates.flood_area(
             dem=dem,
@@ -246,7 +276,9 @@ class Flooder(BaseFlooder_Mixin):
             self.polygons,
             self.ID_column,
             self.elevation,
-            self.filename
+            self.filename,
+            self.wetlands,
+            self.buildings,
         ]
         return params
 
@@ -298,7 +330,9 @@ class StandardScenarios(BaseFlooder_Mixin):
             self.dem,
             self.polygons,
             self.ID_column,
-            self.filename
+            self.filename,
+            self.wetlands,
+            self.buildings,
         ]
         return params
 
