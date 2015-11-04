@@ -41,9 +41,13 @@ def test_assess_impact():
     buildings = r"input\buildings.shp"
     with utils.WorkSpace(ws), utils.OverwriteState(True):
         layer = tidegates.assess_impact(
-            floods, wetlands, buildings, cleanup=True,
+            floods_path=floods,
+            ID_column="GeoID",
+            wetlands_path=wetlands,
+            buildings_path=buildings,
             buildingsoutput=r"output\flooded_buildings.shp",
             wetlandsoutput=r"output\flooded_wetlands.shp",
+            cleanup=True,
         )
 
     nt.assert_true(isinstance(layer, arcpy.mapping.Layer))
