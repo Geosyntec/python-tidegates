@@ -176,6 +176,8 @@ def assess_impact(floods_path, ID_column, wetlands_path=None, wetlandsoutput=Non
         )
         if cleanup:
             utils.cleanup_temp_results(flooded_wetlands)
+    else:
+        flooded_wetlands = None
 
 
     if buildings_path is not None:
@@ -189,8 +191,10 @@ def assess_impact(floods_path, ID_column, wetlands_path=None, wetlandsoutput=Non
         )
         if cleanup:
             utils.cleanup_temp_results(flooded_buildings)
+    else:
+        flooded_buildings = None
 
-    return utils.load_data(floods_path, "layer")
+    return utils.load_data(floods_path, "layer"), flooded_wetlands, flooded_buildings
 
 
 @utils.update_status()
