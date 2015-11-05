@@ -40,7 +40,7 @@ def test_assess_impact():
     wetlands = r"input\test_wetlands.shp"
     buildings = r"input\buildings.shp"
     with utils.WorkSpace(ws), utils.OverwriteState(True):
-        layer = tidegates.assess_impact(
+        floods, wetlands, buildings = tidegates.assess_impact(
             floods_path=floods,
             ID_column="GeoID",
             wetlands_path=wetlands,
@@ -50,8 +50,63 @@ def test_assess_impact():
             cleanup=True,
         )
 
-    nt.assert_true(isinstance(layer, arcpy.mapping.Layer))
+    nt.assert_true(isinstance(floods, arcpy.mapping.Layer))
+    nt.assert_true(isinstance(wetlands, arcpy.mapping.Layer))
+    nt.assert_true(isinstance(buildings, arcpy.mapping.Layer))
     tgtest.assert_shapefiles_are_close(
         resource_filename("tidegates.testing.output", "flood_impacts.shp"),
         resource_filename("tidegates.testing.known", "flood_impacts.shp")
     )
+
+    utils.cleanup_temp_results(
+        r"output\flooded_buildings.shp",
+        r"output\flooded_wetlands.shp"
+    )
+
+
+@nptest.dec.skipif(not tgtest.has_fiona)
+def test__impact_to_wetlands():
+    ws = resource_filename("tidegates", "testing")
+    floods = r"output\flood_impacts.shp"
+    known = r"known\flooded_wetlands.shp"
+    wetlands = r"input\test_wetlands.shp"
+    flooded_output = r"output\flooded_wetlands.shp"
+    with utils.WorkSpace(ws), utils.OverwriteState(True):
+        flooded_wetlands = tidegates._impact_to_wetlands(
+            floods_path=floods,
+            ID_column="GeoID",
+            wetlands_path=wetlands,
+            wetlandsoutput=flooded_output,
+        )
+
+    nt.assert_true(isinstance(flooded_wetlands, arcpy.mapping.Layer))
+    tgtest.assert_shapefiles_are_close(
+        resource_filename("tidegates.testing.output", "flooded_wetlands.shp"),
+        resource_filename("tidegates.testing.known", "flooded_wetlands.shp")
+    )
+
+    utils.cleanup_temp_results(flooded_output)
+
+
+@nptest.dec.skipif(not tgtest.has_fiona)
+def test__impact_to_buildings():
+    ws = resource_filename("tidegates", "testing")
+    floods = r"output\flood_impacts.shp"
+    known = r"known\flooded_buildings.shp"
+    buildings = r"input\buildings.shp"
+    flooded_output = r"output\flooded_buildings.shp"
+    with utils.WorkSpace(ws), utils.OverwriteState(True):
+        flooded_buildings = tidegates._impact_to_buildings(
+            floods_path=floods,
+            ID_column="GeoID",
+            buildings_path=buildings,
+            buildingsoutput=flooded_output,
+        )
+
+    nt.assert_true(isinstance(flooded_buildings, arcpy.mapping.Layer))
+    tgtest.assert_shapefiles_are_close(
+        resource_filename("tidegates.testing.output", "flooded_buildings.shp"),
+        resource_filename("tidegates.testing.known", "flooded_buildings.shp")
+    )
+
+    utils.cleanup_temp_results(flooded_output)
