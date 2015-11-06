@@ -82,9 +82,9 @@ class BaseFlooder_Mixin(object):
         downstream.parameterDependencies = [u.name for u in upstream]
 
     @staticmethod
-    def _show_header(base_msg, verbose=True):
-        underline = ''.join(['-'] * len(base_msg))
-        header = '\n{}\n{}'.format(base_msg, underline)
+    def _show_header(title, verbose=True):
+        underline = ''.join(['-'] * len(title))
+        header = '\n{}\n{}'.format(title, underline)
         utils._status(header, verbose=verbose, asMessage=True, addTab=False)
         return header
 
@@ -141,6 +141,22 @@ class BaseFlooder_Mixin(object):
                 multiValue=False
             )
         return self._workspace
+
+    @staticmethod
+    def _get_parameter_values(parameters, multivals=None):
+        if multivals is None:
+            multivals = []
+        elif numpy.isscalar(multivals):
+            multivals = [multivals]
+
+        params = {}
+        for p in parameters:
+            value = p.valueAsText
+            if p.name in multivals:
+                value = value.split(';')
+            params[p.name] = value
+
+        return params
 
     @property
     def dem(self):
@@ -255,6 +271,15 @@ class Flooder(BaseFlooder_Mixin):
         # lazy properties
         self._elevation = None
 
+    @staticmethod
+    def _prep_elevation_and_filename(elev_string, filename):
+        basename, ext = os.path.splitext(filename)
+        fname = basename + elev_string.replace('.', '_') + ext
+        elevation = float(elev_string)
+        title = "Analyzing flood elevation: {} ft".format(elevation)
+
+        return elevation, title, fname
+
     @property
     def elevation(self):
         if self._elevation is None:
@@ -322,6 +347,15 @@ class StandardScenarios(BaseFlooder_Mixin):
         (MHHW, 10-yr, 50-yr, 100-yr) and sea level rise up to 6 feet in
         1-ft increments.
         """)
+
+    @staticmethod
+    def _prep_elevation_and_filename(surge, slr, filename):
+        basename, ext = os.path.splitext(filename)
+        elevation = float(slr + SURGES[surge])
+        fname = basename + str(elevation).replace('.', '_') + ext
+        title = "Analyzing flood elevation: {} ft ({}, {})".format(elevation, surge, slr)
+
+        return elevation, title, fname
 
     def getParameterInfo(self):
         """ Returns all parameter definitions"""
