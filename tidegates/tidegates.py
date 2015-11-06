@@ -114,7 +114,7 @@ def flood_area(dem, polygons, ID_column, elevation_feet,
     flooded_r = utils.array_to_raster(
         array=flooded_a,
         template=zones_r,
-        msg='Covering flooded array to a raster dataset',
+        msg='Converting flooded array to a raster dataset',
         **verbose_options
     )
     with utils.OverwriteState(True):
@@ -125,7 +125,7 @@ def flood_area(dem, polygons, ID_column, elevation_feet,
         flooded_r,
         temp_filename,
         newfield=ID_column,
-        msg='Convert raster of floods to polygons',
+        msg='Converting raster of floods to polygons',
         **verbose_options
     )
 
