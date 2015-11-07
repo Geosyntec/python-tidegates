@@ -11,13 +11,13 @@ import tidegates
 from tidegates import utils
 
 
-SEALEVELRISE = numpy.arange(7) # FEET
+# ALL ELEVATIONS IN FEET
+SEALEVELRISE = numpy.arange(7)
 SURGES = {
-    'MHHW' :   4.0, # FEET
-    '10-yr':   8.0, # FEET
-    #'25-yr':   8.5, # FEET
-    '50-yr':   9.6, # FEET
-    '100-yr': 10.5, # FEET
+    'MHHW':   4.0,
+    '10yr':   8.0,
+    '50yr':   9.6,
+    '100yr': 10.5,
 }
 
 
