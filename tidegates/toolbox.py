@@ -31,7 +31,9 @@ class BaseFlooder_Mixin(object):
         self._dem = None
         self._polygons = None
         self._ID_column = None
-        self._filename = None
+        self._flood_output = None
+        self._building_output = None
+        self._wetland_output = None
         self._wetlands = None
         self._buildings = None
 
@@ -201,16 +203,46 @@ class BaseFlooder_Mixin(object):
         return self._ID_column
 
     @property
-    def filename(self):
-        if self._filename is None:
-            self._filename = arcpy.Parameter(
-                displayName="Output layer/filename",
-                name="filename",
+    def flood_output(self):
+        """ Where the flooded areas for each scenario will be saved.
+        """
+        if self._flood_output is None:
+            self._flood_output = arcpy.Parameter(
+                displayName="Output floods layer/filename",
+                name="flood_output",
                 datatype="GPString",
                 parameterType="Required",
                 direction="Input"
             )
-        return self._filename
+        return self._flood_output
+
+    @property
+    def building_output(self):
+        """ Where the flooded buildings for each scenario will be saved.
+        """
+        if self._building_output is None:
+            self._building_output = arcpy.Parameter(
+                displayName="Output layer/filename of impacted buildings",
+                name="building_output",
+                datatype="GPString",
+                parameterType="Optional",
+                direction="Input"
+            )
+        return self._building_output
+
+    @property
+    def wetland_output(self):
+        """ Where the flooded wetlands for each scenario will be saved.
+        """
+        if self._wetland_output is None:
+            self._wetland_output = arcpy.Parameter(
+                displayName="Output layer/filename of impacted wetlands",
+                name="wetland_output",
+                datatype="GPString",
+                parameterType="Optional",
+                direction="Input"
+            )
+        return self._wetland_output
 
     @property
     def wetlands(self):
@@ -246,11 +278,13 @@ class BaseFlooder_Mixin(object):
             polygons=poly,
             ID_column=idcol,
             elevation_feet=elev,
-            filename=filename,
+            filename=flood_output,
             verbose=True,
             asMessage=True
         )
-        self._add_scenario_columns(res, elev=elev, surge=surge, slr=slr)
+        self._add_scenario_columns(flooded_polygons, elev=elev, surge=surge, slr=slr)
+
+        return flooded_polygons
 
         return res
 
@@ -293,17 +327,17 @@ class Flooder(BaseFlooder_Mixin):
             )
         return self._elevation
 
-    def getParameterInfo(self):
-        """ Returns all parameter definitions"""
         params = [
             self.workspace,
             self.dem,
             self.polygons,
             self.ID_column,
             self.elevation,
-            self.filename,
+            self.flood_output,
             self.wetlands,
+            self.wetland_output,
             self.buildings,
+            self.building_output,
         ]
         return params
 
@@ -357,16 +391,16 @@ class StandardScenarios(BaseFlooder_Mixin):
 
         return elevation, title, fname
 
-    def getParameterInfo(self):
-        """ Returns all parameter definitions"""
         params = [
             self.workspace,
             self.dem,
             self.polygons,
             self.ID_column,
-            self.filename,
+            self.flood_output,
             self.wetlands,
+            self.wetland_output,
             self.buildings,
+            self.building_output,
         ]
         return params
 

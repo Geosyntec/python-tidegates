@@ -136,13 +136,21 @@ class CheckToolbox_Mixin(object):
         nt.assert_equal(self.tbx.ID_column.datatype, "Field")
         nt.assert_equal(self.tbx.ID_column.name, 'ID_column')
 
-    def test_filename(self):
-        nt.assert_true(hasattr(self.tbx, 'filename'))
-        nt.assert_true(isinstance(self.tbx.filename, arcpy.Parameter))
-        nt.assert_equal(self.tbx.filename.parameterType, "Required")
-        nt.assert_equal(self.tbx.filename.direction, "Input")
-        nt.assert_equal(self.tbx.filename.datatype, "String")
-        nt.assert_equal(self.tbx.filename.name, 'filename')
+    def test_flood_filename(self):
+        nt.assert_true(hasattr(self.tbx, 'flood_filename'))
+        nt.assert_true(isinstance(self.tbx.flood_filename, arcpy.Parameter))
+        nt.assert_equal(self.tbx.flood_filename.parameterType, "Required")
+        nt.assert_equal(self.tbx.flood_filename.direction, "Input")
+        nt.assert_equal(self.tbx.flood_filename.datatype, "String")
+        nt.assert_equal(self.tbx.flood_filename.name, 'flood_filename')
+
+    def test_building_filename(self):
+        nt.assert_true(hasattr(self.tbx, 'building_filename'))
+        nt.assert_true(isinstance(self.tbx.building_filename, arcpy.Parameter))
+        nt.assert_equal(self.tbx.building_filename.parameterType, "Required")
+        nt.assert_equal(self.tbx.building_filename.direction, "Input")
+        nt.assert_equal(self.tbx.building_filename.datatype, "String")
+        nt.assert_equal(self.tbx.building_filename.name, 'building_filename')
 
     def test__do_flood(self):
         with mock.patch.object(tidegates.tidegates, 'flood_area') as fa:
@@ -166,7 +174,7 @@ class CheckToolbox_Mixin(object):
         with mock.patch.object(tidegates.tidegates, 'assess_impact') as ai:
             ai.return_value = (1, 2, 3)
             x, y, z = self.tbx._do_assessment(
-                filename="output",
+                floods_path="output",
                 idcol="GeoID",
                 wetlands="flooded_wetlands",
                 buildings="flooded_buildings"
@@ -189,11 +197,11 @@ class Test_Flooder(CheckToolbox_Mixin):
     def setup(self):
         self.tbx = toolbox.Flooder()
 
-    def test__prep_elevation_and_filename(self):
-        elev, header, fname = self.tbx._prep_elevation_and_filename("7.8", "test.shp")
+    def test__prep_flooder_input(self):
+        elev, header, fname = self.tbx._prep_flooder_input("7.8", "test.shp")
         nt.assert_equal(elev, 7.8)
         nt.assert_equal(header, "Analyzing flood elevation: 7.8 ft")
-        nt.assert_equal(fname, 'test7_8.shp')    
+        nt.assert_equal(fname, 'test7_8.shp')
 
     def test_elevation(self):
         nt.assert_true(hasattr(self.tbx, 'elevation'))
@@ -206,8 +214,8 @@ class Test_Flooder(CheckToolbox_Mixin):
     def test_getParameterInfo(self):
         params = self.tbx.getParameterInfo()
         names = [str(p.name) for p in params]
-        known_names = ['workspace', 'dem', 'polygons', 'ID_column',
-                       'elevation', 'filename', 'wetlands', 'buildings']
+        known_names = ['workspace', 'dem', 'polygons', 'ID_column', 'elevation',
+                       'flood_filename', 'wetlands', 'buildings', 'building_filename']
         nt.assert_list_equal(names, known_names)
 
 
@@ -215,8 +223,8 @@ class Test_StandardScenarios(CheckToolbox_Mixin):
     def setup(self):
         self.tbx = toolbox.StandardScenarios()
 
-    def test__prep_elevation_and_filename(self):
-        elev, header, fname = self.tbx._prep_elevation_and_filename("MHHW", 3, "test.shp")
+    def test__prep_flooder_input(self):
+        elev, header, fname = self.tbx._prep_flooder_input("MHHW", 3, "test.shp")
         nt.assert_equal(elev, 7.0)
         nt.assert_equal(header, "Analyzing flood elevation: 7.0 ft (MHHW, 3)")
         nt.assert_equal(fname, 'test7_0.shp')
@@ -225,5 +233,6 @@ class Test_StandardScenarios(CheckToolbox_Mixin):
         params = self.tbx.getParameterInfo()
         names = [str(p.name) for p in params]
         known_names = ['workspace', 'dem', 'polygons', 'ID_column',
-                       'filename', 'wetlands', 'buildings']
+                       'flood_filename', 'wetlands', 'buildings',
+                       'building_filename']
         nt.assert_list_equal(names, known_names)
