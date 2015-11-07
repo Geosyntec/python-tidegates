@@ -38,23 +38,45 @@ class BaseFlooder_Mixin(object):
         self._buildings = None
 
     def isLicensed(self):
-        """Set whether tool is licensed to execute."""
+        """ PART OF THE ESRI BLACK BOX.
+
+        ESRI SAYS:
+        > Set whether tool is licensed to execute.
+
+        So I just make this always true b/c it's an open source project
+        with a BSD license -- (c) Geosyntec Consultants -- so who cares?
+
+        """
         return True
 
     def updateMessages(self, parameters): # pragma: no cover
-        """Modify the messages created by internal validation for each
-        parameter of the tool.  This method is called after internal
-        validation."""
+        """ PART OF THE ESRI BLACK BOX.
+
+        ESRI SAYS:
+        > Modify the messages created by internal validation for each
+        > parameter of the tool.  This method is called after internal
+        > validation.
+
+        But I have no idea when or how internal validation is called so
+        that's pretty useless information.
+
+        """
         return
 
     def updateParameters(self, parameters): # pragma: no cover
-        """ Automatically called when any parameter is updated in the
-        GUI.
+        """ PART OF THE ESRI BLACK BOX.
+
+        Automatically called when any parameter is updated in the GUI.
 
         Flow is like this:
             1. User interacts with GUI, filling out some input element
             2. self.getParameterInfo is called
             3. Parameteter are fed to this method as a list
+
+        I used to set the parameter dependecies in here, but that didn't
+        work. So now this does nothing and dependecies are set when the
+        parameters (as class properties) are created (i.e., called for
+        the first time).
 
         """
         return
@@ -145,14 +167,51 @@ class BaseFlooder_Mixin(object):
 
     @staticmethod
     def _show_header(title, verbose=True):
+        """ Creates and shows a little header from a title.
+
+        Parameters
+        ----------
+        title : str
+            The message to be shown
+        verbose : bool, optional (True)
+            Whether or not the final message should be printed
+
+        Returns
+        -------
+        header : str
+            The formatted title as a header
+
+        Example
+        -------
+        >>> Flooder._show_header('Hello, world', verbose=True)
+        'Hello, world'
+        --------------
+        >>> # see?
+
+
+        """
         underline = ''.join(['-'] * len(title))
         header = '\n{}\n{}'.format(title, underline)
         utils._status(header, verbose=verbose, asMessage=True, addTab=False)
         return header
 
     @staticmethod
-    def _add_results_to_map(mapname, filename):
-        ezmd = utils.EasyMapDoc(mapname)
+    def _add_to_map(filename):
+        """ Adds a layer or raster to the "CURRENT" map.
+
+        Parameters
+        ----------
+        filename : str
+            Path to the layer or raster that will be added
+
+        Returns
+        -------
+        ezmd : EasyMapDoc
+            The "easy map document" to which ``filename`` was added.
+
+        """
+
+        ezmd = utils.EasyMapDoc('CURRENT')
         if ezmd.mapdoc is not None:
             ezmd.add_layer(filename)
 
@@ -160,6 +219,27 @@ class BaseFlooder_Mixin(object):
 
     @staticmethod
     def _add_scenario_columns(layer, elev=None, surge=None, slr=None):
+        """ Adds scenario information to a shapefile/layer
+
+        Parameters
+        ----------
+        layer : str or arcpy.mapping.Layer
+            The path to the layer, or the actual layer object that
+            will be modified in-place.
+        elev, slr : float, optional
+            Final elevation and sea level rise associated with the
+            scenario.
+        surge : str, optional
+            The name of the storm surge associated with the scenario
+            (e.g., MHHW, 100yr).
+
+        Returns
+        -------
+        None
+
+        """
+
+
         if elev is not None:
             utils.add_field_with_value(
                 table=layer,
@@ -193,6 +273,10 @@ class BaseFlooder_Mixin(object):
 
     @property
     def workspace(self):
+        """
+        The directory or geodatabase in which the analysis will occur.
+        """
+
         if self._workspace is None:
             self._workspace = arcpy.Parameter(
                 displayName="Analysis WorkSpace",
@@ -206,6 +290,26 @@ class BaseFlooder_Mixin(object):
 
     @staticmethod
     def _get_parameter_values(parameters, multivals=None):
+        """ Returns a dictionary of the parameters values as passed in from
+        the ESRI black box. Keys are the parameter names, values are the
+        actual values (as text) of the parameters.
+
+        Parameters
+        ----------
+        parameters : list of arcpy.Parameter-type thingies
+            The list of whatever-the-hell ESRI passes to the ``execute``
+            method of a toolbox.
+        multivals : str or list of str, optional
+            Parameter names that can take mulitiple values.
+
+        Returns
+        -------
+        params : dict
+            A python dictionary of parameter values mapped to the
+            parameter names.
+
+        """
+
         if multivals is None:
             multivals = []
         elif numpy.isscalar(multivals):
@@ -264,6 +368,7 @@ class BaseFlooder_Mixin(object):
 
     @property
     def dem(self):
+        """ DEM file to be used in the analysis """
         if self._dem is None:
             self._dem = arcpy.Parameter(
                 displayName="Digital Elevation Model",
@@ -278,6 +383,7 @@ class BaseFlooder_Mixin(object):
 
     @property
     def polygons(self):
+        """ zones of influence polygons to be used in the analysis """
         if self._polygons is None:
             self._polygons = arcpy.Parameter(
                 displayName="Tidegate Zones of Influence",
@@ -292,6 +398,9 @@ class BaseFlooder_Mixin(object):
 
     @property
     def ID_column(self):
+        """ Name of the field in `polygons` that uniquely identifies
+        each zone of influence.
+        """
         if self._ID_column is None:
             self._ID_column = arcpy.Parameter(
                 displayName="Column with Tidegate IDs",
@@ -348,6 +457,8 @@ class BaseFlooder_Mixin(object):
 
     @property
     def wetlands(self):
+        """ Input layer of wetlands.
+        """
         if self._wetlands is None:
             self._wetlands = arcpy.Parameter(
                 displayName="Wetlands",
@@ -362,6 +473,8 @@ class BaseFlooder_Mixin(object):
 
     @property
     def buildings(self):
+        """ Input layer of building footprints.
+        """
         if self._buildings is None:
             self._buildings = arcpy.Parameter(
                 displayName="Buildings footprints",
@@ -618,27 +731,17 @@ class Flooder(BaseFlooder_Mixin):
         # lazy properties
         self._elevation = None
 
-    @staticmethod
-    def _prep_elevation_and_filename(elev_string, filename):
-        basename, ext = os.path.splitext(filename)
-        fname = basename + elev_string.replace('.', '_') + ext
-        elevation = float(elev_string)
-        title = "Analyzing flood elevation: {} ft".format(elevation)
+    def getParameterInfo(self):
+        """ PART OF THE ESRI BLACK BOX
 
-        return elevation, title, fname
+        This *must* return a list of all of the parameter definitions.
 
-    @property
-    def elevation(self):
-        if self._elevation is None:
-            self._elevation = arcpy.Parameter(
-                displayName="Water Surface Elevation",
-                name="elevation",
-                datatype="GPDouble",
-                parameterType="Required",
-                direction="Input",
-                multiValue=True
-            )
-        return self._elevation
+        ESRI recommends that you create all of the parameters in here,
+        and always return that list. I instead chose to create the list
+        from the class properties I've defined. Accessing things with
+        meaningful names is always better, in my opinion.
+
+        """
 
         params = [
             self.workspace,
@@ -659,7 +762,16 @@ class Flooder(BaseFlooder_Mixin):
         """ The flood elevation for a custom scenario.
         """
 
-        return results
+        if self._elevation is None:
+            self._elevation = arcpy.Parameter(
+                displayName="Water Surface Elevation",
+                name="elevation",
+                datatype="GPDouble",
+                parameterType="Required",
+                direction="Input",
+                multiValue=True
+            )
+        return self._elevation
 
 
 class StandardScenarios(BaseFlooder_Mixin):
@@ -678,14 +790,17 @@ class StandardScenarios(BaseFlooder_Mixin):
         1-ft increments.
         """)
 
-    @staticmethod
-    def _prep_elevation_and_filename(surge, slr, filename):
-        basename, ext = os.path.splitext(filename)
-        elevation = float(slr + SURGES[surge])
-        fname = basename + str(elevation).replace('.', '_') + ext
-        title = "Analyzing flood elevation: {} ft ({}, {})".format(elevation, surge, slr)
+    def getParameterInfo(self):
+        """ PART OF THE ESRI BLACK BOX
 
-        return elevation, title, fname
+        This *must* return a list of all of the parameter definitions.
+
+        ESRI recommends that you create all of the parameters in here,
+        and always return that list. I instead chose to create the list
+        from the class properties I've defined. Accessing things with
+        meaningful names is always better, in my opinion.
+
+        """
 
         params = [
             self.workspace,
