@@ -196,24 +196,27 @@ class BaseFlooder_Mixin(object):
         return header
 
     @staticmethod
-    def _add_to_map(filename):
+    def _add_to_map(layerfile, mxd=None):
         """ Adds a layer or raster to the "CURRENT" map.
 
         Parameters
         ----------
-        filename : str
+        layerfile : str
             Path to the layer or raster that will be added
+        mxd : str, optional
+            Path to an ESRI mapdocument.
 
         Returns
         -------
         ezmd : EasyMapDoc
-            The "easy map document" to which ``filename`` was added.
+            The "easy map document" to which ``layerfile`` was added.
 
         """
-
-        ezmd = utils.EasyMapDoc('CURRENT')
+        if mxd is None:
+            mxd = 'CURRENT'
+        ezmd = utils.EasyMapDoc(mxd)
         if ezmd.mapdoc is not None:
-            ezmd.add_layer(filename)
+            ezmd.add_layer(layerfile)
 
         return ezmd
 
