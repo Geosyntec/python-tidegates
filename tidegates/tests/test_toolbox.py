@@ -61,9 +61,9 @@ class CheckToolbox_Mixin(object):
         expected = "\nTEST MESSAGE\n------------"
         nt.assert_equal(header, expected)
 
-    def test__add_results_to_map(self):
+    def test_add_result(self):
         with mock.patch.object(utils.EasyMapDoc, 'add_layer') as add_layer:
-            ezmd = self.tbx._add_results_to_map(self.mxd, self.simple_shp)
+            ezmd = self.tbx._add_to_map(self.simple_shp, mxd=self.mxd)
             nt.assert_true(isinstance(ezmd, utils.EasyMapDoc))
             add_layer.assert_called_once_with(self.simple_shp)
 
@@ -136,21 +136,29 @@ class CheckToolbox_Mixin(object):
         nt.assert_equal(self.tbx.ID_column.datatype, "Field")
         nt.assert_equal(self.tbx.ID_column.name, 'ID_column')
 
-    def test_flood_filename(self):
-        nt.assert_true(hasattr(self.tbx, 'flood_filename'))
-        nt.assert_true(isinstance(self.tbx.flood_filename, arcpy.Parameter))
-        nt.assert_equal(self.tbx.flood_filename.parameterType, "Required")
-        nt.assert_equal(self.tbx.flood_filename.direction, "Input")
-        nt.assert_equal(self.tbx.flood_filename.datatype, "String")
-        nt.assert_equal(self.tbx.flood_filename.name, 'flood_filename')
+    def test_flood_output(self):
+        nt.assert_true(hasattr(self.tbx, 'flood_output'))
+        nt.assert_true(isinstance(self.tbx.flood_output, arcpy.Parameter))
+        nt.assert_equal(self.tbx.flood_output.parameterType, "Required")
+        nt.assert_equal(self.tbx.flood_output.direction, "Input")
+        nt.assert_equal(self.tbx.flood_output.datatype, "String")
+        nt.assert_equal(self.tbx.flood_output.name, 'flood_output')
 
-    def test_building_filename(self):
-        nt.assert_true(hasattr(self.tbx, 'building_filename'))
-        nt.assert_true(isinstance(self.tbx.building_filename, arcpy.Parameter))
-        nt.assert_equal(self.tbx.building_filename.parameterType, "Required")
-        nt.assert_equal(self.tbx.building_filename.direction, "Input")
-        nt.assert_equal(self.tbx.building_filename.datatype, "String")
-        nt.assert_equal(self.tbx.building_filename.name, 'building_filename')
+    def test_building_output(self):
+        nt.assert_true(hasattr(self.tbx, 'building_output'))
+        nt.assert_true(isinstance(self.tbx.building_output, arcpy.Parameter))
+        nt.assert_equal(self.tbx.building_output.parameterType, "Optional")
+        nt.assert_equal(self.tbx.building_output.direction, "Input")
+        nt.assert_equal(self.tbx.building_output.datatype, "String")
+        nt.assert_equal(self.tbx.building_output.name, 'building_output')
+
+    def test_wetland_output(self):
+        nt.assert_true(hasattr(self.tbx, 'wetland_output'))
+        nt.assert_true(isinstance(self.tbx.wetland_output, arcpy.Parameter))
+        nt.assert_equal(self.tbx.wetland_output.parameterType, "Optional")
+        nt.assert_equal(self.tbx.wetland_output.direction, "Input")
+        nt.assert_equal(self.tbx.wetland_output.datatype, "String")
+        nt.assert_equal(self.tbx.wetland_output.name, 'wetland_output')
 
     def test__do_flood(self):
         with mock.patch.object(tidegates.tidegates, 'flood_area') as fa:
@@ -192,16 +200,22 @@ class CheckToolbox_Mixin(object):
                 asMessage=True,
             )
 
+    def test__prep_flooder_input_elev_only(self):
+        elev, header, fname = self.tbx._prep_flooder_input(elev="7.8", flood_output="test.shp")
+        nt.assert_equal(elev, 7.8)
+        nt.assert_equal(header, "Analyzing flood elevation: 7.8 ft")
+        nt.assert_equal(fname, 'test7_8.shp')
+
+    def test__prep_flooder_input_surge_and_slr(self):
+        elev, header, fname = self.tbx._prep_flooder_input(slr=2.5, surge='50yr', flood_output="test.shp")
+        nt.assert_equal(elev, 12.1)
+        nt.assert_equal(header, "Analyzing flood elevation: 12.1 ft (50yr, 2.5)")
+        nt.assert_equal(fname, 'test12_1.shp')
+
 
 class Test_Flooder(CheckToolbox_Mixin):
     def setup(self):
         self.tbx = toolbox.Flooder()
-
-    def test__prep_flooder_input(self):
-        elev, header, fname = self.tbx._prep_flooder_input("7.8", "test.shp")
-        nt.assert_equal(elev, 7.8)
-        nt.assert_equal(header, "Analyzing flood elevation: 7.8 ft")
-        nt.assert_equal(fname, 'test7_8.shp')
 
     def test_elevation(self):
         nt.assert_true(hasattr(self.tbx, 'elevation'))
@@ -215,7 +229,8 @@ class Test_Flooder(CheckToolbox_Mixin):
         params = self.tbx.getParameterInfo()
         names = [str(p.name) for p in params]
         known_names = ['workspace', 'dem', 'polygons', 'ID_column', 'elevation',
-                       'flood_filename', 'wetlands', 'buildings', 'building_filename']
+                       'flood_output', 'wetlands', 'wetland_output',
+                       'buildings', 'building_output']
         nt.assert_list_equal(names, known_names)
 
 
@@ -223,16 +238,10 @@ class Test_StandardScenarios(CheckToolbox_Mixin):
     def setup(self):
         self.tbx = toolbox.StandardScenarios()
 
-    def test__prep_flooder_input(self):
-        elev, header, fname = self.tbx._prep_flooder_input("MHHW", 3, "test.shp")
-        nt.assert_equal(elev, 7.0)
-        nt.assert_equal(header, "Analyzing flood elevation: 7.0 ft (MHHW, 3)")
-        nt.assert_equal(fname, 'test7_0.shp')
-
     def test_getParameterInfo(self):
         params = self.tbx.getParameterInfo()
         names = [str(p.name) for p in params]
         known_names = ['workspace', 'dem', 'polygons', 'ID_column',
-                       'flood_filename', 'wetlands', 'buildings',
-                       'building_filename']
+                       'flood_output', 'wetlands', 'wetland_output',
+                       'buildings', 'building_output']
         nt.assert_list_equal(names, known_names)
