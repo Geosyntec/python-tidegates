@@ -690,7 +690,9 @@ def groupby_and_aggregate(input_path, groupfield, valuefield,
     _check_fields(layer.dataSource, groupfield, valuefield, should_exist=True)
 
     table = arcpy.da.TableToNumPyArray(layer, [groupfield, valuefield])
-    table.sort(order=groupfield)
+    #_status((table.dtype), verbose=True, asMessage=True)
+    #table.sort(order=groupfield)
+    table.sort()
 
     counts = {}
     for groupname, shapes in itertools.groupby(table, lambda row: row[groupfield]):
@@ -802,3 +804,23 @@ def copy_data(destfolder, *source_layers, **kwargs):
         copied = copied[0]
 
     return copied
+
+
+@update_status()
+def concat_results(destination, *input_files):
+    result = arcpy.management.Merge(input_files, destination)
+    return load_data(result.getOutput(0), 'layer')
+
+
+@update_status()
+def join_results_to_baseline(destination, result_file, baseline_file):
+    result = arcpy.SpatialJoin_analysis(
+        target_features=baseline_file,
+        join_features=result_file,
+        out_feature_class=destination,
+        join_operation="JOIN_ONE_TO_MANY",
+        join_type="KEEP_COMMON",
+        match_option="INTERSECT",
+    )
+
+    return load_data(result.getOutput(0), 'layer')

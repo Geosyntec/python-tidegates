@@ -422,7 +422,6 @@ def test_raster_to_polygons():
     utils.cleanup_temp_results(testfile)
 
 
-
 @nptest.dec.skipif(not tgtest.has_fiona)
 def test_raster_to_polygons_with_new_field():
     zonefile = resource_filename("tidegates.testing.input", "test_raster_to_polygon.tif")
@@ -666,6 +665,21 @@ class Test_groupby_and_aggregate():
                 delta=0.01
             )
 
+    def test_recarry_sort_no_args(self):
+        known = numpy.array([
+            ('A', 1.), ('A', 2.), ('A', 3.), ('A', 4.),
+            ('B', 1.), ('B', 2.), ('B', 3.), ('B', 4.),
+            ('C', 1.), ('C', 2.), ('C', 3.), ('C', 4.),
+        ], dtype=[('GeoID', 'S4'), ('Area', float)])
+
+        test = numpy.array([
+            ('A', 1.), ('B', 1.), ('C', 3.), ('A', 4.),
+            ('C', 4.), ('A', 2.), ('C', 1.), ('A', 3.),
+            ('B', 2.), ('C', 2.), ('B', 4.), ('B', 3.),
+        ], dtype=[('GeoID', 'S4'), ('Area', float)])
+
+        test.sort()
+        nptest.assert_array_equal(test, known)
 
     @nt.raises(ValueError)
     def test_bad_group_col(self):
@@ -682,6 +696,7 @@ class Test_groupby_and_aggregate():
             self.group_col,
             "JUNK"
         )
+
 
 @nt.raises(NotImplementedError)
 def test_rename_column():
@@ -785,3 +800,35 @@ class Test_copy_data(object):
         tgtest.assert_shapefiles_are_close(self.output[0], self.srclayers[0])
 
         utils.cleanup_temp_results(self.output[0])
+
+
+@nptest.dec.skipif(not tgtest.has_fiona)
+def test_concat_results():
+    known = resource_filename('tidegates.testing.known', 'concat_result.shp')
+    with utils.OverwriteState(True):
+        test = utils.concat_results(
+            resource_filename('tidegates.testing.output', 'concat_result.shp'),
+            resource_filename('tidegates.testing.input', 'intersect_input1.shp'),
+            resource_filename('tidegates.testing.input', 'intersect_input2.shp')
+        )
+
+    nt.assert_true(isinstance(test, arcpy.mapping.Layer))
+    tgtest.assert_shapefiles_are_close(test.dataSource, known)
+
+    utils.cleanup_temp_results(test)
+
+
+@nptest.dec.skipif(not tgtest.has_fiona)
+def test_join_results_to_baseline():
+    known = resource_filename('tidegates.testing.known', 'merge_result.shp')
+    with utils.OverwriteState(True):
+        test = utils.join_results_to_baseline(
+            resource_filename('tidegates.testing.output', 'merge_result.shp'),
+            resource_filename('tidegates.testing.input', 'merge_join.shp'),
+            resource_filename('tidegates.testing.input', 'merge_baseline.shp')
+        )
+    nt.assert_true(isinstance(test, arcpy.mapping.Layer))
+    tgtest.assert_shapefiles_are_close(test.dataSource, known)
+
+    utils.cleanup_temp_results(test)
+
