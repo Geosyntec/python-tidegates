@@ -203,6 +203,54 @@ class CheckToolbox_Mixin(object):
         nt.assert_equal(self.tbx.wetland_output.datatype, "String")
         nt.assert_equal(self.tbx.wetland_output.name, 'wetland_output')
 
+    def test_buildings(self):
+        nt.assert_true(hasattr(self.tbx, 'buildings'))
+        nt.assert_true(isinstance(self.tbx.buildings, arcpy.Parameter))
+        nt.assert_equal(self.tbx.buildings.parameterType, "Optional")
+        nt.assert_equal(self.tbx.buildings.direction, "Input")
+        nt.assert_equal(self.tbx.buildings.datatype, "Feature Class")
+        nt.assert_equal(self.tbx.buildings.name, 'buildings')
+
+    def test_wetlands(self):
+        nt.assert_true(hasattr(self.tbx, 'wetlands'))
+        nt.assert_true(isinstance(self.tbx.wetlands, arcpy.Parameter))
+        nt.assert_equal(self.tbx.wetlands.parameterType, "Optional")
+        nt.assert_equal(self.tbx.wetlands.direction, "Input")
+        nt.assert_equal(self.tbx.wetlands.datatype, "Feature Class")
+        nt.assert_equal(self.tbx.wetlands.name, 'wetlands')
+
+    def test__make_scenarios_elevation_list(self):
+        expected = [
+            {'elev': 7.8, 'surge_name': None, 'surge_elev': None, 'slr': None},
+            {'elev': 8.6, 'surge_name': None, 'surge_elev': None, 'slr': None},
+            {'elev': 9.2, 'surge_name': None, 'surge_elev': None, 'slr': None},
+        ]
+
+        test = self.tbx._make_scenarios(elevation=['7.8', '8.6', '9.2'])
+
+        for ts, es in zip(test, expected):
+            nt.assert_dict_equal(ts, es)
+
+    def test__make_scenarios_elevation_scalar(self):
+        expected = [
+            {'elev': 7.8, 'surge_name': None, 'surge_elev': None, 'slr': None},
+        ]
+
+        test = self.tbx._make_scenarios(elevation='7.8')
+
+        for ts, es in zip(test, expected):
+            nt.assert_dict_equal(ts, es)
+
+    def test__make_scenarios_no_elev(self):
+        test = self.tbx._make_scenarios()
+
+        for ts in test:
+            nt.assert_true(ts['elev'] is None)
+            nt.assert_true(ts['surge_name'] in toolbox.SURGES.keys())
+            nt.assert_true(ts['surge_elev'] in toolbox.SURGES.values())
+            nt.assert_true(ts['slr'] in toolbox.SEALEVELRISE)
+
+
     def test__do_flood(self):
         with mock.patch.object(tidegates.tidegates, 'flood_area') as fa:
             with mock.patch.object(self.tbx, '_add_scenario_columns') as asc:

@@ -521,6 +521,8 @@ class BaseFlooder_Mixin(object):
         # a custom flood elevation. Otherwise, we're evaluating the
         # standard scenarios.
         elevations = params.get('elevation', None)
+        if numpy.isscalar(elevations):
+            elevations = [elevations]
 
         # standard scenarioes
         if elevations is None:
