@@ -42,9 +42,20 @@ class CheckToolbox_Mixin(object):
         MockParam('elevation', '7.8;8.9;9.2')
     ]
 
+    parameter_dict = {
+        'dem': 'path/to/dem',
+        'ID_column': 'GeoID',
+        'elevation': ['7.8', '8.9', '9.2']
+    }
+
     def test_isLicensed(self):
         # every toolbox should be always licensed!
         nt.assert_true(self.tbx.isLicensed())
+
+    def test_getParameterInfo(self):
+        with mock.patch.object(self.tbx, '_params_as_list') as _pal:
+            self.tbx.getParameterInfo()
+            _pal.assert_called_once_with()
 
     def test__set_parameter_dependency_single(self):
         self.tbx._set_parameter_dependency(
@@ -304,8 +315,8 @@ class Test_Flooder(CheckToolbox_Mixin):
         nt.assert_equal(self.tbx.elevation.datatype, "Double")
         nt.assert_equal(self.tbx.elevation.name, 'elevation')
 
-    def test_getParameterInfo(self):
-        params = self.tbx.getParameterInfo()
+    def test_params_as_list(self):
+        params = self.tbx._params_as_list()
         names = [str(p.name) for p in params]
         known_names = ['workspace', 'dem', 'polygons', 'ID_column', 'elevation',
                        'flood_output', 'wetlands', 'wetland_output',
@@ -317,8 +328,8 @@ class Test_StandardScenarios(CheckToolbox_Mixin):
     def setup(self):
         self.tbx = toolbox.StandardScenarios()
 
-    def test_getParameterInfo(self):
-        params = self.tbx.getParameterInfo()
+    def test_params_as_list(self):
+        params = self.tbx._params_as_list()
         names = [str(p.name) for p in params]
         known_names = ['workspace', 'dem', 'polygons', 'ID_column',
                        'flood_output', 'wetlands', 'wetland_output',

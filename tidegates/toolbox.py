@@ -736,18 +736,7 @@ class Flooder(BaseFlooder_Mixin):
         # lazy properties
         self._elevation = None
 
-    def getParameterInfo(self):
-        """ PART OF THE ESRI BLACK BOX
-
-        This *must* return a list of all of the parameter definitions.
-
-        ESRI recommends that you create all of the parameters in here,
-        and always return that list. I instead chose to create the list
-        from the class properties I've defined. Accessing things with
-        meaningful names is always better, in my opinion.
-
-        """
-
+    def _params_as_list(self):
         params = [
             self.workspace,
             self.dem,
@@ -795,18 +784,7 @@ class StandardScenarios(BaseFlooder_Mixin):
         1-ft increments.
         """)
 
-    def getParameterInfo(self):
-        """ PART OF THE ESRI BLACK BOX
-
-        This *must* return a list of all of the parameter definitions.
-
-        ESRI recommends that you create all of the parameters in here,
-        and always return that list. I instead chose to create the list
-        from the class properties I've defined. Accessing things with
-        meaningful names is always better, in my opinion.
-
-        """
-
+    def _params_as_list(self):
         params = [
             self.workspace,
             self.dem,
