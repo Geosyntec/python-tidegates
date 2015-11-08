@@ -21,6 +21,13 @@ class MockResult(object):
             return resource_filename("tidegates.testing.input", "test_zones.shp")
 
 
+@nt.nottest
+class MockParam(object):
+    def __init__(self, name, value):
+        self.name = name
+        self.valueAsText = value
+
+
 class CheckToolbox_Mixin(object):
     mockMap = mock.Mock(spec=utils.EasyMapDoc)
     mockLayer = mock.Mock(spec=arcpy.mapping.Layer)
@@ -28,6 +35,12 @@ class CheckToolbox_Mixin(object):
     mxd = resource_filename("tidegates.testing.input", "test.mxd")
     simple_shp = resource_filename("tidegates.testing.input", "test_zones.shp")
     outfile = "output.shp"
+
+    parameters = [
+        MockParam('dem', 'path/to/dem'),
+        MockParam('ID_column', 'GeoID'),
+        MockParam('elevation', '7.8;8.9;9.2')
+    ]
 
     def test_isLicensed(self):
         # every toolbox should be always licensed!
@@ -111,6 +124,36 @@ class CheckToolbox_Mixin(object):
         nt.assert_equal(self.tbx.workspace.direction, "Input")
         nt.assert_equal(self.tbx.workspace.datatype, "Workspace")
         nt.assert_equal(self.tbx.workspace.name, 'workspace')
+
+    def test__get_parameter_values_default(self):
+        param_vals = self.tbx._get_parameter_values(self.parameters)
+        expected = {
+            'dem': 'path/to/dem',
+            'ID_column': 'GeoID',
+            'elevation': '7.8;8.9;9.2'
+        }
+        nt.assert_dict_equal(param_vals, expected)
+
+    def test__get_parameter_values_multivals(self):
+        param_vals = self.tbx._get_parameter_values(self.parameters, multivals='elevation')
+        expected = {
+            'dem': 'path/to/dem',
+            'ID_column': 'GeoID',
+            'elevation': ['7.8', '8.9', '9.2']
+        }
+        nt.assert_dict_equal(param_vals, expected)
+
+    def test__prep_flooder_input_elev_only(self):
+        elev, header, fname = self.tbx._prep_flooder_input(elev="7.8", flood_output="test.shp")
+        nt.assert_equal(elev, 7.8)
+        nt.assert_equal(header, "Analyzing flood elevation: 7.8 ft")
+        nt.assert_equal(fname, 'test7_8.shp')
+
+    def test__prep_flooder_input_surge_and_slr(self):
+        elev, header, fname = self.tbx._prep_flooder_input(slr=2.5, surge='50yr', flood_output="test.shp")
+        nt.assert_equal(elev, 12.1)
+        nt.assert_equal(header, "Analyzing flood elevation: 12.1 ft (50yr, 2.5)")
+        nt.assert_equal(fname, 'test12_1.shp')
 
     def test_dem(self):
         nt.assert_true(hasattr(self.tbx, 'dem'))
@@ -199,18 +242,6 @@ class CheckToolbox_Mixin(object):
                 verbose=True,
                 asMessage=True,
             )
-
-    def test__prep_flooder_input_elev_only(self):
-        elev, header, fname = self.tbx._prep_flooder_input(elev="7.8", flood_output="test.shp")
-        nt.assert_equal(elev, 7.8)
-        nt.assert_equal(header, "Analyzing flood elevation: 7.8 ft")
-        nt.assert_equal(fname, 'test7_8.shp')
-
-    def test__prep_flooder_input_surge_and_slr(self):
-        elev, header, fname = self.tbx._prep_flooder_input(slr=2.5, surge='50yr', flood_output="test.shp")
-        nt.assert_equal(elev, 12.1)
-        nt.assert_equal(header, "Analyzing flood elevation: 12.1 ft (50yr, 2.5)")
-        nt.assert_equal(fname, 'test12_1.shp')
 
 
 class Test_Flooder(CheckToolbox_Mixin):
