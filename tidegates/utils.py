@@ -41,10 +41,7 @@ class EasyMapDoc(object):
             raise ValueError('Position: %s is not in %s' % (position.lower, valid_positions))
 
         # layer can be a path to a file. if so, convert to a Layer object
-        if isinstance(layer, basestring):
-            layer = arcpy.mapping.Layer(layer)
-        elif not isinstance(layer, arcpy.mapping.Layer):
-            raise ValueError("``layer`` be an arcpy Layer or a path to a file")
+        layer = load_data(layer, 'layer')
 
         # add the layer to the map
         arcpy.mapping.AddLayer(df, layer, position.upper())
@@ -202,12 +199,12 @@ def _check_fields(table, *fieldnames, **kwargs):
             bad_names.append(name)
 
     if not should_exist:
-        qual = ' not '
+        qual = 'already'
     else:
-        qual = ' '
+        qual = 'not'
 
     if len(bad_names) > 0:
-        raise ValueError('fields {} are{}in {}'.format(bad_names, qual, table))
+        raise ValueError('fields {} are {} in {}'.format(bad_names, qual, table))
 
 
 @update_status() # raster
@@ -402,7 +399,7 @@ def clip_dem_to_zones(dem, zones):
 
 
 @update_status() # layer
-def raster_to_polygons(zonal_raster, filename):
+def raster_to_polygons(zonal_raster, filename, newfield=None):
     """
     Converts zonal rasters to polygons layers. This is basically just
     a thing wrapper around arcpy.conversion.RasterToPolygon. The
@@ -433,6 +430,15 @@ def raster_to_polygons(zonal_raster, filename):
         simplify="SIMPLIFY",
         raster_field="Value",
     )
+
+
+    if newfield is not None:
+        for field in arcpy.ListFields(filename):
+            if field.name.lower() == 'gridcode':
+                gridfield = field.name
+
+        add_field_with_value(filename, newfield, field_type="LONG")
+        populate_field(filename, lambda x: x[0], newfield, gridfield)
 
     polygons = result_to_layer(results)
     return polygons
@@ -684,7 +690,9 @@ def groupby_and_aggregate(input_path, groupfield, valuefield,
     _check_fields(layer.dataSource, groupfield, valuefield, should_exist=True)
 
     table = arcpy.da.TableToNumPyArray(layer, [groupfield, valuefield])
-    table.sort(order=groupfield)
+    #_status((table.dtype), verbose=True, asMessage=True)
+    #table.sort(order=groupfield)
+    table.sort()
 
     counts = {}
     for groupname, shapes in itertools.groupby(table, lambda row: row[groupfield]):
@@ -796,3 +804,23 @@ def copy_data(destfolder, *source_layers, **kwargs):
         copied = copied[0]
 
     return copied
+
+
+@update_status()
+def concat_results(destination, *input_files):
+    result = arcpy.management.Merge(input_files, destination)
+    return load_data(result.getOutput(0), 'layer')
+
+
+@update_status()
+def join_results_to_baseline(destination, result_file, baseline_file):
+    result = arcpy.SpatialJoin_analysis(
+        target_features=baseline_file,
+        join_features=result_file,
+        out_feature_class=destination,
+        join_operation="JOIN_ONE_TO_MANY",
+        join_type="KEEP_COMMON",
+        match_option="INTERSECT",
+    )
+
+    return load_data(result.getOutput(0), 'layer')

@@ -423,6 +423,21 @@ def test_raster_to_polygons():
 
 
 @nptest.dec.skipif(not tgtest.has_fiona)
+def test_raster_to_polygons_with_new_field():
+    zonefile = resource_filename("tidegates.testing.input", "test_raster_to_polygon.tif")
+    knownfile = resource_filename("tidegates.testing.known", "known_polygons_from_raster_2.shp")
+    testfile = resource_filename("tidegates.testing.output", "test_polygons_from_raster_2.shp")
+
+    with utils.OverwriteState(True):
+        zones = utils.load_data(zonefile, 'raster')
+        known = utils.load_data(knownfile, 'layer')
+        test = utils.raster_to_polygons(zones, testfile, newfield="GeoID")
+
+    tgtest.assert_shapefiles_are_close(test.dataSource, known.dataSource)
+    utils.cleanup_temp_results(testfile)
+
+
+@nptest.dec.skipif(not tgtest.has_fiona)
 def test_aggregate_polygons():
     rawfile = resource_filename("tidegates.testing.known", "known_polygons_from_raster.shp")
     knownfile = resource_filename("tidegates.testing.known", "known_dissolved_polygons.shp")
@@ -619,8 +634,9 @@ class Test_intersect_polygon_layers(object):
 class Test_groupby_and_aggregate():
     known_counts = {16.0: 32, 150.0: 2}
     buildings = resource_filename("tidegates.testing.known", "flooded_buildings.shp")
-    group_col = 'GRIDCODE'
+    group_col = 'GeoID'
     count_col = 'STRUCT_ID'
+    area_op = 'SHAPE@AREA'
 
     areas = resource_filename("tidegates.testing.input", "intersect_input1.shp")
     known_areas = {2: 1327042.1024, 7: 1355433.0192, 12: 1054529.2882}
@@ -638,8 +654,8 @@ class Test_groupby_and_aggregate():
     def test_area(self):
         areadict = utils.groupby_and_aggregate(
             self.areas,
-            "GeoID",
-            "SHAPE@AREA",
+            self.group_col,
+            self.area_op,
             aggfxn=lambda g: sum([row[1] for row in g])
         )
         for key in areadict.keys():
@@ -649,6 +665,21 @@ class Test_groupby_and_aggregate():
                 delta=0.01
             )
 
+    def test_recarry_sort_no_args(self):
+        known = numpy.array([
+            ('A', 1.), ('A', 2.), ('A', 3.), ('A', 4.),
+            ('B', 1.), ('B', 2.), ('B', 3.), ('B', 4.),
+            ('C', 1.), ('C', 2.), ('C', 3.), ('C', 4.),
+        ], dtype=[('GeoID', 'S4'), ('Area', float)])
+
+        test = numpy.array([
+            ('A', 1.), ('B', 1.), ('C', 3.), ('A', 4.),
+            ('C', 4.), ('A', 2.), ('C', 1.), ('A', 3.),
+            ('B', 2.), ('C', 2.), ('B', 4.), ('B', 3.),
+        ], dtype=[('GeoID', 'S4'), ('Area', float)])
+
+        test.sort()
+        nptest.assert_array_equal(test, known)
 
     @nt.raises(ValueError)
     def test_bad_group_col(self):
@@ -665,6 +696,7 @@ class Test_groupby_and_aggregate():
             self.group_col,
             "JUNK"
         )
+
 
 @nt.raises(NotImplementedError)
 def test_rename_column():
@@ -724,19 +756,15 @@ class Test_populate_field(object):
 class Test_copy_data(object):
     destfolder = resource_filename("tidegates.testing", "output")
     srclayers = [
-        resource_filename("tidegates.testing.input", "buildings.shp"),
-        resource_filename("tidegates.testing.known", "flooded_buildings.shp"),
+        resource_filename("tidegates.testing.input", "intersect_input2.shp"),
         resource_filename("tidegates.testing.input", "intersect_input1.shp"),
     ]
 
     output = [
-        resource_filename("tidegates.testing.output", "buildings.shp"),
-        resource_filename("tidegates.testing.output", "flooded_buildings.shp"),
+        resource_filename("tidegates.testing.output", "intersect_input2.shp"),
         resource_filename("tidegates.testing.output", "intersect_input1.shp"),
     ]
 
-    def teardown(self):
-        utils.cleanup_temp_results(*self.output)
 
     def test_list(self):
         with utils.OverwriteState(True):
@@ -748,6 +776,8 @@ class Test_copy_data(object):
             nt.assert_true(isinstance(newlyr, arcpy.mapping.Layer))
             tgtest.assert_shapefiles_are_close(newname, oldname)
 
+        utils.cleanup_temp_results(*self.output)
+
     def test_single_squeeze_false(self):
         with utils.OverwriteState(True):
             newlayers = utils.copy_data(self.destfolder, *self.srclayers[:1])
@@ -758,6 +788,8 @@ class Test_copy_data(object):
             nt.assert_true(isinstance(newlyr, arcpy.mapping.Layer))
             tgtest.assert_shapefiles_are_close(newname, oldname)
 
+        utils.cleanup_temp_results(*self.output[:1])
+
     def test_single_squeeze_true(self):
         with utils.OverwriteState(True):
             newlayer = utils.copy_data(self.destfolder, *self.srclayers[:1], squeeze=True)
@@ -766,3 +798,37 @@ class Test_copy_data(object):
 
         nt.assert_true(isinstance(newlayer, arcpy.mapping.Layer))
         tgtest.assert_shapefiles_are_close(self.output[0], self.srclayers[0])
+
+        utils.cleanup_temp_results(self.output[0])
+
+
+@nptest.dec.skipif(not tgtest.has_fiona)
+def test_concat_results():
+    known = resource_filename('tidegates.testing.known', 'concat_result.shp')
+    with utils.OverwriteState(True):
+        test = utils.concat_results(
+            resource_filename('tidegates.testing.output', 'concat_result.shp'),
+            resource_filename('tidegates.testing.input', 'intersect_input1.shp'),
+            resource_filename('tidegates.testing.input', 'intersect_input2.shp')
+        )
+
+    nt.assert_true(isinstance(test, arcpy.mapping.Layer))
+    tgtest.assert_shapefiles_are_close(test.dataSource, known)
+
+    utils.cleanup_temp_results(test)
+
+
+@nptest.dec.skipif(not tgtest.has_fiona)
+def test_join_results_to_baseline():
+    known = resource_filename('tidegates.testing.known', 'merge_result.shp')
+    with utils.OverwriteState(True):
+        test = utils.join_results_to_baseline(
+            resource_filename('tidegates.testing.output', 'merge_result.shp'),
+            resource_filename('tidegates.testing.input', 'merge_join.shp'),
+            resource_filename('tidegates.testing.input', 'merge_baseline.shp')
+        )
+    nt.assert_true(isinstance(test, arcpy.mapping.Layer))
+    tgtest.assert_shapefiles_are_close(test.dataSource, known)
+
+    utils.cleanup_temp_results(test)
+

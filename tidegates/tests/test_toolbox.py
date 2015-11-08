@@ -27,6 +27,7 @@ class CheckToolbox_Mixin(object):
     mockUtils = mock.Mock(spec=utils)
     mxd = resource_filename("tidegates.testing.input", "test.mxd")
     simple_shp = resource_filename("tidegates.testing.input", "test_zones.shp")
+    outfile = "output.shp"
 
     def test_isLicensed(self):
         # every toolbox should be always licensed!
@@ -60,9 +61,9 @@ class CheckToolbox_Mixin(object):
         expected = "\nTEST MESSAGE\n------------"
         nt.assert_equal(header, expected)
 
-    def test__add_results_to_map(self):
+    def test_add_result(self):
         with mock.patch.object(utils.EasyMapDoc, 'add_layer') as add_layer:
-            ezmd = self.tbx._add_results_to_map(self.mxd, self.simple_shp)
+            ezmd = self.tbx._add_to_map(self.simple_shp, mxd=self.mxd)
             nt.assert_true(isinstance(ezmd, utils.EasyMapDoc))
             add_layer.assert_called_once_with(self.simple_shp)
 
@@ -70,7 +71,7 @@ class CheckToolbox_Mixin(object):
         with mock.patch.object(utils, 'add_field_with_value') as afwv:
             self.tbx._add_scenario_columns(MockResult, elev=5.0)
             afwv.assert_called_once_with(
-                table=self.simple_shp,
+                table=MockResult,
                 field_name='flood_elev',
                 field_value=5.0,
                 msg="Adding 'flood_elev' field to ouput",
@@ -82,7 +83,7 @@ class CheckToolbox_Mixin(object):
         with mock.patch.object(utils, 'add_field_with_value') as afwv:
             self.tbx._add_scenario_columns(MockResult, slr=5)
             afwv.assert_called_once_with(
-                table=self.simple_shp,
+                table=MockResult,
                 field_name='slr',
                 field_value=5,
                 msg="Adding sea level rise field to ouput",
@@ -94,7 +95,7 @@ class CheckToolbox_Mixin(object):
         with mock.patch.object(utils, 'add_field_with_value') as afwv:
             self.tbx._add_scenario_columns(MockResult, surge='TESTING')
             afwv.assert_called_once_with(
-                table=self.simple_shp,
+                table=MockResult,
                 field_name="surge",
                 field_value='TESTING',
                 field_length=10,
@@ -135,28 +136,81 @@ class CheckToolbox_Mixin(object):
         nt.assert_equal(self.tbx.ID_column.datatype, "Field")
         nt.assert_equal(self.tbx.ID_column.name, 'ID_column')
 
-    def test_filename(self):
-        nt.assert_true(hasattr(self.tbx, 'filename'))
-        nt.assert_true(isinstance(self.tbx.filename, arcpy.Parameter))
-        nt.assert_equal(self.tbx.filename.parameterType, "Required")
-        nt.assert_equal(self.tbx.filename.direction, "Input")
-        nt.assert_equal(self.tbx.filename.datatype, "String")
-        nt.assert_equal(self.tbx.filename.name, 'filename')
+    def test_flood_output(self):
+        nt.assert_true(hasattr(self.tbx, 'flood_output'))
+        nt.assert_true(isinstance(self.tbx.flood_output, arcpy.Parameter))
+        nt.assert_equal(self.tbx.flood_output.parameterType, "Required")
+        nt.assert_equal(self.tbx.flood_output.direction, "Input")
+        nt.assert_equal(self.tbx.flood_output.datatype, "String")
+        nt.assert_equal(self.tbx.flood_output.name, 'flood_output')
+
+    def test_building_output(self):
+        nt.assert_true(hasattr(self.tbx, 'building_output'))
+        nt.assert_true(isinstance(self.tbx.building_output, arcpy.Parameter))
+        nt.assert_equal(self.tbx.building_output.parameterType, "Optional")
+        nt.assert_equal(self.tbx.building_output.direction, "Input")
+        nt.assert_equal(self.tbx.building_output.datatype, "String")
+        nt.assert_equal(self.tbx.building_output.name, 'building_output')
+
+    def test_wetland_output(self):
+        nt.assert_true(hasattr(self.tbx, 'wetland_output'))
+        nt.assert_true(isinstance(self.tbx.wetland_output, arcpy.Parameter))
+        nt.assert_equal(self.tbx.wetland_output.parameterType, "Optional")
+        nt.assert_equal(self.tbx.wetland_output.direction, "Input")
+        nt.assert_equal(self.tbx.wetland_output.datatype, "String")
+        nt.assert_equal(self.tbx.wetland_output.name, 'wetland_output')
 
     def test__do_flood(self):
         with mock.patch.object(tidegates.tidegates, 'flood_area') as fa:
             with mock.patch.object(self.tbx, '_add_scenario_columns') as asc:
-                res = self.tbx._do_flood('dem', 'poly', 'tgid', 5.7, surge='surge', slr=2)
-                fa.assert_called_once_with(
-                    dem='dem',
-                    polygons='poly',
-                    ID_column='tgid',
-                    elevation_feet=5.7,
-                    filename=None,
-                    verbose=True,
-                    asMessage=True
+                res = self.tbx._do_flood(
+                    'dem', 'poly', 'tgid', 5.7,
+                    self.outfile, surge='surge', slr=2
                 )
-                asc.assert_called_once_with(res, elev=5.7, surge='surge', slr=2)
+
+                fa.assert_called_once_with(
+                    dem='dem', polygons='poly', ID_column='tgid',
+                    elevation_feet=5.7, filename=self.outfile,
+                    verbose=True, asMessage=True
+                )
+
+                asc.assert_called_once_with(
+                    res, elev=5.7, surge='surge', slr=2
+                )
+
+    def test__do_assessment(self):
+        with mock.patch.object(tidegates.tidegates, 'assess_impact') as ai:
+            ai.return_value = (1, 2, 3)
+            x, y, z = self.tbx._do_assessment(
+                floods_path="output",
+                idcol="GeoID",
+                wetlands="flooded_wetlands",
+                buildings="flooded_buildings"
+            )
+
+            ai.assert_called_once_with(
+                floods_path="output",
+                ID_column="GeoID",
+                wetlands_path="flooded_wetlands",
+                wetlandsoutput="_wetlands_output",
+                buildings_path="flooded_buildings",
+                buildingsoutput="_buildinds_output",
+                cleanup=True,
+                verbose=True,
+                asMessage=True,
+            )
+
+    def test__prep_flooder_input_elev_only(self):
+        elev, header, fname = self.tbx._prep_flooder_input(elev="7.8", flood_output="test.shp")
+        nt.assert_equal(elev, 7.8)
+        nt.assert_equal(header, "Analyzing flood elevation: 7.8 ft")
+        nt.assert_equal(fname, 'test7_8.shp')
+
+    def test__prep_flooder_input_surge_and_slr(self):
+        elev, header, fname = self.tbx._prep_flooder_input(slr=2.5, surge='50yr', flood_output="test.shp")
+        nt.assert_equal(elev, 12.1)
+        nt.assert_equal(header, "Analyzing flood elevation: 12.1 ft (50yr, 2.5)")
+        nt.assert_equal(fname, 'test12_1.shp')
 
 
 class Test_Flooder(CheckToolbox_Mixin):
@@ -174,8 +228,9 @@ class Test_Flooder(CheckToolbox_Mixin):
     def test_getParameterInfo(self):
         params = self.tbx.getParameterInfo()
         names = [str(p.name) for p in params]
-        known_names = ['workspace', 'dem', 'polygons', 'ID_column',
-                       'elevation', 'filename']
+        known_names = ['workspace', 'dem', 'polygons', 'ID_column', 'elevation',
+                       'flood_output', 'wetlands', 'wetland_output',
+                       'buildings', 'building_output']
         nt.assert_list_equal(names, known_names)
 
 
@@ -186,6 +241,7 @@ class Test_StandardScenarios(CheckToolbox_Mixin):
     def test_getParameterInfo(self):
         params = self.tbx.getParameterInfo()
         names = [str(p.name) for p in params]
-        known_names = ['workspace', 'dem', 'polygons',
-                       'ID_column', 'filename']
+        known_names = ['workspace', 'dem', 'polygons', 'ID_column',
+                       'flood_output', 'wetlands', 'wetland_output',
+                       'buildings', 'building_output']
         nt.assert_list_equal(names, known_names)
