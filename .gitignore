@@ -242,3 +242,4 @@ tidegates/testing/info/arc.dir
 notebooks/Scratch.ipynb
 tidegates/testing/output/log
 *.dir
+tidegates/testing/analyze/log
