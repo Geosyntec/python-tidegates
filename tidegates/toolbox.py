@@ -3,6 +3,7 @@ import sys
 import glob
 import datetime
 from textwrap import dedent
+from collections import OrderedDict
 
 import arcpy
 import numpy
@@ -13,12 +14,10 @@ from tidegates import utils
 
 # ALL ELEVATIONS IN FEET
 SEALEVELRISE = numpy.arange(7)
-SURGES = {
-    'MHHW':   4.0,
-    '10yr':   8.0,
-    '50yr':   9.6,
-    '100yr': 10.5,
-}
+SURGES = OrderedDict(MHHW=4.0)
+SURGES['10yr'] = 8.0
+SURGES['50yr'] = 9.6
+SURGES['100yr'] = 10.5
 
 
 class BaseFlooder_Mixin(object):
@@ -647,6 +646,37 @@ class BaseFlooder_Mixin(object):
             utils.cleanup_temp_results(*results)
 
     def _execute(self, **params):
+        """ Performs the flood-impact analysis on multiple flood
+        elevations.
+
+        Parameters
+        ----------
+        workspace : str
+            The folder or geodatabase where the analysis will be
+            executed.
+        polygons : str
+            Name of zones of influence layer.
+        ID_column : str
+            Name of the field in ``polygons`` that uniquely identifies
+            each zone of influence.
+        wetlands, buildings : str
+            Names of the wetland and building footprint layers.
+        flood_output, wetland_output, building_output : str
+            Filenames where the output will be saved.
+        dem : str
+            Filename of the digital elevation model (topography data)
+            to be used in determinging the inundated areas.
+        elevation : list, optional
+            List of (custom) flood elevations to be analyzed. If this is
+            not provided, *all* of the standard scenarios will be
+            evaluated.
+
+        Returns
+        -------
+        None
+
+        """
+
         all_floods = []
         all_wetlands = []
         all_buildings = []
