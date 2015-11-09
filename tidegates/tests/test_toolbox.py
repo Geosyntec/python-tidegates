@@ -21,6 +21,13 @@ class MockResult(object):
             return resource_filename("tidegates.testing.input", "test_zones.shp")
 
 
+@nt.nottest
+class MockParam(object):
+    def __init__(self, name, value):
+        self.name = name
+        self.valueAsText = value
+
+
 class CheckToolbox_Mixin(object):
     mockMap = mock.Mock(spec=utils.EasyMapDoc)
     mockLayer = mock.Mock(spec=arcpy.mapping.Layer)
@@ -29,9 +36,32 @@ class CheckToolbox_Mixin(object):
     simple_shp = resource_filename("tidegates.testing.input", "test_zones.shp")
     outfile = "output.shp"
 
+    parameters = [
+        MockParam('dem', 'path/to/dem'),
+        MockParam('ID_column', 'GeoID'),
+        MockParam('elevation', '7.8;8.9;9.2')
+    ]
+
+    parameter_dict = {
+        'dem': 'path/to/dem',
+        'ID_column': 'GeoID',
+        'elevation': ['7.8', '8.9', '9.2']
+    }
+
     def test_isLicensed(self):
         # every toolbox should be always licensed!
         nt.assert_true(self.tbx.isLicensed())
+
+    def test_getParameterInfo(self):
+        with mock.patch.object(self.tbx, '_params_as_list') as _pal:
+            self.tbx.getParameterInfo()
+            _pal.assert_called_once_with()
+
+    def test_execute(self):
+        messages = ['message1', 'message2']
+        with mock.patch.object(self.tbx, '_execute') as _exe:
+            self.tbx.execute(self.parameters, messages)
+            _exe.assert_called_once_with(**self.parameter_dict)
 
     def test__set_parameter_dependency_single(self):
         self.tbx._set_parameter_dependency(
@@ -112,6 +142,36 @@ class CheckToolbox_Mixin(object):
         nt.assert_equal(self.tbx.workspace.datatype, "Workspace")
         nt.assert_equal(self.tbx.workspace.name, 'workspace')
 
+    def test__get_parameter_values_default(self):
+        param_vals = self.tbx._get_parameter_values(self.parameters)
+        expected = {
+            'dem': 'path/to/dem',
+            'ID_column': 'GeoID',
+            'elevation': '7.8;8.9;9.2'
+        }
+        nt.assert_dict_equal(param_vals, expected)
+
+    def test__get_parameter_values_multivals(self):
+        param_vals = self.tbx._get_parameter_values(self.parameters, multivals='elevation')
+        expected = {
+            'dem': 'path/to/dem',
+            'ID_column': 'GeoID',
+            'elevation': ['7.8', '8.9', '9.2']
+        }
+        nt.assert_dict_equal(param_vals, expected)
+
+    def test__prep_flooder_input_elev_only(self):
+        elev, header, fname = self.tbx._prep_flooder_input(elev="7.8", flood_output="test.shp")
+        nt.assert_equal(elev, 7.8)
+        nt.assert_equal(header, "Analyzing flood elevation: 7.8 ft")
+        nt.assert_equal(fname, 'test7_8.shp')
+
+    def test__prep_flooder_input_surge_and_slr(self):
+        elev, header, fname = self.tbx._prep_flooder_input(slr=2.5, surge='50yr', flood_output="test.shp")
+        nt.assert_equal(elev, 12.1)
+        nt.assert_equal(header, "Analyzing flood elevation: 12.1 ft (50yr, 2.5)")
+        nt.assert_equal(fname, 'test12_1.shp')
+
     def test_dem(self):
         nt.assert_true(hasattr(self.tbx, 'dem'))
         nt.assert_true(isinstance(self.tbx.dem, arcpy.Parameter))
@@ -160,57 +220,89 @@ class CheckToolbox_Mixin(object):
         nt.assert_equal(self.tbx.wetland_output.datatype, "String")
         nt.assert_equal(self.tbx.wetland_output.name, 'wetland_output')
 
-    def test__do_flood(self):
-        with mock.patch.object(tidegates.tidegates, 'flood_area') as fa:
-            with mock.patch.object(self.tbx, '_add_scenario_columns') as asc:
-                res = self.tbx._do_flood(
-                    'dem', 'poly', 'tgid', 5.7,
-                    self.outfile, surge='surge', slr=2
-                )
+    def test_buildings(self):
+        nt.assert_true(hasattr(self.tbx, 'buildings'))
+        nt.assert_true(isinstance(self.tbx.buildings, arcpy.Parameter))
+        nt.assert_equal(self.tbx.buildings.parameterType, "Optional")
+        nt.assert_equal(self.tbx.buildings.direction, "Input")
+        nt.assert_equal(self.tbx.buildings.datatype, "Feature Class")
+        nt.assert_equal(self.tbx.buildings.name, 'buildings')
 
-                fa.assert_called_once_with(
-                    dem='dem', polygons='poly', ID_column='tgid',
-                    elevation_feet=5.7, filename=self.outfile,
-                    verbose=True, asMessage=True
-                )
+    def test_wetlands(self):
+        nt.assert_true(hasattr(self.tbx, 'wetlands'))
+        nt.assert_true(isinstance(self.tbx.wetlands, arcpy.Parameter))
+        nt.assert_equal(self.tbx.wetlands.parameterType, "Optional")
+        nt.assert_equal(self.tbx.wetlands.direction, "Input")
+        nt.assert_equal(self.tbx.wetlands.datatype, "Feature Class")
+        nt.assert_equal(self.tbx.wetlands.name, 'wetlands')
 
-                asc.assert_called_once_with(
-                    res, elev=5.7, surge='surge', slr=2
-                )
+    def test__make_scenarios_elevation_list(self):
+        expected = [
+            {'elev': 7.8, 'surge_name': None, 'surge_elev': None, 'slr': None},
+            {'elev': 8.6, 'surge_name': None, 'surge_elev': None, 'slr': None},
+            {'elev': 9.2, 'surge_name': None, 'surge_elev': None, 'slr': None},
+        ]
 
-    def test__do_assessment(self):
-        with mock.patch.object(tidegates.tidegates, 'assess_impact') as ai:
-            ai.return_value = (1, 2, 3)
-            x, y, z = self.tbx._do_assessment(
-                floods_path="output",
-                idcol="GeoID",
-                wetlands="flooded_wetlands",
-                buildings="flooded_buildings"
+        test = self.tbx._make_scenarios(elevation=['7.8', '8.6', '9.2'])
+
+        for ts, es in zip(test, expected):
+            nt.assert_dict_equal(ts, es)
+
+    def test__make_scenarios_elevation_scalar(self):
+        expected = [
+            {'elev': 7.8, 'surge_name': None, 'surge_elev': None, 'slr': None},
+        ]
+
+        test = self.tbx._make_scenarios(elevation='7.8')
+
+        for ts, es in zip(test, expected):
+            nt.assert_dict_equal(ts, es)
+
+    def test__make_scenarios_no_elev(self):
+        test = self.tbx._make_scenarios()
+
+        for ts in test:
+            nt.assert_true(ts['elev'] is None)
+            nt.assert_true(ts['surge_name'] in toolbox.SURGES.keys())
+            nt.assert_true(ts['surge_elev'] in toolbox.SURGES.values())
+            nt.assert_true(ts['slr'] in toolbox.SEALEVELRISE)
+
+    def test__finish_results_no_source(self):
+        results = [
+            resource_filename('tidegates.testing.finish_result', 'res1.shp'),
+            resource_filename('tidegates.testing.finish_result', 'res2.shp'),
+            resource_filename('tidegates.testing.finish_result', 'res3.shp')
+        ]
+        with utils.OverwriteState(True):
+            self.tbx._finish_results(
+                resource_filename('tidegates.testing.finish_result', 'finished_no_src.shp'),
+                results,
+                cleanup=False
             )
 
-            ai.assert_called_once_with(
-                floods_path="output",
-                ID_column="GeoID",
-                wetlands_path="flooded_wetlands",
-                wetlandsoutput="_wetlands_output",
-                buildings_path="flooded_buildings",
-                buildingsoutput="_buildinds_output",
-                cleanup=True,
-                verbose=True,
-                asMessage=True,
+        tgtest.assert_shapefiles_are_close(
+            resource_filename('tidegates.testing.finish_result', 'finished_no_src.shp'),
+            resource_filename('tidegates.testing.finish_result', 'known_finished_no_src.shp'),
+        )
+
+    def test__finish_results_with_source(self):
+        results = [
+            resource_filename('tidegates.testing.finish_result', 'res1.shp'),
+            resource_filename('tidegates.testing.finish_result', 'res2.shp'),
+            resource_filename('tidegates.testing.finish_result', 'res3.shp')
+        ]
+        with utils.OverwriteState(True):
+            self.tbx._finish_results(
+                resource_filename('tidegates.testing.finish_result', 'finished_with_src.shp'),
+                results,
+                cleanup=False,
+                sourcename=resource_filename('tidegates.testing.finish_result', 'source.shp')
             )
 
-    def test__prep_flooder_input_elev_only(self):
-        elev, header, fname = self.tbx._prep_flooder_input(elev="7.8", flood_output="test.shp")
-        nt.assert_equal(elev, 7.8)
-        nt.assert_equal(header, "Analyzing flood elevation: 7.8 ft")
-        nt.assert_equal(fname, 'test7_8.shp')
-
-    def test__prep_flooder_input_surge_and_slr(self):
-        elev, header, fname = self.tbx._prep_flooder_input(slr=2.5, surge='50yr', flood_output="test.shp")
-        nt.assert_equal(elev, 12.1)
-        nt.assert_equal(header, "Analyzing flood elevation: 12.1 ft (50yr, 2.5)")
-        nt.assert_equal(fname, 'test12_1.shp')
+        tgtest.assert_shapefiles_are_close(
+            resource_filename('tidegates.testing.finish_result', 'finished_with_src.shp'),
+            resource_filename('tidegates.testing.finish_result', 'known_finished_with_src.shp'),
+        )
 
 
 class Test_Flooder(CheckToolbox_Mixin):
@@ -225,23 +317,151 @@ class Test_Flooder(CheckToolbox_Mixin):
         nt.assert_equal(self.tbx.elevation.datatype, "Double")
         nt.assert_equal(self.tbx.elevation.name, 'elevation')
 
-    def test_getParameterInfo(self):
-        params = self.tbx.getParameterInfo()
+    def test_params_as_list(self):
+        params = self.tbx._params_as_list()
         names = [str(p.name) for p in params]
         known_names = ['workspace', 'dem', 'polygons', 'ID_column', 'elevation',
                        'flood_output', 'wetlands', 'wetland_output',
                        'buildings', 'building_output']
         nt.assert_list_equal(names, known_names)
 
+    def test__analyze(self):
+        ws = resource_filename('tidegates.testing', 'analyze')
+        testdir = 'tidegates.testing.analyze'
+        test_dem = resource_filename(testdir, 'dem.tif')
+        test_zones = resource_filename(testdir, 'zones.shp')
+        test_wetlands = resource_filename(testdir, 'wetlands.shp')
+        test_buidlings = resource_filename(testdir, 'buildings.shp')
+        output = resource_filename(testdir, 'flooding.shp')
+
+        with utils.WorkSpace(ws), utils.OverwriteState(True):
+            flood, wetland, building = self.tbx._analyze(
+                elev=7.8,
+                flood_output=output,
+                dem=test_dem,
+                polygons=test_zones,
+                ID_column='GeoID',
+                wetlands=test_wetlands,
+                buildings=test_buidlings,
+            )
+
+        nt.assert_true(isinstance(flood, arcpy.mapping.Layer))
+        nt.assert_equal(flood.dataSource, resource_filename(testdir, 'flooding7_8.shp'))
+        nt.assert_true(isinstance(wetland, arcpy.mapping.Layer))
+        nt.assert_true(isinstance(building, arcpy.mapping.Layer))
+
+        tgtest.assert_shapefiles_are_close(
+            resource_filename(testdir, 'flooding7_8.shp'),
+            resource_filename(testdir, 'known_flooding7_8.shp')
+        )
+
+    def test__execute(self):
+        ws = resource_filename('tidegates.testing', 'execute_elev')
+        with utils.OverwriteState(True), utils.WorkSpace(ws):
+            self.tbx._execute(
+                polygons='zones.shp',
+                workspace=ws,
+                flood_output='test_floods.shp',
+                wetland_output='test_wetlands.shp',
+                building_output='test_buildings.shp',
+                wetlands='wetlands.shp',
+                buildings='buildings.shp',
+                ID_column='GeoID',
+                dem='dem.tif',
+                elevation=[6.8, 7.8, 9.8]
+            )
+
+            utils.cleanup_temp_results("tempraster")
+
+        tgtest.assert_shapefiles_are_close(
+            resource_filename('tidegates.testing.execute_elev', 'test_wetlands.shp'),
+            resource_filename('tidegates.testing.execute_elev', 'known_wetlands.shp'),
+        )
+
+        tgtest.assert_shapefiles_are_close(
+            resource_filename('tidegates.testing.execute_elev', 'test_floods.shp'),
+            resource_filename('tidegates.testing.execute_elev', 'known_floods.shp'),
+        )
+
+        tgtest.assert_shapefiles_are_close(
+            resource_filename('tidegates.testing.execute_elev', 'test_buildings.shp'),
+            resource_filename('tidegates.testing.execute_elev', 'known_buildings.shp'),
+        )
+
 
 class Test_StandardScenarios(CheckToolbox_Mixin):
     def setup(self):
         self.tbx = toolbox.StandardScenarios()
 
-    def test_getParameterInfo(self):
-        params = self.tbx.getParameterInfo()
+    def test_params_as_list(self):
+        params = self.tbx._params_as_list()
         names = [str(p.name) for p in params]
         known_names = ['workspace', 'dem', 'polygons', 'ID_column',
                        'flood_output', 'wetlands', 'wetland_output',
                        'buildings', 'building_output']
         nt.assert_list_equal(names, known_names)
+
+    def test__analyze(self):
+        ws = resource_filename('tidegates.testing', 'analyze')
+        testdir = 'tidegates.testing.analyze'
+        test_dem = resource_filename(testdir, 'dem.tif')
+        test_zones = resource_filename(testdir, 'zones.shp')
+        test_wetlands = resource_filename(testdir, 'wetlands.shp')
+        test_buidlings = resource_filename(testdir, 'buildings.shp')
+        output = resource_filename(testdir, 'flooding.shp')
+
+        with utils.WorkSpace(ws), utils.OverwriteState(True):
+            flood, wetland, building = self.tbx._analyze(
+                surge='MHHW',
+                slr=2.5,
+                flood_output=output,
+                dem=test_dem,
+                polygons=test_zones,
+                ID_column='GeoID',
+                wetlands=test_wetlands,
+                buildings=test_buidlings,
+            )
+
+        nt.assert_true(isinstance(flood, arcpy.mapping.Layer))
+        nt.assert_equal(flood.dataSource, resource_filename(testdir, 'flooding6_5.shp'))
+        nt.assert_true(isinstance(wetland, arcpy.mapping.Layer))
+        nt.assert_true(isinstance(building, arcpy.mapping.Layer))
+
+        tgtest.assert_shapefiles_are_close(
+            resource_filename(testdir, 'flooding6_5.shp'),
+            resource_filename(testdir, 'known_flooding6_5.shp')
+        )
+
+    @mock.patch('tidegates.toolbox.SEALEVELRISE', [0, 1])
+    @mock.patch('tidegates.toolbox.SURGES', {'MHHW': 4.0, '10yr': 8.0})
+    def test__execute(self):
+        ws = resource_filename('tidegates.testing', 'execute_std')
+        with utils.OverwriteState(True), utils.WorkSpace(ws):
+            self.tbx._execute(
+                polygons='zones.shp',
+                workspace=ws,
+                flood_output='test_floods.shp',
+                wetland_output='test_wetlands.shp',
+                building_output='test_buildings.shp',
+                wetlands='wetlands.shp',
+                buildings='buildings.shp',
+                ID_column='GeoID',
+                dem='dem.tif',
+            )
+
+            utils.cleanup_temp_results("tempraster")
+
+        tgtest.assert_shapefiles_are_close(
+            resource_filename('tidegates.testing.execute_std', 'test_wetlands.shp'),
+            resource_filename('tidegates.testing.execute_std', 'known_wetlands.shp'),
+        )
+
+        tgtest.assert_shapefiles_are_close(
+            resource_filename('tidegates.testing.execute_std', 'test_floods.shp'),
+            resource_filename('tidegates.testing.execute_std', 'known_floods.shp'),
+        )
+
+        tgtest.assert_shapefiles_are_close(
+            resource_filename('tidegates.testing.execute_std', 'test_buildings.shp'),
+            resource_filename('tidegates.testing.execute_std', 'known_buildings.shp'),
+        )

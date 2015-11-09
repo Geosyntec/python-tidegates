@@ -81,7 +81,20 @@ class BaseFlooder_Mixin(object):
         """
         return
 
-    def execute(self, parameters, messages):
+    def getParameterInfo(self):
+        """ PART OF THE ESRI BLACK BOX
+
+        This *must* return a list of all of the parameter definitions.
+
+        ESRI recommends that you create all of the parameters in here,
+        and always return that list. I instead chose to create the list
+        from the class properties I've defined. Accessing things with
+        meaningful names is always better, in my opinion.
+
+        """
+        return self._params_as_list()
+
+    def execute(self, parameters, messages): # pragma: no cover
         """ PART OF THE ESRI BLACK BOX
 
         This method is called when the tool is actually executed. It
@@ -112,32 +125,7 @@ class BaseFlooder_Mixin(object):
         """
 
         params = self._get_parameter_values(parameters, multivals=['elevation'])
-
-        all_floods = []
-        all_wetlands = []
-        all_buildings = []
-        scenario_list = self._make_scenarios(**params)
-        with utils.WorkSpace(params['workspace']), utils.OverwriteState(True):
-            for scenario in scenario_list:
-                fldlyr, wtlndlyr, blgdlyr = self._analyze(
-                    elev=scenario['elev'],
-                    surge=scenario['surge_name'],
-                    slr=scenario['slr'],
-                    **params
-                )
-                all_floods.append(fldlyr.dataSource)
-                all_wetlands.append(wtlndlyr.dataSource)
-                all_buildings.append(blgdlyr.dataSource)
-
-            self._finish_results(
-                all_floods,
-                all_wetlands,
-                all_buildings,
-                msg="\nMerging output layers and cleaning up",
-                verbose=True,
-                asMessage=True,
-                **params
-            )
+        self._execute(**params)
 
         return None
 
@@ -521,6 +509,8 @@ class BaseFlooder_Mixin(object):
         # a custom flood elevation. Otherwise, we're evaluating the
         # standard scenarios.
         elevations = params.get('elevation', None)
+        if numpy.isscalar(elevations):
+            elevations = [elevations]
 
         # standard scenarioes
         if elevations is None:
@@ -546,90 +536,8 @@ class BaseFlooder_Mixin(object):
 
         return scenario_list
 
-    def _do_flood(self, dem, poly, idcol, elev, flood_output, surge=None, slr=None):
-        """ Determines the extent of flooded for a single sceario.
-
-        Parameters
-        ----------
-        dem, poly : str
-            Path/filenames to the DEM and polygon (zones of influent)
-            layers to be analyzed.
-        idcol : str
-            Name of the field in ``poly`` that uniquely identifies each
-            zone of influence.
-        elev : float
-            The total flood elevation for the scenario
-        flood_output : str
-            Path/filename to where the areas of inundation will be
-            saved.
-        surge : str, optional
-            The name of the storm surge scenario.
-        slr : float, optional
-            The amount of sea level rise being considered.
-
-        Returns
-        -------
-        flooded_polygons : arcpy.mapping.Layer
-            GIS layer of the polygons showing the extent flooded behind
-            each tidegate.
-
-
-        """
-        flooded_polygons = tidegates.flood_area(
-            dem=dem,
-            polygons=poly,
-            ID_column=idcol,
-            elevation_feet=elev,
-            filename=flood_output,
-            verbose=True,
-            asMessage=True
-        )
-        self._add_scenario_columns(flooded_polygons, elev=elev, surge=surge, slr=slr)
-
-        return flooded_polygons
-
-    def _do_assessment(self, floods_path, idcol, wetlands=None, buildings=None):
-        """ Assesses the extent of impacts to wetlands and buildings due
-        to a single flooding scenario.
-
-        Parameters
-        ----------
-        floods_path : str
-            Path/filename to the output of `self._do_flood`.
-        idcol : str
-            Name of the field in ``floods_path`` that uniquely
-            identifies each zone of influence.
-        wetlands, buildings : str, optional
-            Paths/filenames to layers of the extent of wetlands and
-            buildings in the area to be analyzed.
-
-        Returns
-        -------
-        floods, flooded_wetlands, flooded_buildings : arcpy.mapping.Layers
-            Layers (or None) of the floods and flood-impacted wetlands
-            and buildings, respectively.
-
-        """
-
-        wl_name = utils.create_temp_filename(floods_path, prefix="_wetlands_")
-        bldg_name = utils.create_temp_filename(floods_path, prefix="_buildinds_")
-
-        floods, flooded_wetlands, flooded_buildings = tidegates.assess_impact(
-            floods_path=floods_path,
-            ID_column=idcol,
-            wetlands_path=wetlands,
-            wetlandsoutput=wl_name,
-            buildings_path=buildings,
-            buildingsoutput=bldg_name,
-            cleanup=True,
-            verbose=True,
-            asMessage=True,
-        )
-
-        return floods, flooded_wetlands, flooded_buildings
-
     def _analyze(self, elev=None, surge=None, slr=None, **params):
-        """ Helper function to call `_do_flood` and `_do_assessment`.
+        """ Tool-agnostic helper function for _execute.
 
         Parameters
         ----------
@@ -651,45 +559,66 @@ class BaseFlooder_Mixin(object):
             and buildings, respectively.
 
         """
-        elev, title, fname = self._prep_flooder_input(
+
+        # prep input
+        elev, title, floods_path = self._prep_flooder_input(
+            flood_output=params['flood_output'],
             elev=elev,
             surge=surge,
             slr=slr,
-            flood_output=params['flood_output']
         )
+
+        # define the scenario in the message windows
         self._show_header(title)
 
-        fldlyr = self._do_flood(
+        # run the scenario and add its info the output attribute table
+        flooded_polygons = tidegates.flood_area(
             dem=params['dem'],
-            poly=params['polygons'],
-            idcol=params['ID_column'],
-            elev=elev,
-            flood_output=fname,
-            surge=surge,
-            slr=slr
+            polygons=params['polygons'],
+            ID_column=params['ID_column'],
+            elevation_feet=elev,
+            filename=floods_path,
+            verbose=True,
+            asMessage=True
         )
+        self._add_scenario_columns(flooded_polygons.dataSource, elev=elev, surge=surge, slr=slr)
 
-        fldlyr, wtlndlyr, blgdlyr = self._do_assessment(
-            fname,
-            params['ID_column'],
-            wetlands=params['wetlands'],
-            buildings=params['buildings']
+        # setup temporary files for impacted wetlands and buildings
+        wl_path = utils.create_temp_filename(floods_path, prefix="_wetlands_")
+        bldg_path = utils.create_temp_filename(floods_path, prefix="_buildings_")
+
+        # asses impacts due to flooding
+        fldlyr, wtlndlyr, blgdlyr = tidegates.assess_impact(
+            floods_path=floods_path,
+            ID_column=params['ID_column'],
+            wetlands_path=params['wetlands'],
+            wetlandsoutput=wl_path,
+            buildings_path=params['buildings'],
+            buildingsoutput=bldg_path,
+            cleanup=True,
+            verbose=True,
+            asMessage=True,
         )
+        self._add_scenario_columns(wtlndlyr.dataSource, elev=elev, surge=surge, slr=slr)
 
         return fldlyr, wtlndlyr, blgdlyr
 
+    @staticmethod
     @utils.update_status()
-    def _finish_results(self, all_floods, all_wetlands, all_buildings, **params):
-        """ Merges and clean up compiled output from `_analyze`.
+    def _finish_results(outputname, results, **kwargs):
+        """ Merges and cleans up compiled output from `_analyze`.
 
         Parameters
         ----------
-        all_floods, all_wetlands, all_buildings : lists of str
+        outputname : str
+            Path to where the final file sould be saved.
+        *results : list of str
             Lists of all of the floods, flooded wetlands, and flooded
             buildings, respectively, that will be merged and deleted.
-        **params : keyword arguments
-            Keyword arguments of analysis parameters generated by
-            `self._get_parameter_values`
+        sourcename : str, optional
+            Path to the original source file of the results. If
+            provided, its attbutes will be spatially joined to the
+            concatenated results.
 
         Returns
         -------
@@ -697,25 +626,67 @@ class BaseFlooder_Mixin(object):
 
         """
 
-        utils.concat_results(params['flood_output'], *all_floods)
+        sourcename = kwargs.pop('sourcename', None)
+        cleanup = kwargs.pop('cleanup', True)
 
-        if params['wetland_output'] is not None:
-            utils.concat_results("_tmp_wetlnds", *all_wetlands)
-            base_wetlands = utils.load_data(params['wetlands'], 'layer')
-            flooded_wetlands = utils.load_data("_tmp_wetlnds", "layer")
-            utils.join_results_to_baseline(params['wetland_output'], flooded_wetlands, base_wetlands)
+        if outputname is not None:
+            if sourcename is not None:
+                tmp_fname = utils.create_temp_filename(outputname)
+                utils.concat_results(tmp_fname, *results)
+                utils.join_results_to_baseline(
+                    outputname,
+                    utils.load_data(tmp_fname, "layer"),
+                    utils.load_data(sourcename, 'layer')
+                )
+                utils.cleanup_temp_results(tmp_fname)
 
-        if params['building_output'] is not None:
-            utils.concat_results("_tmp_bldgs", *all_buildings)
-            base_buildings = utils.load_data(params['buildings'], 'layer')
-            flooded_buildings = utils.load_data("_tmp_bldgs", "layer")
-            utils.join_results_to_baseline(params['building_output'], flooded_buildings, base_buildings)
+            else:
+                utils.concat_results(outputname, *results)
 
+        if cleanup:
+            utils.cleanup_temp_results(*results)
 
-        # clean everything no matter what
-        tidegates.utils.cleanup_temp_results(*all_floods)
-        tidegates.utils.cleanup_temp_results(*all_wetlands)
-        tidegates.utils.cleanup_temp_results(*all_buildings)
+    def _execute(self, **params):
+        all_floods = []
+        all_wetlands = []
+        all_buildings = []
+        with utils.WorkSpace(params['workspace']), utils.OverwriteState(True):
+            for scenario in self._make_scenarios(**params):
+                fldlyr, wtlndlyr, blgdlyr = self._analyze(
+                    elev=scenario['elev'],
+                    surge=scenario['surge_name'],
+                    slr=scenario['slr'],
+                    **params
+                )
+                all_floods.append(fldlyr.dataSource)
+                all_wetlands.append(wtlndlyr.dataSource)
+                all_buildings.append(blgdlyr.dataSource)
+
+            self._finish_results(
+                params['flood_output'],
+                all_floods,
+                msg="Merging and cleaning up all flood results",
+                verbose=True,
+                asMessage=True,
+            )
+
+            self._finish_results(
+                params['wetland_output'],
+                all_wetlands,
+                sourcename=params['wetlands'],
+                msg="Merging and cleaning up all wetlands results",
+                verbose=True,
+                asMessage=True,
+            )
+
+            self._finish_results(
+                params['building_output'],
+                all_buildings,
+                sourcename=params['buildings'],
+                msg="Merging and cleaning up all buildings results",
+                verbose=True,
+                asMessage=True,
+            )
 
 
 class Flooder(BaseFlooder_Mixin):
@@ -734,18 +705,7 @@ class Flooder(BaseFlooder_Mixin):
         # lazy properties
         self._elevation = None
 
-    def getParameterInfo(self):
-        """ PART OF THE ESRI BLACK BOX
-
-        This *must* return a list of all of the parameter definitions.
-
-        ESRI recommends that you create all of the parameters in here,
-        and always return that list. I instead chose to create the list
-        from the class properties I've defined. Accessing things with
-        meaningful names is always better, in my opinion.
-
-        """
-
+    def _params_as_list(self):
         params = [
             self.workspace,
             self.dem,
@@ -793,18 +753,7 @@ class StandardScenarios(BaseFlooder_Mixin):
         1-ft increments.
         """)
 
-    def getParameterInfo(self):
-        """ PART OF THE ESRI BLACK BOX
-
-        This *must* return a list of all of the parameter definitions.
-
-        ESRI recommends that you create all of the parameters in here,
-        and always return that list. I instead chose to create the list
-        from the class properties I've defined. Accessing things with
-        meaningful names is always better, in my opinion.
-
-        """
-
+    def _params_as_list(self):
         params = [
             self.workspace,
             self.dem,
