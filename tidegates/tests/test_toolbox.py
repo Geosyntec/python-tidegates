@@ -261,6 +261,43 @@ class CheckToolbox_Mixin(object):
             nt.assert_true(ts['surge_elev'] in toolbox.SURGES.values())
             nt.assert_true(ts['slr'] in toolbox.SEALEVELRISE)
 
+    def test__finish_results_no_source(self):
+        results = [
+            resource_filename('tidegates.testing.finish_result', 'res1.shp'),
+            resource_filename('tidegates.testing.finish_result', 'res2.shp'),
+            resource_filename('tidegates.testing.finish_result', 'res3.shp')
+        ]
+        with utils.OverwriteState(True):
+            self.tbx._finish_results(
+                resource_filename('tidegates.testing.finish_result', 'finished_no_src.shp'),
+                results,
+                cleanup=False
+            )
+
+        tgtest.assert_shapefiles_are_close(
+            resource_filename('tidegates.testing.finish_result', 'finished_no_src.shp'),
+            resource_filename('tidegates.testing.finish_result', 'known_finished_no_src.shp'),
+        )
+
+    def test__finish_results_with_source(self):
+        results = [
+            resource_filename('tidegates.testing.finish_result', 'res1.shp'),
+            resource_filename('tidegates.testing.finish_result', 'res2.shp'),
+            resource_filename('tidegates.testing.finish_result', 'res3.shp')
+        ]
+        with utils.OverwriteState(True):
+            self.tbx._finish_results(
+                resource_filename('tidegates.testing.finish_result', 'finished_with_src.shp'),
+                results,
+                cleanup=False,
+                sourcename=resource_filename('tidegates.testing.finish_result', 'source.shp')
+            )
+
+        tgtest.assert_shapefiles_are_close(
+            resource_filename('tidegates.testing.finish_result', 'finished_with_src.shp'),
+            resource_filename('tidegates.testing.finish_result', 'known_finished_with_src.shp'),
+        )
+
 
 class Test_Flooder(CheckToolbox_Mixin):
     def setup(self):
