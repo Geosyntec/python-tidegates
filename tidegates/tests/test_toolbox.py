@@ -323,6 +323,36 @@ class Test_Flooder(CheckToolbox_Mixin):
                        'buildings', 'building_output']
         nt.assert_list_equal(names, known_names)
 
+    def test__analyze(self):
+        ws = resource_filename('tidegates.testing', 'analyze')
+        testdir = 'tidegates.testing.analyze'
+        test_dem = resource_filename(testdir, 'dem.tif')
+        test_zones = resource_filename(testdir, 'zones.shp')
+        test_wetlands = resource_filename(testdir, 'wetlands.shp')
+        test_buidlings = resource_filename(testdir, 'buildings.shp')
+        output = resource_filename(testdir, 'flooding.shp')
+
+        with utils.WorkSpace(ws), utils.OverwriteState(True):
+            flood, wetland, building = self.tbx._analyze(
+                elev=7.8,
+                flood_output=output,
+                dem=test_dem,
+                polygons=test_zones,
+                ID_column='GeoID',
+                wetlands=test_wetlands,
+                buildings=test_buidlings,
+            )
+
+        nt.assert_true(isinstance(flood, arcpy.mapping.Layer))
+        nt.assert_equal(flood.dataSource, resource_filename(testdir, 'flooding7_8.shp'))
+        nt.assert_true(isinstance(wetland, arcpy.mapping.Layer))
+        nt.assert_true(isinstance(building, arcpy.mapping.Layer))
+
+        tgtest.assert_shapefiles_are_close(
+            resource_filename(testdir, 'flooding7_8.shp'),
+            resource_filename(testdir, 'known_flooding7_8.shp')
+        )
+
 
 class Test_StandardScenarios(CheckToolbox_Mixin):
     def setup(self):
@@ -335,3 +365,30 @@ class Test_StandardScenarios(CheckToolbox_Mixin):
                        'flood_output', 'wetlands', 'wetland_output',
                        'buildings', 'building_output']
         nt.assert_list_equal(names, known_names)
+
+    def test__analyze(self):
+        ws = resource_filename('tidegates.testing', 'analyze')
+        testdir = 'tidegates.testing.analyze'
+        test_dem = resource_filename(testdir, 'dem.tif')
+        test_zones = resource_filename(testdir, 'zones.shp')
+        test_wetlands = resource_filename(testdir, 'wetlands.shp')
+        test_buidlings = resource_filename(testdir, 'buildings.shp')
+        output = resource_filename(testdir, 'flooding.shp')
+
+        with utils.WorkSpace(ws), utils.OverwriteState(True):
+            flood, wetland, building = self.tbx._analyze(
+                surge='MHHW',
+                slr=2.5,
+                flood_output=output,
+                dem=test_dem,
+                polygons=test_zones,
+                ID_column='GeoID',
+                wetlands=test_wetlands,
+                buildings=test_buidlings,
+            )
+
+        nt.assert_true(isinstance(flood, arcpy.mapping.Layer))
+        nt.assert_equal(flood.dataSource, resource_filename(testdir, 'flooding6_5.shp'))
+        nt.assert_true(isinstance(wetland, arcpy.mapping.Layer))
+        nt.assert_true(isinstance(building, arcpy.mapping.Layer))
+
