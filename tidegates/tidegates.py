@@ -141,7 +141,7 @@ def flood_area(dem, polygons, ID_column, elevation_feet,
     if cleanup:
         _temp_files = []
         utils.cleanup_temp_results(
-            temp_polygons,
+            temp_polygons.dataSource,
             flooded_r,
             topo_r,
             zones_r,
@@ -204,7 +204,7 @@ def _impact_to_wetlands(floods_path, ID_column, wetlands_path, wetlandsoutput=No
         wetlandsoutput = 'flooded_wetlands'
 
     # intersect wetlands with the floods
-    flooded_wetlands = utils.intersect_polygon_layers(
+    temp_flooded_wetlands = utils.intersect_polygon_layers(
         utils.load_data(floods_path, 'layer'),
         utils.load_data(wetlands_path, 'layer'),
         filename=utils.create_temp_filename(wetlandsoutput),
@@ -213,7 +213,7 @@ def _impact_to_wetlands(floods_path, ID_column, wetlands_path, wetlandsoutput=No
 
     # aggregate the wetlands based on the flood zone
     flooded_wetlands = utils.aggregate_polygons(
-        flooded_wetlands,
+        temp_flooded_wetlands,
         ID_column,
         wetlandsoutput
     )
@@ -233,7 +233,7 @@ def _impact_to_wetlands(floods_path, ID_column, wetlands_path, wetlandsoutput=No
         'wetlands',
         ID_column,
     )
-
+    utils.cleanup_temp_results(temp_flooded_wetlands.dataSource)
     return flooded_wetlands
 
 
