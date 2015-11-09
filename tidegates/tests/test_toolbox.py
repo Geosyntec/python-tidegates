@@ -57,6 +57,12 @@ class CheckToolbox_Mixin(object):
             self.tbx.getParameterInfo()
             _pal.assert_called_once_with()
 
+    def test_execute(self):
+        messages = ['message1', 'message2']
+        with mock.patch.object(self.tbx, '_execute') as _exe:
+            self.tbx.execute(self.parameters, messages)
+            _exe.assert_called_once_with(**self.parameter_dict)
+
     def test__set_parameter_dependency_single(self):
         self.tbx._set_parameter_dependency(
             self.tbx.ID_column,
@@ -349,6 +355,39 @@ class Test_Flooder(CheckToolbox_Mixin):
             resource_filename(testdir, 'known_flooding7_8.shp')
         )
 
+    def test__execute(self):
+        ws = resource_filename('tidegates.testing', 'execute_elev')
+        with utils.OverwriteState(True), utils.WorkSpace(ws):
+            self.tbx._execute(
+                polygons='zones.shp',
+                workspace=ws,
+                flood_output='test_floods.shp',
+                wetland_output='test_wetlands.shp',
+                building_output='test_buildings.shp',
+                wetlands='wetlands.shp',
+                buildings='buildings.shp',
+                ID_column='GeoID',
+                dem='dem.tif',
+                elevation=[6.8, 7.8, 9.8]
+            )
+
+            utils.cleanup_temp_results("tempraster")
+
+        tgtest.assert_shapefiles_are_close(
+            resource_filename('tidegates.testing.execute_elev', 'test_wetlands.shp'),
+            resource_filename('tidegates.testing.execute_elev', 'known_wetlands.shp'),
+        )
+
+        tgtest.assert_shapefiles_are_close(
+            resource_filename('tidegates.testing.execute_elev', 'test_floods.shp'),
+            resource_filename('tidegates.testing.execute_elev', 'known_floods.shp'),
+        )
+
+        tgtest.assert_shapefiles_are_close(
+            resource_filename('tidegates.testing.execute_elev', 'test_buildings.shp'),
+            resource_filename('tidegates.testing.execute_elev', 'known_buildings.shp'),
+        )
+
 
 class Test_StandardScenarios(CheckToolbox_Mixin):
     def setup(self):
@@ -391,4 +430,38 @@ class Test_StandardScenarios(CheckToolbox_Mixin):
         tgtest.assert_shapefiles_are_close(
             resource_filename(testdir, 'flooding6_5.shp'),
             resource_filename(testdir, 'known_flooding6_5.shp')
+        )
+
+    @mock.patch('tidegates.toolbox.SEALEVELRISE', [0, 1])
+    @mock.patch('tidegates.toolbox.SURGES', {'MHHW': 4.0, '10yr': 8.0})
+    def test__execute(self):
+        ws = resource_filename('tidegates.testing', 'execute_std')
+        with utils.OverwriteState(True), utils.WorkSpace(ws):
+            self.tbx._execute(
+                polygons='zones.shp',
+                workspace=ws,
+                flood_output='test_floods.shp',
+                wetland_output='test_wetlands.shp',
+                building_output='test_buildings.shp',
+                wetlands='wetlands.shp',
+                buildings='buildings.shp',
+                ID_column='GeoID',
+                dem='dem.tif',
+            )
+
+            utils.cleanup_temp_results("tempraster")
+
+        tgtest.assert_shapefiles_are_close(
+            resource_filename('tidegates.testing.execute_std', 'test_wetlands.shp'),
+            resource_filename('tidegates.testing.execute_std', 'known_wetlands.shp'),
+        )
+
+        tgtest.assert_shapefiles_are_close(
+            resource_filename('tidegates.testing.execute_std', 'test_floods.shp'),
+            resource_filename('tidegates.testing.execute_std', 'known_floods.shp'),
+        )
+
+        tgtest.assert_shapefiles_are_close(
+            resource_filename('tidegates.testing.execute_std', 'test_buildings.shp'),
+            resource_filename('tidegates.testing.execute_std', 'known_buildings.shp'),
         )
