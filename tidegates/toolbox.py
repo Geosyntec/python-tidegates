@@ -81,7 +81,20 @@ class BaseFlooder_Mixin(object):
         """
         return
 
-    def execute(self, parameters, messages):
+    def getParameterInfo(self):
+        """ PART OF THE ESRI BLACK BOX
+
+        This *must* return a list of all of the parameter definitions.
+
+        ESRI recommends that you create all of the parameters in here,
+        and always return that list. I instead chose to create the list
+        from the class properties I've defined. Accessing things with
+        meaningful names is always better, in my opinion.
+
+        """
+        return self._params_as_list()
+
+    def execute(self, parameters, messages): # pragma: no cover
         """ PART OF THE ESRI BLACK BOX
 
         This method is called when the tool is actually executed. It
@@ -112,32 +125,7 @@ class BaseFlooder_Mixin(object):
         """
 
         params = self._get_parameter_values(parameters, multivals=['elevation'])
-
-        all_floods = []
-        all_wetlands = []
-        all_buildings = []
-        scenario_list = self._make_scenarios(**params)
-        with utils.WorkSpace(params['workspace']), utils.OverwriteState(True):
-            for scenario in scenario_list:
-                fldlyr, wtlndlyr, blgdlyr = self._analyze(
-                    elev=scenario['elev'],
-                    surge=scenario['surge_name'],
-                    slr=scenario['slr'],
-                    **params
-                )
-                all_floods.append(fldlyr.dataSource)
-                all_wetlands.append(wtlndlyr.dataSource)
-                all_buildings.append(blgdlyr.dataSource)
-
-            self._finish_results(
-                all_floods,
-                all_wetlands,
-                all_buildings,
-                msg="\nMerging output layers and cleaning up",
-                verbose=True,
-                asMessage=True,
-                **params
-            )
+        self._execute(**params)
 
         return None
 
@@ -611,6 +599,7 @@ class BaseFlooder_Mixin(object):
             verbose=True,
             asMessage=True,
         )
+        self._add_scenario_columns(wtlndlyr.dataSource, elev=elev, surge=surge, slr=slr)
 
         return fldlyr, wtlndlyr, blgdlyr
 
@@ -657,11 +646,47 @@ class BaseFlooder_Mixin(object):
         if cleanup:
             utils.cleanup_temp_results(*results)
 
+    def _execute(self, **params):
+        all_floods = []
+        all_wetlands = []
+        all_buildings = []
+        with utils.WorkSpace(params['workspace']), utils.OverwriteState(True):
+            for scenario in self._make_scenarios(**params):
+                fldlyr, wtlndlyr, blgdlyr = self._analyze(
+                    elev=scenario['elev'],
+                    surge=scenario['surge_name'],
+                    slr=scenario['slr'],
+                    **params
+                )
+                all_floods.append(fldlyr.dataSource)
+                all_wetlands.append(wtlndlyr.dataSource)
+                all_buildings.append(blgdlyr.dataSource)
 
-        # clean everything no matter what
-        tidegates.utils.cleanup_temp_results(*all_floods)
-        tidegates.utils.cleanup_temp_results(*all_wetlands)
-        tidegates.utils.cleanup_temp_results(*all_buildings)
+            self._finish_results(
+                params['flood_output'],
+                all_floods,
+                msg="Merging and cleaning up all flood results",
+                verbose=True,
+                asMessage=True,
+            )
+
+            self._finish_results(
+                params['wetland_output'],
+                all_wetlands,
+                sourcename=params['wetlands'],
+                msg="Merging and cleaning up all wetlands results",
+                verbose=True,
+                asMessage=True,
+            )
+
+            self._finish_results(
+                params['building_output'],
+                all_buildings,
+                sourcename=params['buildings'],
+                msg="Merging and cleaning up all buildings results",
+                verbose=True,
+                asMessage=True,
+            )
 
 
 class Flooder(BaseFlooder_Mixin):
