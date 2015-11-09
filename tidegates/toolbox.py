@@ -3,6 +3,7 @@ import sys
 import glob
 import datetime
 from textwrap import dedent
+from collections import OrderedDict
 
 import arcpy
 import numpy
@@ -13,12 +14,10 @@ from tidegates import utils
 
 # ALL ELEVATIONS IN FEET
 SEALEVELRISE = numpy.arange(7)
-SURGES = {
-    'MHHW':   4.0,
-    '10yr':   8.0,
-    '50yr':   9.6,
-    '100yr': 10.5,
-}
+SURGES = OrderedDict(MHHW=4.0)
+SURGES['10yr'] = 8.0
+SURGES['50yr'] = 9.6
+SURGES['100yr'] = 10.5
 
 
 class BaseFlooder_Mixin(object):
