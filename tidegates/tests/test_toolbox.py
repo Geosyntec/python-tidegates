@@ -262,47 +262,6 @@ class CheckToolbox_Mixin(object):
             nt.assert_true(ts['slr'] in toolbox.SEALEVELRISE)
 
 
-    def test__do_flood(self):
-        with mock.patch.object(tidegates.tidegates, 'flood_area') as fa:
-            with mock.patch.object(self.tbx, '_add_scenario_columns') as asc:
-                res = self.tbx._do_flood(
-                    'dem', 'poly', 'tgid', 5.7,
-                    self.outfile, surge='surge', slr=2
-                )
-
-                fa.assert_called_once_with(
-                    dem='dem', polygons='poly', ID_column='tgid',
-                    elevation_feet=5.7, filename=self.outfile,
-                    verbose=True, asMessage=True
-                )
-
-                asc.assert_called_once_with(
-                    res, elev=5.7, surge='surge', slr=2
-                )
-
-    def test__do_assessment(self):
-        with mock.patch.object(tidegates.tidegates, 'assess_impact') as ai:
-            ai.return_value = (1, 2, 3)
-            x, y, z = self.tbx._do_assessment(
-                floods_path="output",
-                idcol="GeoID",
-                wetlands="flooded_wetlands",
-                buildings="flooded_buildings"
-            )
-
-            ai.assert_called_once_with(
-                floods_path="output",
-                ID_column="GeoID",
-                wetlands_path="flooded_wetlands",
-                wetlandsoutput="_wetlands_output",
-                buildings_path="flooded_buildings",
-                buildingsoutput="_buildinds_output",
-                cleanup=True,
-                verbose=True,
-                asMessage=True,
-            )
-
-
 class Test_Flooder(CheckToolbox_Mixin):
     def setup(self):
         self.tbx = toolbox.Flooder()
@@ -392,3 +351,7 @@ class Test_StandardScenarios(CheckToolbox_Mixin):
         nt.assert_true(isinstance(wetland, arcpy.mapping.Layer))
         nt.assert_true(isinstance(building, arcpy.mapping.Layer))
 
+        tgtest.assert_shapefiles_are_close(
+            resource_filename(testdir, 'flooding6_5.shp'),
+            resource_filename(testdir, 'known_flooding6_5.shp')
+        )

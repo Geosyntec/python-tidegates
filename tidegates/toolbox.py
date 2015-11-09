@@ -548,90 +548,8 @@ class BaseFlooder_Mixin(object):
 
         return scenario_list
 
-    def _do_flood(self, dem, poly, idcol, elev, flood_output, surge=None, slr=None):
-        """ Determines the extent of flooded for a single sceario.
-
-        Parameters
-        ----------
-        dem, poly : str
-            Path/filenames to the DEM and polygon (zones of influent)
-            layers to be analyzed.
-        idcol : str
-            Name of the field in ``poly`` that uniquely identifies each
-            zone of influence.
-        elev : float
-            The total flood elevation for the scenario
-        flood_output : str
-            Path/filename to where the areas of inundation will be
-            saved.
-        surge : str, optional
-            The name of the storm surge scenario.
-        slr : float, optional
-            The amount of sea level rise being considered.
-
-        Returns
-        -------
-        flooded_polygons : arcpy.mapping.Layer
-            GIS layer of the polygons showing the extent flooded behind
-            each tidegate.
-
-
-        """
-        flooded_polygons = tidegates.flood_area(
-            dem=dem,
-            polygons=poly,
-            ID_column=idcol,
-            elevation_feet=elev,
-            filename=flood_output,
-            verbose=True,
-            asMessage=True
-        )
-        self._add_scenario_columns(flooded_polygons, elev=elev, surge=surge, slr=slr)
-
-        return flooded_polygons
-
-    def _do_assessment(self, floods_path, idcol, wetlands=None, buildings=None):
-        """ Assesses the extent of impacts to wetlands and buildings due
-        to a single flooding scenario.
-
-        Parameters
-        ----------
-        floods_path : str
-            Path/filename to the output of `self._do_flood`.
-        idcol : str
-            Name of the field in ``floods_path`` that uniquely
-            identifies each zone of influence.
-        wetlands, buildings : str, optional
-            Paths/filenames to layers of the extent of wetlands and
-            buildings in the area to be analyzed.
-
-        Returns
-        -------
-        floods, flooded_wetlands, flooded_buildings : arcpy.mapping.Layers
-            Layers (or None) of the floods and flood-impacted wetlands
-            and buildings, respectively.
-
-        """
-
-        wl_name = utils.create_temp_filename(floods_path, prefix="_wetlands_")
-        bldg_name = utils.create_temp_filename(floods_path, prefix="_buildinds_")
-
-        floods, flooded_wetlands, flooded_buildings = tidegates.assess_impact(
-            floods_path=floods_path,
-            ID_column=idcol,
-            wetlands_path=wetlands,
-            wetlandsoutput=wl_name,
-            buildings_path=buildings,
-            buildingsoutput=bldg_name,
-            cleanup=True,
-            verbose=True,
-            asMessage=True,
-        )
-
-        return floods, flooded_wetlands, flooded_buildings
-
     def _analyze(self, elev=None, surge=None, slr=None, **params):
-        """ Helper function to call `_do_flood` and `_do_assessment`.
+        """ Tool-agnostic helper function for _execute.
 
         Parameters
         ----------
@@ -653,29 +571,45 @@ class BaseFlooder_Mixin(object):
             and buildings, respectively.
 
         """
-        elev, title, fname = self._prep_flooder_input(
+
+        # prep input
+        elev, title, floods_path = self._prep_flooder_input(
+            flood_output=params['flood_output'],
             elev=elev,
             surge=surge,
             slr=slr,
-            flood_output=params['flood_output']
         )
+
+        # define the scenario in the message windows
         self._show_header(title)
 
-        fldlyr = self._do_flood(
+        # run the scenario and add its info the output attribute table
+        flooded_polygons = tidegates.flood_area(
             dem=params['dem'],
-            poly=params['polygons'],
-            idcol=params['ID_column'],
-            elev=elev,
-            flood_output=fname,
-            surge=surge,
-            slr=slr
+            polygons=params['polygons'],
+            ID_column=params['ID_column'],
+            elevation_feet=elev,
+            filename=floods_path,
+            verbose=True,
+            asMessage=True
         )
+        self._add_scenario_columns(flooded_polygons.dataSource, elev=elev, surge=surge, slr=slr)
 
-        fldlyr, wtlndlyr, blgdlyr = self._do_assessment(
-            fname,
-            params['ID_column'],
-            wetlands=params['wetlands'],
-            buildings=params['buildings']
+        # setup temporary files for impacted wetlands and buildings
+        wl_path = utils.create_temp_filename(floods_path, prefix="_wetlands_")
+        bldg_path = utils.create_temp_filename(floods_path, prefix="_buildings_")
+
+        # asses impacts due to flooding
+        fldlyr, wtlndlyr, blgdlyr = tidegates.assess_impact(
+            floods_path=floods_path,
+            ID_column=params['ID_column'],
+            wetlands_path=params['wetlands'],
+            wetlandsoutput=wl_path,
+            buildings_path=params['buildings'],
+            buildingsoutput=bldg_path,
+            cleanup=True,
+            verbose=True,
+            asMessage=True,
         )
 
         return fldlyr, wtlndlyr, blgdlyr
