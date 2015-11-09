@@ -10,14 +10,15 @@ tidegates/testing/info
 tidegates/testing/info/*
 tidegates/testing/tempraster
 tidegates/testing/tempraster.*
-tidegates/testing/log
+tidegates/testing/*/log
 tidegates/testing/test_zones_PolygonToRaster*
 tidegates/testing/_temp_clipped
 tidegates/testing/_temp*
 tidegates/testing/output/*
 tidegates/testing/*/*.shp.xml
-
-
+tidegates/testing/*/_temp_*
+tidegates/testing/*/_buildings_*
+tidegates/testing/*/_wetlands_*
 
 #################
 ## Eclipse
