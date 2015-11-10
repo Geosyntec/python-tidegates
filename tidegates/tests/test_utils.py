@@ -332,12 +332,12 @@ class Test_load_data(object):
         nptest.assert_array_almost_equal(*utils.rasters_to_arrays(x, raster))
 
 
-class _process_polygons_mixin(object):
+class _polygons_to_raster_mixin(object):
     testfile = resource_filename("tidegates.testing.input", "test_zones.shp")
     known_values = numpy.array([-999, 16, 150])
 
     def test_process(self):
-        raster, res = utils.process_polygons(self.testfile, "GeoID", **self.kwargs)
+        raster, res = utils.polygons_to_raster(self.testfile, "GeoID", **self.kwargs)
         nt.assert_true(isinstance(raster, arcpy.Raster))
         nt.assert_true(isinstance(res, arcpy.Result))
 
@@ -351,21 +351,21 @@ class _process_polygons_mixin(object):
         nt.assert_tuple_equal(array.shape, self.known_shape)
 
 
-class Test_process_polygons_default(_process_polygons_mixin):
+class Test_polygons_to_raster_default(_polygons_to_raster_mixin):
     def setup(self):
         self.kwargs = {}
         self.known_shape = (854, 661)
         self.known_counts = numpy.array([95274, 36674])
 
 
-class Test_process_polygons_x02(_process_polygons_mixin):
+class Test_polygons_to_raster_x02(_polygons_to_raster_mixin):
     def setup(self):
         self.kwargs = {'cellsize': 2}
         self.known_shape = (1709, 1322)
         self.known_counts = numpy.array([381211, 146710])
 
 
-class Test_process_polygons_x08(_process_polygons_mixin):
+class Test_polygons_to_raster_x08(_polygons_to_raster_mixin):
     def setup(self):
         self.kwargs = {'cellsize': 8}
         self.known_shape = (427, 330)
@@ -374,14 +374,14 @@ class Test_process_polygons_x08(_process_polygons_mixin):
     def test_actual_arrays(self):
         known_raster_file = resource_filename("tidegates.testing.input", "test_zones_raster.tif")
         known_raster = utils.load_data(known_raster_file, 'raster')
-        raster, result = utils.process_polygons(self.testfile, "GeoID", **self.kwargs)
+        raster, result = utils.polygons_to_raster(self.testfile, "GeoID", **self.kwargs)
         arrays = utils.rasters_to_arrays(raster, known_raster)
         arcpy.management.Delete(raster)
 
         nptest.assert_array_almost_equal(*arrays)
 
 
-class Test_process_polygons_x16(_process_polygons_mixin):
+class Test_polygons_to_raster_x16(_polygons_to_raster_mixin):
     def setup(self):
         self.kwargs = {'cellsize': 16}
         self.known_shape = (214, 165)
@@ -603,32 +603,24 @@ def test_cleanup_temp_results():
     nt.assert_false(os.path.exists("temp_2"))
 
 
-class Test_intersect_polygon_layers(object):
+@nptest.dec.skipif(not tgtest.has_fiona)
+def test_intersect_polygon_layers():
     input1_file = resource_filename("tidegates.testing.input", "intersect_input1.shp")
     input2_file = resource_filename("tidegates.testing.input", "intersect_input2.shp")
     known_file = resource_filename("tidegates.testing.known", "intersect_output.shp")
     output_file = resource_filename("tidegates.testing.output", "intersect_output.shp")
 
-    @nptest.dec.skipif(not tgtest.has_fiona)
-    def test_normal(self):
-        with utils.OverwriteState(True):
-            output = utils.intersect_polygon_layers(
-                self.input1_file,
-                self.input2_file,
-                filename=self.output_file
-            )
-
-        nt.assert_true(isinstance(output, arcpy.mapping.Layer))
-        tgtest.assert_shapefiles_are_close(self.output_file, self.known_file)
-
-        utils.cleanup_temp_results(output)
-
-    @nt.raises(ValueError)
-    def test_no_filename(self):
+    with utils.OverwriteState(True):
         output = utils.intersect_polygon_layers(
-            self.input1_file,
-            self.input2_file,
+            output_file,
+            input1_file,
+            input2_file,
         )
+
+    nt.assert_true(isinstance(output, arcpy.mapping.Layer))
+    tgtest.assert_shapefiles_are_close(output_file, known_file)
+
+    utils.cleanup_temp_results(output)
 
 
 class Test_groupby_and_aggregate():

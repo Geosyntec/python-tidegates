@@ -1,3 +1,16 @@
+""" Basic utility functions for python-tidegates.
+
+This contains basic file I/O, coversion, and spatial analysis functions
+to support the python-tidegates library.
+
+(c) Geosyntec Consultants, 2015.
+
+Released under the BSD 3-clause license (see LICENSE file for more info)
+
+Written by Paul Hobson (phobson@geosyntec.com)
+
+"""
+
 import os
 import sys
 import glob
@@ -11,6 +24,35 @@ import arcpy
 
 
 class EasyMapDoc(object):
+    """ The object-oriented map class Esri should have made.
+
+    Create this the same you would make any other
+    `arcpy.mapping.MapDocument`_. But now, you can directly list and
+    add layers and dataframes. See the two examples below.
+
+    Has ``layers`` and ``dataframes`` attributes that return all of the
+    `arcpy.mapping.Layer`_ and `arcpy.mapping.DataFrame`_ objects in the
+    map, respectively.
+
+    .. _arcpy.mapping.MapDocument: http://resources.arcgis.com/EN/HELP/MAIN/10.2/index.html#/MapDocument/00s30000000n000000/
+    .. _arcpy.mapping.DataFrame: http://resources.arcgis.com/EN/HELP/MAIN/10.2/index.html#/DataFrame/00s300000003000000/
+    .. _arcpy.mapping.Layer: http://resources.arcgis.com/EN/HELP/MAIN/10.2/index.html#/Layer/00s300000008000000/
+
+    Examples
+    --------
+    >>> # Adding a layer with the Esri version:
+    >>> import arpcy
+    >>> md = arcpy.mapping.MapDocument('CURRENT')
+    >>> df = arcpy.mapping.ListDataFrames(md)
+    >>> arcpy.mapping.AddLayer(df, myLayer, 'TOP')
+
+    >>> # And now with an ``EasyMapDoc``:
+    >>> from tidegates import utils
+    >>> ezmd = utils.EasyMapDoc('CURRENT')
+    >>> ezmd.add_layer(myLayer)
+
+    """
+
     def __init__(self, *args, **kwargs):
         try:
             self.mapdoc = arcpy.mapping.MapDocument(*args, **kwargs)
@@ -19,18 +61,80 @@ class EasyMapDoc(object):
 
     @property
     def layers(self):
+        """
+        All of the layers in the map.
+        """
         return arcpy.mapping.ListLayers(self.mapdoc)
 
     @property
     def dataframes(self):
+        """
+        All of the dataframes in the map.
+        """
         return arcpy.mapping.ListDataFrames(self.mapdoc)
 
     def findLayerByName(self, name):
+        """ Finds a `layer`_ in the map by searching for an exact match
+        of its name.
+
+        .. _layer: http://resources.arcgis.com/EN/HELP/MAIN/10.2/index.html#/Layer/00s300000008000000/
+
+        Parameters
+        ----------
+        name : str
+            The name of the layer you want to find.
+
+        Returns
+        -------
+        lyr : arcpy.mapping.Layer
+            The map layer or None if no match is found.
+
+        .. warning:: Group Layers are not returned.
+
+        Examples
+        --------
+        >>> from tidegates import utils
+        >>> ezmd = utils.EasyMapDoc('CURRENT')
+        >>> wetlands = ezmd.findLayerByName("wetlands")
+        >>> if wetlands is not None:
+        ...     # do something with `wetlands`
+
+        """
+
         for lyr in self.layers:
             if not lyr.isGroupLayer and lyr.name == name:
                 return lyr
 
     def add_layer(self, layer, df=None, position='top'):
+        """ Simply adds a `layer`_ to a map.
+
+        .. _layer: http://resources.arcgis.com/EN/HELP/MAIN/10.2/index.html#/Layer/00s300000008000000/
+
+        Parameters
+        ----------
+        layer : str or arcpy.mapping.Layer
+            The dataset to be added to the map.
+        df : arcpy.mapping.DataFrame, optional
+            The specific dataframe to which the layer will be added. If
+            not provided, the data will be added to the first dataframe
+            in the map.
+        position : str, optional ('TOP')
+            The positional within `df` where the data will be added.
+            Valid options are: 'auto_arrange', 'bottom', and 'top'.
+
+        Returns
+        -------
+        layer : arcpy.mapping.Layer
+            The sucessfully added layer.
+
+        Examples
+        --------
+        >>> from tidegates import utils
+        >>> ezmd = utils.EasyMapDoc('CURRENT')
+        >>> ezmd.add_layer(myLayer)
+
+        """
+
         # if no dataframe is provided, select the first
         if df is None:
             df = self.dataframes[0]
@@ -57,8 +161,8 @@ class Extension(object):
     the interpreter leaves the code block by any means (e.g., sucessful
     execution, raised exception) the extension will be checked back in.
 
-    Example
-    -------
+    Examples
+    --------
     >>> import tidegates, arcpy
     >>> with tidegates.utils.Extension("spatial"):
     ...     arcpy.sa.Hillshade("C:/data/dem.tif")
@@ -89,8 +193,8 @@ class OverwriteState(object):
     block by any means (e.g., sucessful execution, raised exception),
     ``arcpy.env.overwriteOutput`` will reset to its original value.
 
-    Example
-    -------
+    Examples
+    --------
     >>> import tidegates
     >>> with tidegates.utils.OverwriteState(False):
     ...     # some operation that should fail if output already exists
@@ -112,13 +216,20 @@ class WorkSpace(object):
     """ Context manager to temporarily set the ``workspace``
     environment variable.
 
-    Inside the context manager, the ``arcpy.env.workspace`` will
+    Inside the context manager, the `arcpy.env.workspace`_ will
     be set to the given value. Once the interpreter leaves the code
     block by any means (e.g., sucessful execution, raised exception),
-    ``arcpy.env.workspace`` will reset to its original value.
+    `arcpy.env.workspace`_ will reset to its original value.
 
-    Example
-    -------
+    .. _arcpy.env.workspace: http://resources.arcgis.com/EN/HELP/MAIN/10.2/index.html#/Current_Workspace/001w00000002000000/
+
+    Parameters
+    ----------
+    path : str
+        Path to the directory that will be set as the current workspace.
+
+    Examples
+    --------
     >>> import tidegates
     >>> with tidegates.utils.OverwriteState(False):
     ...     # some operation that should fail if output already exists
@@ -170,7 +281,9 @@ def create_temp_filename(filepath, prefix='_temp_'):
 def _check_fields(table, *fieldnames, **kwargs):
     """
     Checks that field are (or are not) in a table. The check fails, a
-    `ValueError` is raised.
+    ``ValueError`` is raised. Relies on `arcpy.ListFields`_.
+
+    .. _arcpy.ListFields: http://resources.arcgis.com/EN/HELP/MAIN/10.2/index.html#/ListFields/03q30000001t000000/
 
     Parameters
     ----------
@@ -209,19 +322,87 @@ def _check_fields(table, *fieldnames, **kwargs):
 
 @update_status() # raster
 def result_to_raster(result):
-    """ Gets the actual raster from an arcpy.Result object """
+    """ Gets the actual `arcpy.Raster`_ from an `arcpy.Result`_ object.
+
+    .. _arcpy.Raster: http://resources.arcgis.com/EN/HELP/MAIN/10.2/index.html#/Raster/018z00000051000000/
+    .. _arcpy.Result: http://resources.arcgis.com/EN/HELP/MAIN/10.2/index.html#/Result/018z00000046000000/
+
+    Parameters
+    ----------
+    result : arcpy.Result
+        The `Result` object returned from some other geoprocessing
+        function.
+
+    Returns
+    -------
+    arcpy.Raster
+
+    See also
+    --------
+    result_to_layer
+
+    """
     return arcpy.Raster(result.getOutput(0))
 
 
 @update_status() # layer
 def result_to_layer(result):
-    """ Gets the actual layer from an arcpy.Result object """
+    """ Gets the actual `arcpy.mapping.Layer`_ from an `arcpy.Result`_
+    object.
+
+    .. _arcpy.mapping.Layer: http://resources.arcgis.com/EN/HELP/MAIN/10.2/index.html#/Layer/00s300000008000000/
+    .. _arcpy.Result: http://resources.arcgis.com/EN/HELP/MAIN/10.2/index.html#/Result/018z00000046000000/
+
+    Parameters
+    ----------
+    result : arcpy.Result
+        The `Result` object returned from some other geoprocessing
+        function.
+
+    Returns
+    -------
+    arcpy.mapping.Layer
+
+    See also
+    --------
+    result_to_raster
+
+    """
+
     return arcpy.mapping.Layer(result.getOutput(0))
 
 
 @update_status() # list of arrays
 def rasters_to_arrays(*rasters, **kwargs):
-    """ Converts an arbitrary number of rasters to numpy arrays"""
+    """ Converts an arbitrary number of `rasters`_ to `numpy arrays`_.
+    Relies on `arcpy.
+
+    .. _rasters: http://resources.arcgis.com/EN/HELP/MAIN/10.2/index.html#/Raster/018z00000051000000/
+    .. _numpy arrays: http://docs.scipy.org/doc/numpy/reference/generated/numpy.array.html
+    .. _arcpy.RasterToNumPyArray: http://resources.arcgis.com/EN/HELP/MAIN/10.2/index.html#/RasterToNumPyArray/03q300000029000000/
+
+    Parameters
+    ----------
+    *rasters : numpy.arrays
+        Rasters that will be converted to arrays.
+    squeeze : bool, optional (False)
+        By default (``squeeze = False``) a list of arrays is always
+        returned. However, when ``squeeze = True`` and only one raster
+        is provided, the array will be **squeezed** out of the list
+        and returned directly.
+
+    Returns
+    -------
+    arrays : list of arrays or array.
+
+    See also
+    --------
+    array_to_raster
+    result_to_raster
+    polygons_to_raster
+
+    """
+
     squeeze = kwargs.pop("squeeze", False)
 
     arrays = []
@@ -237,6 +418,9 @@ def rasters_to_arrays(*rasters, **kwargs):
 @update_status() # raster
 def array_to_raster(array, template):
     """ Create an arcpy.Raster from a numpy.ndarray based on a template.
+    This wrapper around `arcpy.NumPyArrayToRaster`_.
+
+    .. _arcpy.NumPyArrayToRaster: http://resources.arcgis.com/en/help/main/10.2/03q3/03q30000007q000000.htm
 
     Parameters
     ----------
@@ -249,6 +433,20 @@ def array_to_raster(array, template):
     Returns
     -------
     newraster : arcpy.Raster
+
+    See also
+    --------
+    rasters_to_arrays
+    polygons_to_raster
+
+    Examples
+    --------
+    >>> from tidegates import utils
+    >>> raster = utils.load_data('dem.tif', 'raster') # in meters
+    >>> array = utils.rasters_to_arrays(raster, squeeze=True)
+    >>> array = array / 0.3048 # convert elevations to feet
+    >>> newraster = utils.array_to_raster(array, raster)
+    >>> newraster.save('<path_to_output>')
 
     """
 
@@ -265,7 +463,7 @@ def array_to_raster(array, template):
 
 @update_status() # raster or layer
 def load_data(datapath, datatype, greedyRasters=True, **verbosity):
-    """ Prepare a DEM or other raster for masking floods
+    """ Loads vector and raster data from filepaths.
 
     Parameters
     ----------
@@ -281,8 +479,11 @@ def load_data(datapath, datatype, greedyRasters=True, **verbosity):
 
     Returns
     -------
-    data : arcpy.Raster or arcpy.mapping.Layer
-        The data loaded as an arcpy type.
+    data : `arcpy.Raster`_ or `arcpy.mapping.Layer`_
+        The data loaded as an arcpy object.
+
+    .. _arcpy.Raster: http://resources.arcgis.com/EN/HELP/MAIN/10.2/index.html#/Raster/018z00000051000000/
+    .. _arcpy.mapping.Layer: http://resources.arcgis.com/EN/HELP/MAIN/10.2/index.html#/Layer/00s300000008000000/
 
     """
 
@@ -315,9 +516,12 @@ def load_data(datapath, datatype, greedyRasters=True, **verbosity):
 
 
 @update_status() # raster and result
-def process_polygons(polygons, ID_column, cellsize=4):
+def polygons_to_raster(polygons, ID_column, cellsize=4):
     """ Prepare tidegates' areas of influence polygons for flooding
-    by converting to a raster.
+    by converting to a raster. Relies on
+    `arcpy.conversion.PolygonToRaster`_.
+
+    .. _arcpy.conversion.PolygonToRaster: http://resources.arcgis.com/EN/HELP/MAIN/10.2/index.html#//001200000030000000
 
     Parameters
     ----------
@@ -338,6 +542,20 @@ def process_polygons(polygons, ID_column, cellsize=4):
         The weird, crpyric results object that so many (but not all)
         ESRI arcpy function return.
 
+    Examples
+    --------
+    >>> zone_raster, res = utils.polygons_to_raster('ZOI.shp', 'GeoID')
+    >>> zone_array = utils.rasters_to_arrays(zone_raster, squeeze=True)
+    >>> # remove all zones with a GeoID less than 5
+    >>> zone_array[zone_array < 5] = 0
+    >>> filtered_raster = utils.array_to_raster(zone_array, zone_raster)
+
+    See also
+    --------
+    raster_to_polygons
+    rasters_to_arrays
+    array_to_raster
+
     """
 
     _zones = load_data(polygons, 'shape')
@@ -349,9 +567,6 @@ def process_polygons(polygons, ID_column, cellsize=4):
             cellsize=cellsize,
         )
 
-    # result object isn't actually the raster
-    # need to read in the raster as an object
-    # the file path embedded in the result
     zones = result_to_raster(result)
 
     return zones, result
@@ -361,7 +576,9 @@ def process_polygons(polygons, ID_column, cellsize=4):
 def clip_dem_to_zones(dem, zones):
     """ Limits the extent of the topographic data (``dem``) to that of
     the zones of influence  so that we can easily use array
-    representations of the rasters.
+    representations of the rasters. Relies on `arcpy.management.Clip`_.
+
+    .. _arcpy.management.Clip: http://resources.arcgis.com/EN/HELP/MAIN/10.2/index.html#//00170000009n000000
 
     Parameters
     ----------
@@ -403,8 +620,14 @@ def raster_to_polygons(zonal_raster, filename, newfield=None):
     """
     Converts zonal rasters to polygons layers. This is basically just
     a thing wrapper around arcpy.conversion.RasterToPolygon. The
-    returned layers will have a field "gridcode" that corresponds to the
-    values of the raster.
+    returned layers will have a field that corresponds to the values of
+    the raster. The name of this field can be controlled with the
+    ``newfield`` parameter.
+
+    Relies on `arcpy.conversion.RasterToPolygon`_.
+
+    .. _arcpy.conversion.RasterToPolygon: http://resources.arcgis.com/EN/HELP/MAIN/10.2/index.html#//001200000008000000
+
 
     Parameters
     ----------
@@ -412,15 +635,20 @@ def raster_to_polygons(zonal_raster, filename, newfield=None):
         An integer raster of reasonably small set distinct values.
     filename : str
         Path to where the polygons will be saved.
+    newfield : str, optional
+        By default, the field that contains the raster values is called
+        "gridcode". Use this parameter to change the name of that field.
 
     Returns
     -------
     polygons : arcpy.mapping.Layer
         The converted polygons.
 
-    See Also
+    See also
     --------
-    arcpy.conversion.RasterToPolygon
+    polygons_to_raster
+    add_field_with_value
+    populate_field
 
     """
 
@@ -449,7 +677,9 @@ def aggregate_polygons(polygons, ID_field, filename):
     """
     Dissolves (aggregates) polygons into a single feature the unique
     values in the provided field. This is basically just a thim wrapper
-    around `arcpy.management.Dissolve`.
+    around `arcpy.management.Dissolve`_.
+
+    .. _arcpy.management.Dissolve: http://resources.arcgis.com/en/help/main/10.2/index.html#//00170000005n000000
 
     Parameters
     ----------
@@ -466,6 +696,16 @@ def aggregate_polygons(polygons, ID_field, filename):
     dissolved : arcpy.mapping.Layer
         The aggregated polygons.
 
+    Examples
+    --------
+    >>> from tidegates import utils
+    >>> dissolved = utils.aggregate_polygons('wetlands.shp', 'GeoID',
+    ...                                      'dissolved.shp')
+
+    See also
+    --------
+    arcpy.management.Dissolve
+
     """
 
     results = arcpy.management.Dissolve(
@@ -481,20 +721,20 @@ def aggregate_polygons(polygons, ID_field, filename):
 
 @update_status() # array
 def flood_zones(zones_array, topo_array, elevation):
-    """ Mask out non-flooded portions of rasters.
+    """ Mask out non-flooded portions of arrays.
 
     Parameters
     ----------
-    zones_array : numpy.ndarray
+    zones_array : numpy.array
         Array of zone IDs from each zone of influence.
-    topo_array : numpy.ndarray
+    topo_array : numpy.array
         Digital elevation model (as an array) of the areas.
     elevation : float
-        The flood elevation *above& which everything will be masked.
+        The flood elevation *above* which everything will be masked.
 
     Returns
     -------
-    flooded_array : numpy.ndarray
+    flooded_array : numpy.array
         Array of zone IDs only where there is flooding.
 
     """
@@ -523,6 +763,10 @@ def add_field_with_value(table, field_name, field_value=None,
     to a constant value. Operates in-place and therefore does not
     return anything.
 
+    Relies on `arcpy.management.AddField`_.
+
+    .. _arcpy.management.AddField: http://resources.arcgis.com/en/help/main/10.2/index.html#//001700000047000000
+
     Parameters
     ----------
     table : Layer, table, or file path
@@ -534,6 +778,9 @@ def add_field_with_value(table, field_name, field_value=None,
         infer the ``field_type`` parameter required by
         `arcpy.management.AddField` if ``field_type`` is itself not
         explicitly provided.
+    overwrite : bool, optonal (False)
+        If True, an existing field will be overwritting. The default
+        behaviour will raise a `ValueError` if the field already exists.
     **field_opts : keyword options
         Keyword arguments that are passed directly to
         `arcpy.management.AddField`.
@@ -542,13 +789,9 @@ def add_field_with_value(table, field_name, field_value=None,
     -------
     None
 
-    See Also
-    --------
-    `arcpy.management.AddField`
-
     Examples
     --------
-    >>> # add a text field to shapefile (text fields need a length speci)
+    >>> # add a text field to shapefile (text fields need a length spec)
     >>> utils.add_field_with_value("mypolygons.shp", "storm_event",
                                    "100-yr", field_length=10)
     >>> # add a numeric field (doesn't require additional options)
@@ -590,23 +833,41 @@ def add_field_with_value(table, field_name, field_value=None,
 
 @update_status() # None
 def cleanup_temp_results(*results):
+    """ Deletes temporary results from the current workspace.
+
+    Relies on `arcpy.management.Delete`_.
+
+    .. _arcpy.management.Delete: http://resources.arcgis.com/en/help/main/10.2/index.html#//001700000052000000
+
+    Parameters
+    ----------
+    *results : str
+        Paths to the temporary results
+
+    Returns
+    -------
+    None
+
+    """
     for r in results:
         arcpy.management.Delete(r)
 
 
 @update_status() # layer
-def intersect_polygon_layers(*layers, **intersect_options):
+def intersect_polygon_layers(destination, *layers, **intersect_options):
     """
     Intersect polygon layers with each other. Basically a thin wrapper
-    around `arcpy.analysis.Intersect`.
+    around `arcpy.analysis.Intersect`_.
+
+    .. _arcpy.analysis.Intersect: http://resources.arcgis.com/en/help/main/10.2/index.html#//00080000000p000000
 
     Parameters
     ----------
-    *layers : string or `arcpy.Mapping.layers
-        The polyong layers (or their paths) that will be intersected
-        with each other.
-    filename : str
+    destination : str
         Filepath where the intersected output will be saved.
+    *layers : str or arcpy.Mapping.Layer
+        The polygon layers (or their paths) that will be intersected
+        with each other.
     **intersect_options : keyword arguments
         Additional arguments that will be passed directly to
         `arcpy.analysis.Intersect`.
@@ -620,22 +881,17 @@ def intersect_polygon_layers(*layers, **intersect_options):
     -------
     >>> from tidedates import utils
     >>> blobs = utils.intersect_polygon_layers(
-    >>> ...     "floods.shp",
-    >>> ...     "wetlands.shp",
-    >>> ...     "buildings.shp"
-    >>> ...     filename="flood_damage.shp"
-    >>> ... )
+    ...     "flood_damage_intersect.shp"
+    ...     "floods.shp",
+    ...     "wetlands.shp",
+    ...     "buildings.shp"
+    ... )
 
     """
 
-    output = intersect_options.pop("filename", None)
-    if output is None:
-        msg = "named argument `filename` required for intersect_polygon_layers"
-        raise ValueError(msg)
-
     result = arcpy.analysis.Intersect(
         in_features=layers,
-        out_feature_class=output,
+        out_feature_class=destination,
         **intersect_options
     )
 
@@ -650,6 +906,11 @@ def groupby_and_aggregate(input_path, groupfield, valuefield,
     Counts the number of distinct values of `valuefield` are associated
     with each value of `groupfield` in a data source found at
     `input_path`.
+
+    Relies on `arcpy.da.TableToNumPyArray`_.
+
+    .. _arcpy.da.TableToNumPyArray: http://resources.arcgis.com/en/help/main/10.2/index.html#/TableToNumPyArray/018w00000018000000/
+
 
     Parameters
     ----------
@@ -673,10 +934,27 @@ def groupby_and_aggregate(input_path, groupfield, valuefield,
         A dictionary whose keys are the distinct values of `groupfield`
         and values are the number of distinct records in each group.
 
-    See Also
+    Examples
     --------
-    `arcpy.da.TableToNumPyArray`
-    `itertools.groupby`
+    >>> # compute total areas for each 'GeoID'
+    >>> wetland_areas = utils.groupby_and_aggregate(
+    ...     input_path='wetlands.shp',
+    ...     groupfield='GeoID',
+    ...     valuefield='SHAPE@AREA',
+    ...     aggfxn=lambda group: sum([row[1] for row in group])
+    ... )
+
+    >>> # count the number of structures associated with each 'GeoID'
+    >>> building_counts = utils.groupby_and_aggregate(
+    ...     input_path=buildingsoutput,
+    ...     groupfield=ID_column,
+    ...     valuefield='STRUCT_ID'
+    ... )
+
+    See also
+    --------
+    itertools.groupby
+    populate_field
 
     """
 
@@ -704,6 +982,9 @@ def groupby_and_aggregate(input_path, groupfield, valuefield,
 
 @update_status() # None
 def rename_column(table, oldname, newname, newalias=None): # pragma: no cover
+    """
+    .. note: Not yet implemented.
+    """
     raise NotImplementedError
     if newalias is None:
         newalias = newname
@@ -728,6 +1009,10 @@ def populate_field(table, value_fxn, valuefield, *keyfields):
     field (`valuefield`) based on another field (`keyfield`) by passing
     the entire row through a function (`value_fxn`).
 
+    Relies on `arcpy.da.UpdateCursor`_.
+
+    .. _arcpy.da.UpdateCursor: http://resources.arcgis.com/en/help/main/10.2/index.html#/UpdateCursor/018w00000014000000/
+
     Parameters
     ----------
     table : Layer, table, or file path
@@ -745,12 +1030,16 @@ def populate_field(table, value_fxn, valuefield, *keyfields):
     -------
     None
 
-    Notes
-    -----
-    In the row object, the `valuefield` will be the last item. In other
-    words, `row[0]` will return the first values in `*keyfields` and
-    `row[-1]` will return the existing value of `valuefield` in that
-    row.
+    .. note::
+       In the row object, the `valuefield` will be the last item.
+       In other words, `row[0]` will return the first values in
+       `*keyfields` and `row[-1]` will return the existing value of
+       `valuefield` in that row.
+
+    Examples
+    --------
+    >>> # populate field ("Company") with a constant value ("Geosyntec")
+    >>> populate_field("wetlands.shp", lambda row: "Geosyntec", "Company")
 
     """
 
@@ -768,6 +1057,10 @@ def populate_field(table, value_fxn, valuefield, *keyfields):
 def copy_data(destfolder, *source_layers, **kwargs):
     """ Copies an arbitrary number of spatial files to a new folder.
 
+    Relies on `arcpy.conversion.FeatureClassToShapefile`_.
+
+    .. _arcpy.conversion.FeatureClassToShapefile: http://resources.arcgis.com/en/help/main/10.2/index.html#//00120000003m000000
+
     Parameters
     ----------
     destfolder : str
@@ -781,10 +1074,6 @@ def copy_data(destfolder, *source_layers, **kwargs):
     Returns
     -------
     copied : list of arcpy.mapping Layers or just a single Layer.
-
-    See Also
-    --------
-    arcpy.conversion.FeatureClassToShapefile
 
     """
 
@@ -808,13 +1097,63 @@ def copy_data(destfolder, *source_layers, **kwargs):
 
 @update_status()
 def concat_results(destination, *input_files):
-    result = arcpy.management.Merge(input_files, destination)
-    return load_data(result.getOutput(0), 'layer')
+    """ Concatentates (merges) serveral datasets into a single shapefile
+    or feature class.
 
+    Relies on `arcpy.management.Merge`_.
+
+    .. _arcpy.management.Merge: http://resources.arcgis.com/en/help/main/10.2/index.html#//001700000055000000
+
+    Parameters
+    ----------
+    destination : str
+        Path to where the concatentated dataset should be saved.
+    *input_files : str
+        Strings of the paths of the datasets to be merged.
+
+    Returns
+    -------
+    arcpy.mapping.Layer
+
+    See also
+    --------
+    join_results_to_baseline
+
+    """
+
+    result = arcpy.management.Merge(input_files, destination)
+    return result_to_layer(result)
 
 @update_status()
 def join_results_to_baseline(destination, result_file, baseline_file):
-    result = arcpy.SpatialJoin_analysis(
+    """ Joins attributes of a geoprocessing result to a baseline dataset
+    and saves the results to another file.
+
+    Relies on `arcpy.analysis.SpatialJoin`_.
+
+    .. _arcpy.analysis.SpatialJoin: http://resources.arcgis.com/en/help/main/10.2/index.html#//00080000000q000000
+
+    Parameters
+    ----------
+    destination : str
+        Path to where the final joined dataset should be saved.
+    results_file : str
+        Path to the results file whose attributes will be added to the
+        ``baseline_file``.
+    baseline_file : str
+        Path to the baseline_file with the desired geometry.
+
+    Returns
+    -------
+    arcpy.mapping.Layer
+
+    See also
+    --------
+    concat_results
+
+    """
+
+    result = arcpy.analysis.SpatialJoin(
         target_features=baseline_file,
         join_features=result_file,
         out_feature_class=destination,
@@ -823,4 +1162,4 @@ def join_results_to_baseline(destination, result_file, baseline_file):
         match_option="INTERSECT",
     )
 
-    return load_data(result.getOutput(0), 'layer')
+    return result_to_layer(result)
