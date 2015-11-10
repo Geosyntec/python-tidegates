@@ -16,14 +16,9 @@
 import sys
 import os
 import shlex
-import sphinx_bootstrap_theme
-from recommonmark.parser import CommonMarkParser
+import sphinx
 
-# enable markdown suppport
-source_parsers = {
-    '.md': CommonMarkParser,
-}
-source_suffix = ['.rst', '.md']
+source_suffix = ['.rst']
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -41,6 +36,7 @@ sys.path.insert(0, os.path.abspath('..'))
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
+    'sphinx.ext.autosummary',
     'sphinx.ext.intersphinx',
     'sphinx.ext.todo',
     'sphinx.ext.coverage',

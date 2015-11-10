@@ -10,7 +10,7 @@ Contents:
 
 .. toctree::
    :maxdepth: 2
-   
+
    ArcGIS Python Toolbox <tidegates/toolbox>
    Top-level API <tidegates/tidegates>
    Utility functions <tidegates/utils>

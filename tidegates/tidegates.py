@@ -1,3 +1,17 @@
+""" Top-level functions for python-tidegates.
+
+This contains main functions to evaluate the extent of floodinga and
+damage due to floods.
+
+(c) Geosyntec Consultants, 2015.
+
+Released under the BSD 3-clause license (see LICENSE file for more info)
+
+Written by Paul Hobson (phobson@geosyntec.com)
+
+"""
+
+
 import os
 import sys
 import glob

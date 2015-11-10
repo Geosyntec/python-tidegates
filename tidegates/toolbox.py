@@ -1,3 +1,17 @@
+""" ArcGIS python toolboxes for python-tidegates.
+
+This contains Classes compatible with ArcGIS python toolbox
+infrastructure.
+
+(c) Geosyntec Consultants, 2015.
+
+Released under the BSD 3-clause license (see LICENSE file for more info)
+
+Written by Paul Hobson (phobson@geosyntec.com)
+
+"""
+
+
 import os
 import sys
 import glob
