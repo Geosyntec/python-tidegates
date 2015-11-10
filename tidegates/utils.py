@@ -315,7 +315,7 @@ def load_data(datapath, datatype, greedyRasters=True, **verbosity):
 
 
 @update_status() # raster and result
-def process_polygons(polygons, ID_column, cellsize=4):
+def polygons_to_raster(polygons, ID_column, cellsize=4):
     """ Prepare tidegates' areas of influence polygons for flooding
     by converting to a raster.
 
@@ -595,18 +595,18 @@ def cleanup_temp_results(*results):
 
 
 @update_status() # layer
-def intersect_polygon_layers(*layers, **intersect_options):
+def intersect_polygon_layers(destination, *layers, **intersect_options):
     """
     Intersect polygon layers with each other. Basically a thin wrapper
     around `arcpy.analysis.Intersect`.
 
     Parameters
     ----------
-    *layers : string or `arcpy.Mapping.layers
-        The polyong layers (or their paths) that will be intersected
-        with each other.
-    filename : str
+    destination : str
         Filepath where the intersected output will be saved.
+    *layers : str or arcpy.Mapping.Layer
+        The polygon layers (or their paths) that will be intersected
+        with each other.
     **intersect_options : keyword arguments
         Additional arguments that will be passed directly to
         `arcpy.analysis.Intersect`.
@@ -620,22 +620,17 @@ def intersect_polygon_layers(*layers, **intersect_options):
     -------
     >>> from tidedates import utils
     >>> blobs = utils.intersect_polygon_layers(
-    >>> ...     "floods.shp",
-    >>> ...     "wetlands.shp",
-    >>> ...     "buildings.shp"
-    >>> ...     filename="flood_damage.shp"
-    >>> ... )
+    ...     "flood_damage_intersect.shp"
+    ...     "floods.shp",
+    ...     "wetlands.shp",
+    ...     "buildings.shp"
+    ... )
 
     """
 
-    output = intersect_options.pop("filename", None)
-    if output is None:
-        msg = "named argument `filename` required for intersect_polygon_layers"
-        raise ValueError(msg)
-
     result = arcpy.analysis.Intersect(
         in_features=layers,
-        out_feature_class=output,
+        out_feature_class=destination,
         **intersect_options
     )
 

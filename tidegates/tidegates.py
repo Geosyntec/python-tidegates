@@ -77,7 +77,7 @@ def flood_area(dem, polygons, ID_column, elevation_feet,
     )
 
     # load the zones of influence, converting to a raster
-    zones_r, zone_res = utils.process_polygons(
+    zones_r, zone_res = utils.polygons_to_raster(
         polygons=polygons,
         ID_column=ID_column,
         cellsize=raw_topo.meanCellWidth,
@@ -205,9 +205,9 @@ def _impact_to_wetlands(floods_path, ID_column, wetlands_path, wetlandsoutput=No
 
     # intersect wetlands with the floods
     temp_flooded_wetlands = utils.intersect_polygon_layers(
+        utils.create_temp_filename(wetlandsoutput),
         utils.load_data(floods_path, 'layer'),
         utils.load_data(wetlands_path, 'layer'),
-        filename=utils.create_temp_filename(wetlandsoutput),
         **verbose_options
     )
 
@@ -246,9 +246,9 @@ def _impact_to_buildings(floods_path, ID_column, buildings_path, buildingsoutput
 
     # intersect the buildings with the floods
     flooded_buildings = utils.intersect_polygon_layers(
+        buildingsoutput,
         utils.load_data(floods_path, 'layer'),
         utils.load_data(buildings_path, 'layer'),
-        filename=buildingsoutput,
         msg='Assessing impact to buildings',
         **verbose_options
     )
