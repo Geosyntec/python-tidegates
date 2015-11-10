@@ -38,8 +38,8 @@ def flood_area(dem, polygons, ID_column, elevation_feet,
     cleanup : bool (default = True)
         When True, temporary results are removed from disk.
 
-    Additional Optional Parameters
-    ------------------------------
+    Other Parameters
+    ----------------
     verbose : bool (default = False)
         Toggles the printing of messages communication the progress
         of the processing.
@@ -53,6 +53,10 @@ def flood_area(dem, polygons, ID_column, elevation_feet,
     flood_polygons : arcpy.mapping.Layer
         arcpy Layer of the polygons showing the extent flooded behind
         each tidegate.
+
+    See also
+    --------
+    assess_impact
 
     """
 
@@ -156,6 +160,46 @@ def assess_impact(floods_path, ID_column, cleanup=False,
                   wetlands_path=None, wetlands_output=None,
                   buildings_path=None, buildings_output=None,
                   **verbose_options):
+    """ Assess the extent of damage due to flooding in wetlands and
+    buildings.
+
+    Parameters
+    ----------
+    floods_path : str or arcpy.mapping.Layer
+        The (filepath to the) layer of the extent of flooding. Ideally,
+        this layer should be generated with ``flood_area``.
+    ID_column : str
+        Name of the column in the ``floods_path`` layer that associates
+        each geomstry with a tidegate.
+    wetlands_path, buildings_path : str
+        Paths to layers containing wetlands and building footprints.
+    wetlands_output, buildings_output : str
+        Path to where the final output of the assessed damage to the
+        wetlands and buildings should be saved.
+    cleanup : bool (default = True)
+        When True, temporary results are removed from disk.
+
+    Other Parameters
+    ----------------
+    verbose : bool (default = False)
+        Toggles the printing of messages communication the progress
+        of the processing.
+    asMessage : bool (default = False)
+        When True, progress messages are passed through
+        ``arcpy.AddMessage``. Otherwise, the msg is simply printed to
+        stdin.
+
+    Returns
+    -------
+    flooded_areas : arcpy.mapping.Layer
+    flooded_wetlands : arcpy.mapping.Layer
+    flooded_buildings : arcpy.mapping.Layer
+
+    See also
+    --------
+    flood_area
+
+    """
 
     # add total area_column and populate
     utils.add_field_with_value(floods_path, 'totalarea', field_type='DOUBLE', overwrite=True)
@@ -242,8 +286,8 @@ def _impact_to_wetlands(floods_path, ID_column, wetlands_path, wetlands_output=N
 def _impact_to_buildings(floods_path, ID_column, buildings_path, buildings_output=None,
                          **verbose_options):
 
-    if buildingsoutput is None:
-        wetlandsoutput = utils.create_temp_filename('flooded_buildings')
+    if buildings_output is None:
+        wetlands_output = utils.create_temp_filename('flooded_buildings')
 
     # intersect the buildings with the floods
     flooded_buildings = utils.intersect_polygon_layers(
