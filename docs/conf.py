@@ -16,6 +16,7 @@
 import sys
 import os
 import shlex
+import sphinx_bootstrap_theme
 from recommonmark.parser import CommonMarkParser
 
 # enable markdown suppport
@@ -43,6 +44,7 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinx.ext.todo',
     'sphinx.ext.coverage',
+    'numpydoc',
 ]
 
 # Add any paths that contain templates here, relative to this directory.

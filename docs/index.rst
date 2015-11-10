@@ -11,11 +11,6 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-.. automodule:: tidegates
-   :members:
-
-.. autofunction:: tidegates.flood_area
-
 Indices and tables
 ==================
 
