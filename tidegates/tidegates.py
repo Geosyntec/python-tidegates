@@ -152,8 +152,9 @@ def flood_area(dem, polygons, ID_column, elevation_feet,
     return flood_polygons
 
 
-def assess_impact(floods_path, ID_column, wetlands_path=None, wetlandsoutput=None,
-                  buildings_path=None, buildingsoutput=None, cleanup=False,
+def assess_impact(floods_path, ID_column, cleanup=False,
+                  wetlands_path=None, wetlands_output=None,
+                  buildings_path=None, buildings_output=None,
                   **verbose_options):
 
     # add total area_column and populate
@@ -170,7 +171,7 @@ def assess_impact(floods_path, ID_column, wetlands_path=None, wetlandsoutput=Non
             floods_path=floods_path,
             ID_column=ID_column,
             wetlands_path=wetlands_path,
-            wetlandsoutput=wetlandsoutput,
+            wetlands_output=wetlands_output,
             msg='Assessing impact to wetlands',
             **verbose_options
         )
@@ -185,7 +186,7 @@ def assess_impact(floods_path, ID_column, wetlands_path=None, wetlandsoutput=Non
             floods_path=floods_path,
             ID_column=ID_column,
             buildings_path=buildings_path,
-            buildingsoutput=buildingsoutput,
+            buildings_output=buildings_output,
             msg='Assessing impact to Buildings',
             **verbose_options
         )
@@ -198,14 +199,14 @@ def assess_impact(floods_path, ID_column, wetlands_path=None, wetlandsoutput=Non
 
 
 @utils.update_status()
-def _impact_to_wetlands(floods_path, ID_column, wetlands_path, wetlandsoutput=None,
+def _impact_to_wetlands(floods_path, ID_column, wetlands_path, wetlands_output=None,
                         **verbose_options):
-    if wetlandsoutput is None:
-        wetlandsoutput = 'flooded_wetlands'
+    if wetlands_output is None:
+        wetlands_output = 'flooded_wetlands'
 
     # intersect wetlands with the floods
     temp_flooded_wetlands = utils.intersect_polygon_layers(
-        utils.create_temp_filename(wetlandsoutput),
+        utils.create_temp_filename(wetlands_output),
         utils.load_data(floods_path, 'layer'),
         utils.load_data(wetlands_path, 'layer'),
         **verbose_options
@@ -215,12 +216,12 @@ def _impact_to_wetlands(floods_path, ID_column, wetlands_path, wetlandsoutput=No
     flooded_wetlands = utils.aggregate_polygons(
         temp_flooded_wetlands,
         ID_column,
-        wetlandsoutput
+        wetlands_output
     )
 
     # get area of flooded wetlands
     wetland_areas = utils.groupby_and_aggregate(
-        input_path=wetlandsoutput,
+        input_path=wetlands_output,
         groupfield=ID_column,
         valuefield='SHAPE@AREA',
         aggfxn=lambda group: sum([row[1] for row in group])
@@ -238,7 +239,7 @@ def _impact_to_wetlands(floods_path, ID_column, wetlands_path, wetlandsoutput=No
 
 
 @utils.update_status()
-def _impact_to_buildings(floods_path, ID_column, buildings_path, buildingsoutput=None,
+def _impact_to_buildings(floods_path, ID_column, buildings_path, buildings_output=None,
                          **verbose_options):
 
     if buildingsoutput is None:
@@ -246,7 +247,7 @@ def _impact_to_buildings(floods_path, ID_column, buildings_path, buildingsoutput
 
     # intersect the buildings with the floods
     flooded_buildings = utils.intersect_polygon_layers(
-        buildingsoutput,
+        buildings_output,
         utils.load_data(floods_path, 'layer'),
         utils.load_data(buildings_path, 'layer'),
         msg='Assessing impact to buildings',
@@ -255,7 +256,7 @@ def _impact_to_buildings(floods_path, ID_column, buildings_path, buildingsoutput
 
     # count the number of flooding buildings in each flood zone
     building_counts = utils.groupby_and_aggregate(
-        input_path=buildingsoutput,
+        input_path=buildings_output,
         groupfield=ID_column,
         valuefield='STRUCT_ID'
     )

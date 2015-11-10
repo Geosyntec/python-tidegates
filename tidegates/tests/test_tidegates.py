@@ -45,8 +45,8 @@ def test_assess_impact():
             ID_column="GeoID",
             wetlands_path=wetlands,
             buildings_path=buildings,
-            buildingsoutput=r"output\flooded_buildings.shp",
-            wetlandsoutput=r"output\flooded_wetlands.shp",
+            buildings_output=r"output\flooded_buildings.shp",
+            wetlands_output=r"output\flooded_wetlands.shp",
             cleanup=True,
         )
 
@@ -76,7 +76,7 @@ def test__impact_to_wetlands():
             floods_path=floods,
             ID_column="GeoID",
             wetlands_path=wetlands,
-            wetlandsoutput=flooded_output,
+            wetlands_output=flooded_output,
         )
 
     nt.assert_true(isinstance(flooded_wetlands, arcpy.mapping.Layer))
@@ -100,7 +100,7 @@ def test__impact_to_buildings():
             floods_path=floods,
             ID_column="GeoID",
             buildings_path=buildings,
-            buildingsoutput=flooded_output,
+            buildings_output=flooded_output,
         )
 
     nt.assert_true(isinstance(flooded_buildings, arcpy.mapping.Layer))
