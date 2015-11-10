@@ -38,6 +38,12 @@ class EasyMapDoc(object):
     .. _arcpy.mapping.DataFrame: http://resources.arcgis.com/EN/HELP/MAIN/10.2/index.html#/DataFrame/00s300000003000000/
     .. _arcpy.mapping.Layer: http://resources.arcgis.com/EN/HELP/MAIN/10.2/index.html#/Layer/00s300000008000000/
 
+    Attributes
+    ----------
+    mapdoc : arcpy.mapping.MapDocument
+        The underlying arcpy MapDocument that serves as the basis for
+        this class.
+
     Examples
     --------
     >>> # Adding a layer with the Esri version:
