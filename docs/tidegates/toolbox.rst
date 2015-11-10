@@ -2,5 +2,9 @@
 Documentation of the ArcGIS python tooboxes
 ===========================================
 
-.. automodule:: tidegates.toolbox
- :members:
+.. autoclass:: tidegates.toolbox.StandardScenarios
+   :members:
+
+.. autoclass:: tidegates.toolbox.Flooder
+   :members:
+   :show-inheritance:

@@ -3,4 +3,5 @@
 =======================
 
 .. automodule:: tidegates.utils
- :members:
+   :members:
+   :undoc-members:
