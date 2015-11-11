@@ -267,6 +267,7 @@ class CheckToolbox_Mixin(object):
             nt.assert_true(ts['surge_elev'] in toolbox.SURGES.values())
             nt.assert_true(ts['slr'] in toolbox.SEALEVELRISE)
 
+    @nptest.dec.skipif(not tgtest.has_fiona)
     def test__finish_results_no_source(self):
         results = [
             resource_filename('tidegates.testing.finish_result', 'res1.shp'),
@@ -285,6 +286,7 @@ class CheckToolbox_Mixin(object):
             resource_filename('tidegates.testing.finish_result', 'known_finished_no_src.shp'),
         )
 
+    @nptest.dec.skipif(not tgtest.has_fiona)
     def test__finish_results_with_source(self):
         results = [
             resource_filename('tidegates.testing.finish_result', 'res1.shp'),
