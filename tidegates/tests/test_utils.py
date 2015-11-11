@@ -159,7 +159,7 @@ def test_create_temp_filename():
 
 
 class Test__check_fields(object):
-    table = resource_filename("tidegates.testing.input", "test_field_adder.shp")
+    table = resource_filename("tidegates.testing.check_fields", "test_file.shp")
 
     def test_should_exist_uni(self):
         utils._check_fields(self.table, "Id", should_exist=True)
