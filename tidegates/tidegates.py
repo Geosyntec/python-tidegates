@@ -261,7 +261,8 @@ def assess_impact(floods_path, ID_column, cleanup=False,
 
 
 @utils.update_status()
-def _impact_to_wetlands(floods_path, ID_column, wetlands_path, wetlands_output=None,
+def _impact_to_wetlands(floods_path, ID_column, wetlands_path,
+                        wetlands_output=None, cleanup=False,
                         **verbose_options):
     if wetlands_output is None:
         wetlands_output = 'flooded_wetlands'
@@ -297,12 +298,15 @@ def _impact_to_wetlands(floods_path, ID_column, wetlands_path, wetlands_output=N
         ID_column,
     )
 
+    if cleanup:
+        utils.cleanup_temp_results(temp_flooded_wetlands    )
+
     return flooded_wetlands
 
 
 @utils.update_status()
-def _impact_to_buildings(floods_path, ID_column, buildings_path, buildings_output=None,
-                         **verbose_options):
+def _impact_to_buildings(floods_path, ID_column, buildings_path,
+                         buildings_output=None, **verbose_options):
 
     if buildings_output is None:
         buildings_output = utils.create_temp_filename('flooded_buildings')
