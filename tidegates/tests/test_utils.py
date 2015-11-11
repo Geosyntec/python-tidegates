@@ -739,7 +739,7 @@ class Test_groupby_and_aggregate():
 
 @nt.raises(NotImplementedError)
 def test_rename_column():
-    layer = resource_filename("tidegates.testing.input", "test_field_adder.dbf")
+    layer = resource_filename("tidegates.testing.rename_column", "rename_col.dbf")
     oldname = "existing"
     newname = "exists"
 
