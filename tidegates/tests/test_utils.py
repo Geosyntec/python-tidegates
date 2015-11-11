@@ -758,6 +758,7 @@ class Test_copy_data(object):
     ]
 
 
+    @nptest.dec.skipif(not tgtest.has_fiona)
     def test_list(self):
         with utils.OverwriteState(True):
             newlayers = utils.copy_data(self.destfolder, *self.srclayers)
@@ -770,6 +771,7 @@ class Test_copy_data(object):
 
         utils.cleanup_temp_results(*self.output)
 
+    @nptest.dec.skipif(not tgtest.has_fiona)
     def test_single_squeeze_false(self):
         with utils.OverwriteState(True):
             newlayers = utils.copy_data(self.destfolder, *self.srclayers[:1])
@@ -782,6 +784,7 @@ class Test_copy_data(object):
 
         utils.cleanup_temp_results(*self.output[:1])
 
+    @nptest.dec.skipif(not tgtest.has_fiona)
     def test_single_squeeze_true(self):
         with utils.OverwriteState(True):
             newlayer = utils.copy_data(self.destfolder, *self.srclayers[:1], squeeze=True)
