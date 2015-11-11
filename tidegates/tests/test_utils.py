@@ -270,7 +270,7 @@ class Test_rasters_to_arrays(object):
 
 
 def test_array_to_raster():
-    template_file = resource_filename("tidegates.testing.input", 'test_raster2')
+    template_file = resource_filename("tidegates.testing.array_to_raster", 'test_raster2')
     template = arcpy.Raster(template_file)
     array = numpy.arange(5, 25).reshape(4, 5).astype(float)
 
