@@ -228,9 +228,9 @@ class Test_rasters_to_arrays(object):
             [1500, 1600, 1700, 1800, 1900]
         ])
 
-        self.rasterfile1 = resource_filename("tidegates.testing.input", 'test_raster1')
-        self.rasterfile2 = resource_filename("tidegates.testing.input", 'test_raster2')
-        self.rasterfile3 = resource_filename("tidegates.testing.input", 'test_raster3')
+        self.rasterfile1 = resource_filename("tidegates.testing.rasters_to_arrays", 'test_raster1')
+        self.rasterfile2 = resource_filename("tidegates.testing.rasters_to_arrays", 'test_raster2')
+        self.rasterfile3 = resource_filename("tidegates.testing.rasters_to_arrays", 'test_raster3')
 
     def test_one_raster(self):
         array = utils.rasters_to_arrays(self.rasterfile1)
