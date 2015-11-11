@@ -275,7 +275,7 @@ class CheckToolbox_Mixin(object):
             resource_filename('tidegates.testing.finish_result', 'res3.shp')
         ]
         with utils.OverwriteState(True):
-            self.tbx._finish_results(
+            self.tbx.finish_results(
                 resource_filename('tidegates.testing.finish_result', 'finished_no_src.shp'),
                 results,
                 cleanup=False
@@ -294,7 +294,7 @@ class CheckToolbox_Mixin(object):
             resource_filename('tidegates.testing.finish_result', 'res3.shp')
         ]
         with utils.OverwriteState(True):
-            self.tbx._finish_results(
+            self.tbx.finish_results(
                 resource_filename('tidegates.testing.finish_result', 'finished_with_src.shp'),
                 results,
                 cleanup=False,
@@ -327,7 +327,7 @@ class Test_Flooder(CheckToolbox_Mixin):
                        'buildings', 'building_output']
         nt.assert_list_equal(names, known_names)
 
-    def test__analyze(self):
+    def test_analyze(self):
         ws = resource_filename('tidegates.testing', 'analyze')
         testdir = 'tidegates.testing.analyze'
         test_dem = resource_filename(testdir, 'dem.tif')
@@ -337,7 +337,7 @@ class Test_Flooder(CheckToolbox_Mixin):
         output = resource_filename(testdir, 'flooding.shp')
 
         with utils.WorkSpace(ws), utils.OverwriteState(True):
-            flood, wetland, building = self.tbx._analyze(
+            flood, wetland, building = self.tbx.analyze(
                 elev=7.8,
                 flood_output=output,
                 dem=test_dem,
@@ -357,10 +357,10 @@ class Test_Flooder(CheckToolbox_Mixin):
             resource_filename(testdir, 'known_flooding7_8.shp')
         )
 
-    def test__execute(self):
+    def test_main_execute(self):
         ws = resource_filename('tidegates.testing', 'execute_elev')
         with utils.OverwriteState(True), utils.WorkSpace(ws):
-            self.tbx._execute(
+            self.tbx.main_execute(
                 polygons='zones.shp',
                 workspace=ws,
                 flood_output='test_floods.shp',
@@ -403,7 +403,7 @@ class Test_StandardScenarios(CheckToolbox_Mixin):
                        'buildings', 'building_output']
         nt.assert_list_equal(names, known_names)
 
-    def test__analyze(self):
+    def test_analyze(self):
         ws = resource_filename('tidegates.testing', 'analyze')
         testdir = 'tidegates.testing.analyze'
         test_dem = resource_filename(testdir, 'dem.tif')
@@ -413,7 +413,7 @@ class Test_StandardScenarios(CheckToolbox_Mixin):
         output = resource_filename(testdir, 'flooding.shp')
 
         with utils.WorkSpace(ws), utils.OverwriteState(True):
-            flood, wetland, building = self.tbx._analyze(
+            flood, wetland, building = self.tbx.analyze(
                 surge='MHHW',
                 slr=2.5,
                 flood_output=output,
@@ -436,10 +436,10 @@ class Test_StandardScenarios(CheckToolbox_Mixin):
 
     @mock.patch('tidegates.toolbox.SEALEVELRISE', [0, 1])
     @mock.patch('tidegates.toolbox.SURGES', {'MHHW': 4.0, '10yr': 8.0})
-    def test__execute(self):
+    def test_main_execute(self):
         ws = resource_filename('tidegates.testing', 'execute_std')
         with utils.OverwriteState(True), utils.WorkSpace(ws):
-            self.tbx._execute(
+            self.tbx.main_execute(
                 polygons='zones.shp',
                 workspace=ws,
                 flood_output='test_floods.shp',

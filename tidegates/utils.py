@@ -11,6 +11,7 @@ Written by Paul Hobson (phobson@geosyntec.com)
 
 """
 
+
 import os
 import sys
 import glob
@@ -37,6 +38,12 @@ class EasyMapDoc(object):
     .. _arcpy.mapping.MapDocument: http://resources.arcgis.com/EN/HELP/MAIN/10.2/index.html#/MapDocument/00s30000000n000000/
     .. _arcpy.mapping.DataFrame: http://resources.arcgis.com/EN/HELP/MAIN/10.2/index.html#/DataFrame/00s300000003000000/
     .. _arcpy.mapping.Layer: http://resources.arcgis.com/EN/HELP/MAIN/10.2/index.html#/Layer/00s300000008000000/
+
+    Attributes
+    ----------
+    mapdoc : arcpy.mapping.MapDocument
+        The underlying arcpy MapDocument that serves as the basis for
+        this class.
 
     Examples
     --------
@@ -258,6 +265,12 @@ def _status(msg, verbose=False, asMessage=False, addTab=False): # pragma: no cov
 
 
 def update_status(): # pragma: no cover
+    """ Decorator to allow a function to take a additional keyword
+    arguments related to printing status messages to stdin or as arcpy
+    messages.
+
+    """
+
     def decorate(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
@@ -273,6 +286,27 @@ def update_status(): # pragma: no cover
 
 
 def create_temp_filename(filepath, prefix='_temp_'):
+    """ Helper function to create temporary filenames before to be saved
+    before the final output has been generated.
+
+    Parameters
+    ----------
+    filepath : str
+        The file path/name of what the final output will eventually be.
+    prefix : str, optional ('_temp_')
+        The prefix that will be applied to ``filepath``.
+
+    Returns
+    -------
+    str
+
+    Examples
+    --------
+    >>> create_temp_filename('path/to/flooded_wetlands.shp')
+    path/to/_temp_flooded_wetlands.shp
+
+    """
+
     file_with_ext = os.path.basename(filepath)
     folder = os.path.dirname(filepath)
     return os.path.join(folder, prefix + file_with_ext)
@@ -383,7 +417,7 @@ def rasters_to_arrays(*rasters, **kwargs):
 
     Parameters
     ----------
-    *rasters : numpy.arrays
+    rasters : args of numpy.arrays
         Rasters that will be converted to arrays.
     squeeze : bool, optional (False)
         By default (``squeeze = False``) a list of arrays is always
@@ -877,8 +911,8 @@ def intersect_polygon_layers(destination, *layers, **intersect_options):
     intersected : arcpy.mapping.Layer
         The arcpy Layer of the intersected polygons.
 
-    Example
-    -------
+    Examples
+    --------
     >>> from tidedates import utils
     >>> blobs = utils.intersect_polygon_layers(
     ...     "flood_damage_intersect.shp"
