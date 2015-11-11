@@ -292,7 +292,7 @@ def _impact_to_wetlands(floods_path, ID_column, wetlands_path, wetlands_output=N
         'wetlands',
         ID_column,
     )
-    utils.cleanup_temp_results(temp_flooded_wetlands.dataSource)
+
     return flooded_wetlands
 
 

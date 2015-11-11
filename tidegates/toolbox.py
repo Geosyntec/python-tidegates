@@ -676,7 +676,7 @@ class StandardScenarios(object):
             wetlands_output=wl_path,
             buildings_path=params.get('buildings', None),
             buildings_output=bldg_path,
-            cleanup=True,
+            cleanup=False,
             verbose=True,
             asMessage=True,
         )

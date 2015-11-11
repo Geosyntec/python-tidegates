@@ -884,7 +884,19 @@ def cleanup_temp_results(*results):
 
     """
     for r in results:
-        arcpy.management.Delete(r)
+        if isinstance(r, basestring):
+            path = r
+        elif isinstance(r, arcpy.Result):
+            path = r.getOutput(0)
+        elif isinstance(r, arcpy.mapping.Layer):
+            path = r.dataSource
+        elif isinstance(r, arcpy.Raster):
+            path = r.path
+        else:
+            raise ValueError("Input must be paths, Results, Rasters, or Layers")
+
+        if os.path.exists(path):
+            arcpy.management.Delete(path)
 
 
 @update_status() # layer
