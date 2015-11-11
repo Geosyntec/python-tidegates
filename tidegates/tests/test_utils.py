@@ -419,9 +419,9 @@ def test_clip_dem_to_zones():
 
 @nptest.dec.skipif(not tgtest.has_fiona)
 def test_raster_to_polygons():
-    zonefile = resource_filename("tidegates.testing.input", "test_raster_to_polygon.tif")
-    knownfile = resource_filename("tidegates.testing.known", "known_polygons_from_raster.shp")
-    testfile = resource_filename("tidegates.testing.output", "test_polygons_from_raster.shp")
+    zonefile = resource_filename("tidegates.testing.raster_to_polygons", "input_raster_to_polygon.tif")
+    knownfile = resource_filename("tidegates.testing.raster_to_polygons", "known_polygons_from_raster_1.shp")
+    testfile = resource_filename("tidegates.testing.raster_to_polygons", "test_polygons_from_raster_1.shp")
 
     with utils.OverwriteState(True):
         zones = utils.load_data(zonefile, 'raster')
@@ -434,9 +434,9 @@ def test_raster_to_polygons():
 
 @nptest.dec.skipif(not tgtest.has_fiona)
 def test_raster_to_polygons_with_new_field():
-    zonefile = resource_filename("tidegates.testing.input", "test_raster_to_polygon.tif")
-    knownfile = resource_filename("tidegates.testing.known", "known_polygons_from_raster_2.shp")
-    testfile = resource_filename("tidegates.testing.output", "test_polygons_from_raster_2.shp")
+    zonefile = resource_filename("tidegates.testing.raster_to_polygons", "input_raster_to_polygon.tif")
+    knownfile = resource_filename("tidegates.testing.raster_to_polygons", "known_polygons_from_raster_2.shp")
+    testfile = resource_filename("tidegates.testing.raster_to_polygons", "test_polygons_from_raster_2.shp")
 
     with utils.OverwriteState(True):
         zones = utils.load_data(zonefile, 'raster')
