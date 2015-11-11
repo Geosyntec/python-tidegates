@@ -512,7 +512,7 @@ def test_mask_array_with_flood():
 
 class Test_add_field_with_value(object):
     def setup(self):
-        self.shapefile = resource_filename("tidegates.testing.input", 'test_field_adder.shp')
+        self.shapefile = resource_filename("tidegates.testing.add_field_with_value", 'field_adder.shp')
         self.fields_added = ["_text", "_unicode", "_int", "_float", '_no_valstr', '_no_valnum']
 
     def teardown(self):
