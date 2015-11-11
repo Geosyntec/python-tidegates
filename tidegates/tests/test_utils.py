@@ -672,12 +672,12 @@ def test_intersect_polygon_layers():
 
 class Test_groupby_and_aggregate():
     known_counts = {16.0: 32, 150.0: 2}
-    buildings = resource_filename("tidegates.testing.known", "flooded_buildings.shp")
+    buildings = resource_filename("tidegates.testing.groupby_and_aggregate", "flooded_buildings.shp")
     group_col = 'GeoID'
     count_col = 'STRUCT_ID'
     area_op = 'SHAPE@AREA'
 
-    areas = resource_filename("tidegates.testing.input", "intersect_input1.shp")
+    areas = resource_filename("tidegates.testing.groupby_and_aggregate", "intersect_input1.shp")
     known_areas = {2: 1327042.1024, 7: 1355433.0192, 12: 1054529.2882}
 
     def test_defaults(self):
