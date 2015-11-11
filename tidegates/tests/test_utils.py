@@ -652,10 +652,10 @@ class Test_cleanup_temp_results(object):
 
 @nptest.dec.skipif(not tgtest.has_fiona)
 def test_intersect_polygon_layers():
-    input1_file = resource_filename("tidegates.testing.input", "intersect_input1.shp")
-    input2_file = resource_filename("tidegates.testing.input", "intersect_input2.shp")
-    known_file = resource_filename("tidegates.testing.known", "intersect_output.shp")
-    output_file = resource_filename("tidegates.testing.output", "intersect_output.shp")
+    input1_file = resource_filename("tidegates.testing.intersect_polygons", "intersect_input1.shp")
+    input2_file = resource_filename("tidegates.testing.intersect_polygons", "intersect_input2.shp")
+    known_file = resource_filename("tidegates.testing.intersect_polygons", "intersect_known.shp")
+    output_file = resource_filename("tidegates.testing.intersect_polygons", "intersect_output.shp")
 
     with utils.OverwriteState(True):
         output = utils.intersect_polygon_layers(
