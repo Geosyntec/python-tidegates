@@ -449,12 +449,12 @@ def test_raster_to_polygons_with_new_field():
 
 @nptest.dec.skipif(not tgtest.has_fiona)
 def test_aggregate_polygons():
-    rawfile = resource_filename("tidegates.testing.known", "known_polygons_from_raster.shp")
-    knownfile = resource_filename("tidegates.testing.known", "known_dissolved_polygons.shp")
-    testfile = resource_filename("tidegates.testing.output", "test_dissolved_polygons.shp")
+    inputfile = resource_filename("tidegates.testing.aggregate_polygons", "input_polygons_from_raster.shp")
+    knownfile = resource_filename("tidegates.testing.aggregate_polygons", "known_dissolved_polygons.shp")
+    testfile = resource_filename("tidegates.testing.aggregate_polygons", "test_dissolved_polygons.shp")
 
     with utils.OverwriteState(True):
-        raw = utils.load_data(rawfile, 'layer')
+        raw = utils.load_data(inputfile, 'layer')
         known = utils.load_data(knownfile, 'layer')
         test = utils.aggregate_polygons(raw, "gridcode", testfile)
 
