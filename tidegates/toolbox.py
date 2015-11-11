@@ -841,8 +841,8 @@ class Flooder(StandardScenarios):
         self.description = dedent("""
         Allows the user to create a custom flooding scenario given the
         following:
-            - A DEM of the coastal area
-            - A polygon layer describing the zones of influence of each
+            1) A DEM of the coastal area
+            2) A polygon layer describing the zones of influence of each
               tidegate
         """)
 
