@@ -756,7 +756,7 @@ def test_rename_column():
 
 class Test_populate_field(object):
     def setup(self):
-        self.shapefile = resource_filename("tidegates.testing.input", 'test_field_adder.shp')
+        self.shapefile = resource_filename("tidegates.testing.populate_field", 'populate_field.shp')
         self.field_added = "newfield"
 
     def teardown(self):
