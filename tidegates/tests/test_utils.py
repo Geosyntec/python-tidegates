@@ -25,12 +25,12 @@ class MockResult(object):
 
 class Test_EasyMapDoc(object):
     def setup(self):
-        self.mxd = resource_filename("tidegates.testing.input", "test.mxd")
+        self.mxd = resource_filename("tidegates.testing.EasyMapDoc", "test.mxd")
         self.ezmd = utils.EasyMapDoc(self.mxd)
 
         self.knownlayer_names = ['ZOI', 'wetlands', 'ZOI_first_few', 'wetlands_first_few']
         self.knowndataframe_names = ['Main', 'Subset']
-        self.add_layer_path = resource_filename("tidegates.testing.input", "ZOI.shp")
+        self.add_layer_path = resource_filename("tidegates.testing.EasyMapDoc", "ZOI.shp")
 
     def test_layers(self):
         nt.assert_true(hasattr(self.ezmd, 'layers'))
