@@ -601,46 +601,53 @@ class Test_add_field_with_value(object):
 
 class Test_cleanup_temp_results(object):
     def setup(self):
-        self.template_file = resource_filename('tidegates.testing.input', 'test_dem.tif')
+        self.workspace = resource_filename('tidegates.testing', 'cleanup_temp_results')
+        self.template_file = resource_filename('tidegates.testing.cleanup_temp_results', 'test_dem.tif')
         self.template = utils.load_data(self.template_file, 'raster')
         self.raster1 = utils.array_to_raster(numpy.random.normal(size=(30, 30)), self.template)
         self.raster2 = utils.array_to_raster(numpy.random.normal(size=(60, 60)), self.template)
-        self.raster1.save('temp_1')
-        self.raster2.save('temp_2')
+        with utils.OverwriteState(True), utils.WorkSpace(self.workspace):
+            self.raster1.save('temp_1')
+            self.raster2.save('temp_2')
 
     def test_with_paths(self):
-        utils.cleanup_temp_results(self.raster1.path, self.raster2.path)
-        nt.assert_false(os.path.exists('temp_1'))
-        nt.assert_false(os.path.exists('temp_2'))
+        with utils.WorkSpace(self.workspace):
+            utils.cleanup_temp_results(self.raster1.path, self.raster2.path)
+            nt.assert_false(os.path.exists('temp_1'))
+            nt.assert_false(os.path.exists('temp_2'))
 
     def test_with_rasters(self):
-        utils.cleanup_temp_results(self.raster1, self.raster2)
-        nt.assert_false(os.path.exists('temp_1'))
-        nt.assert_false(os.path.exists('temp_2'))
+        with utils.WorkSpace(self.workspace):
+            utils.cleanup_temp_results(self.raster1, self.raster2)
+            nt.assert_false(os.path.exists('temp_1'))
+            nt.assert_false(os.path.exists('temp_2'))
 
     def test_with_results(self):
-        res1 = arcpy.Result(toolname='Clip_management')
-        res2 = arcpy.Result(toolname='Clip_management')
-        with mock.patch.object(res1, 'getOutput', return_value='temp_1'), \
-             mock.patch.object(res2, 'getOutput', return_value='temp_2'):
-            utils.cleanup_temp_results(res1, res2)
+        with utils.WorkSpace(self.workspace):
+            res1 = arcpy.Result(toolname='Clip_management')
+            res2 = arcpy.Result(toolname='Clip_management')
+            with mock.patch.object(res1, 'getOutput', return_value='temp_1'), \
+                 mock.patch.object(res2, 'getOutput', return_value='temp_2'):
+                utils.cleanup_temp_results(res1, res2)
 
-        nt.assert_false(os.path.exists('temp_1'))
-        nt.assert_false(os.path.exists('temp_2'))
+            nt.assert_false(os.path.exists('temp_1'))
+            nt.assert_false(os.path.exists('temp_2'))
 
     def test_with_layers(self):
-        lyr1 = utils.load_data('temp_1', 'layer', greedyRasters=False)
-        lyr2 = utils.load_data('temp_2', 'layer', greedyRasters=False)
-        utils.cleanup_temp_results(lyr1, lyr2)
-        nt.assert_false(os.path.exists('temp_1'))
-        nt.assert_false(os.path.exists('temp_2'))
+        with utils.WorkSpace(self.workspace):
+            lyr1 = utils.load_data('temp_1', 'layer', greedyRasters=False)
+            lyr2 = utils.load_data('temp_2', 'layer', greedyRasters=False)
+            utils.cleanup_temp_results(lyr1, lyr2)
+            nt.assert_false(os.path.exists('temp_1'))
+            nt.assert_false(os.path.exists('temp_2'))
 
     @nt.raises(ValueError)
     def test_with_bad_input(self):
         utils.cleanup_temp_results(1, 2, ['a', 'b', 'c'])
 
     def teardown(self):
-        utils.cleanup_temp_results(self.raster1, self.raster2)
+        with utils.WorkSpace(self.workspace):
+            utils.cleanup_temp_results('temp_1', 'temp_2')
 
 
 @nptest.dec.skipif(not tgtest.has_fiona)
