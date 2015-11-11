@@ -859,12 +859,12 @@ def test_concat_results():
 
 @nptest.dec.skipif(not tgtest.has_fiona)
 def test_join_results_to_baseline():
-    known = resource_filename('tidegates.testing.known', 'merge_result.shp')
+    known = resource_filename('tidegates.testing.join_results', 'merge_result.shp')
     with utils.OverwriteState(True):
         test = utils.join_results_to_baseline(
-            resource_filename('tidegates.testing.output', 'merge_result.shp'),
-            resource_filename('tidegates.testing.input', 'merge_join.shp'),
-            resource_filename('tidegates.testing.input', 'merge_baseline.shp')
+            resource_filename('tidegates.testing.join_results', 'merge_result.shp'),
+            resource_filename('tidegates.testing.join_results', 'merge_join.shp'),
+            resource_filename('tidegates.testing.join_results', 'merge_baseline.shp')
         )
     nt.assert_true(isinstance(test, arcpy.mapping.Layer))
     tgtest.assert_shapefiles_are_close(test.dataSource, known)
