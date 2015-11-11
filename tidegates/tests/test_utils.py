@@ -399,8 +399,8 @@ class Test_polygons_to_raster_x16(_polygons_to_raster_mixin):
 
 
 def test_clip_dem_to_zones():
-    demfile = resource_filename("tidegates.testing.input", 'test_dem.tif')
-    zonefile = resource_filename("tidegates.testing.input", "test_zones_raster_small.tif")
+    demfile = resource_filename("tidegates.testing.clip_dem_to_zones", 'test_dem.tif')
+    zonefile = resource_filename("tidegates.testing.clip_dem_to_zones", "test_zones_raster_small.tif")
     raster, result = utils.clip_dem_to_zones(demfile, zonefile)
 
     zone_r = utils.load_data(zonefile, 'raster')
