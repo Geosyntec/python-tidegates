@@ -282,8 +282,8 @@ def test_array_to_raster():
 
 
 class Test_load_data(object):
-    rasterpath = resource_filename("tidegates.testing.input", 'test_dem.tif')
-    vectorpath = resource_filename("tidegates.testing.input", 'test_wetlands.shp')
+    rasterpath = resource_filename("tidegates.testing.load_data", 'test_dem.tif')
+    vectorpath = resource_filename("tidegates.testing.load_data", 'test_wetlands.shp')
 
     @nt.raises(ValueError)
     def test_bad_datatype(self):
