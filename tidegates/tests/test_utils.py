@@ -793,16 +793,19 @@ class Test_populate_field(object):
 
 
 class Test_copy_data(object):
-    destfolder = resource_filename("tidegates.testing", "output")
+    destfolder = resource_filename("tidegates.testing.copy_data", "output")
     srclayers = [
-        resource_filename("tidegates.testing.input", "intersect_input2.shp"),
-        resource_filename("tidegates.testing.input", "intersect_input1.shp"),
+        resource_filename("tidegates.testing.copy_data", "copy2.shp"),
+        resource_filename("tidegates.testing.copy_data", "copy1.shp"),
     ]
 
     output = [
-        resource_filename("tidegates.testing.output", "intersect_input2.shp"),
-        resource_filename("tidegates.testing.output", "intersect_input1.shp"),
+        resource_filename("tidegates.testing.copy_data.output", "copy2.shp"),
+        resource_filename("tidegates.testing.copy_data.output", "copy1.shp"),
     ]
+
+    def teardown(self):
+        utils.cleanup_temp_results(*self.output)
 
 
     @nptest.dec.skipif(not tgtest.has_fiona)
@@ -816,8 +819,6 @@ class Test_copy_data(object):
             nt.assert_true(isinstance(newlyr, arcpy.mapping.Layer))
             tgtest.assert_shapefiles_are_close(newname, oldname)
 
-        utils.cleanup_temp_results(*self.output)
-
     @nptest.dec.skipif(not tgtest.has_fiona)
     def test_single_squeeze_false(self):
         with utils.OverwriteState(True):
@@ -829,8 +830,6 @@ class Test_copy_data(object):
             nt.assert_true(isinstance(newlyr, arcpy.mapping.Layer))
             tgtest.assert_shapefiles_are_close(newname, oldname)
 
-        utils.cleanup_temp_results(*self.output[:1])
-
     @nptest.dec.skipif(not tgtest.has_fiona)
     def test_single_squeeze_true(self):
         with utils.OverwriteState(True):
@@ -840,8 +839,6 @@ class Test_copy_data(object):
 
         nt.assert_true(isinstance(newlayer, arcpy.mapping.Layer))
         tgtest.assert_shapefiles_are_close(self.output[0], self.srclayers[0])
-
-        utils.cleanup_temp_results(self.output[0])
 
 
 @nptest.dec.skipif(not tgtest.has_fiona)
