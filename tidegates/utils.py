@@ -450,7 +450,7 @@ def rasters_to_arrays(*rasters, **kwargs):
 
 
 @update_status() # raster
-def array_to_raster(array, template):
+def array_to_raster(array, template, outfile=None):
     """ Create an arcpy.Raster from a numpy.ndarray based on a template.
     This wrapper around `arcpy.NumPyArrayToRaster`_.
 
@@ -491,6 +491,9 @@ def array_to_raster(array, template):
         y_cell_size=template.meanCellHeight,
         value_to_nodata=0
     )
+
+    if outfile is not None:
+        newraster.save(outfile)
 
     return newraster
 
@@ -549,8 +552,8 @@ def load_data(datapath, datatype, greedyRasters=True, **verbosity):
     return data
 
 
-@update_status() # raster and result
-def polygons_to_raster(polygons, ID_column, cellsize=4):
+@update_status() # raster
+def polygons_to_raster(polygons, ID_column, cellsize=4, outfile=None):
     """ Prepare tidegates' areas of influence polygons for flooding
     by converting to a raster. Relies on
     `arcpy.conversion.PolygonToRaster`_.
@@ -599,6 +602,7 @@ def polygons_to_raster(polygons, ID_column, cellsize=4):
             in_features=_zones,
             value_field=ID_column,
             cellsize=cellsize,
+            out_rasterdataset=outfile,
         )
 
     zones = result_to_raster(result)
@@ -606,8 +610,8 @@ def polygons_to_raster(polygons, ID_column, cellsize=4):
     return zones, result
 
 
-@update_status() # raster and result
-def clip_dem_to_zones(dem, zones):
+@update_status() # raster
+def clip_dem_to_zones(dem, zones, outfile=None):
     """ Limits the extent of the topographic data (``dem``) to that of
     the zones of influence  so that we can easily use array
     representations of the rasters. Relies on `arcpy.management.Clip`_.
@@ -639,7 +643,7 @@ def clip_dem_to_zones(dem, zones):
         result = arcpy.management.Clip(
             in_raster=_dem,
             in_template_dataset=_zones,
-            out_raster="_temp_clipped",
+            out_raster=outfile,
             maintain_clipping_extent="MAINTAIN_EXTENT",
             clipping_geometry="NONE",
         )
