@@ -895,12 +895,15 @@ def cleanup_temp_results(*results):
         elif isinstance(r, arcpy.mapping.Layer):
             path = r.dataSource
         elif isinstance(r, arcpy.Raster):
-            path = r.path
+            # Esri docs are incorrect here:
+            # --> http://goo.gl/67NwDj
+            # path doesn't include the name
+            path = os.path.join(r.path, r.name)
         else:
             raise ValueError("Input must be paths, Results, Rasters, or Layers")
 
-        path = os.path.abspath(path)
-        arcpy.management.Delete(path)
+        fullpath = os.path.join(os.path.abspath(arcpy.env.workspace), path)
+        arcpy.management.Delete(fullpath)
 
 
 @update_status() # layer

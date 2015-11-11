@@ -599,45 +599,59 @@ class Test_add_field_with_value(object):
 
 class Test_cleanup_temp_results(object):
     def setup(self):
-        self.workspace = resource_filename('tidegates.testing', 'cleanup_temp_results')
+        self.workspace = os.path.abspath(resource_filename('tidegates.testing', 'cleanup_temp_results'))
         self.template_file = resource_filename('tidegates.testing.cleanup_temp_results', 'test_dem.tif')
         self.template = utils.load_data(self.template_file, 'raster')
-        self.raster1 = utils.array_to_raster(numpy.random.normal(size=(30, 30)), self.template)
-        self.raster2 = utils.array_to_raster(numpy.random.normal(size=(60, 60)), self.template)
-        with utils.OverwriteState(True), utils.WorkSpace(self.workspace):
-            self.raster1.save('temp_1')
-            self.raster2.save('temp_2')
 
-    def test_with_paths(self):
+        raster1 = utils.array_to_raster(numpy.random.normal(size=(30, 30)), self.template)
+        raster2 = utils.array_to_raster(numpy.random.normal(size=(60, 60)), self.template)
+
+        self.name1 = 'temp_1.tif'
+        self.name2 = 'temp_2.tif'
+
+        self.path1 = os.path.join(self.workspace, self.name1)
+        self.path2 = os.path.join(self.workspace, self.name2)
+
+        with utils.OverwriteState(True), utils.WorkSpace(self.workspace):
+            raster1.save(self.path1)
+            raster2.save(self.path2)
+
+    @nt.nottest
+    def check_outcome(self):
+        nt.assert_false(os.path.exists(os.path.join(self.workspace, 'temp_1.tif')))
+        nt.assert_false(os.path.exists(os.path.join(self.workspace, 'temp_2.tif')))
+
+    def test_with_names_in_a_workspace(self):
         with utils.WorkSpace(self.workspace):
-            utils.cleanup_temp_results(self.raster1.path, self.raster2.path)
-            nt.assert_false(os.path.exists('temp_1'))
-            nt.assert_false(os.path.exists('temp_2'))
+            utils.cleanup_temp_results(self.name1, self.name2)
+            self.check_outcome()
+
+    def test_with_paths_absolute(self):
+        utils.cleanup_temp_results(self.path1, self.path2)
+        self.check_outcome()
 
     def test_with_rasters(self):
         with utils.WorkSpace(self.workspace):
-            utils.cleanup_temp_results(self.raster1, self.raster2)
-            nt.assert_false(os.path.exists('temp_1'))
-            nt.assert_false(os.path.exists('temp_2'))
+            raster1 = utils.load_data(self.path1, 'raster')
+            raster2 = utils.load_data(self.path2, 'raster')
+            utils.cleanup_temp_results(raster1, raster2)
+            self.check_outcome()
 
     def test_with_results(self):
         with utils.WorkSpace(self.workspace):
             res1 = arcpy.Result(toolname='Clip_management')
             res2 = arcpy.Result(toolname='Clip_management')
-            with mock.patch.object(res1, 'getOutput', return_value='temp_1'), \
-                 mock.patch.object(res2, 'getOutput', return_value='temp_2'):
+            with mock.patch.object(res1, 'getOutput', return_value='temp_1.tif'), \
+                 mock.patch.object(res2, 'getOutput', return_value='temp_2.tif'):
                 utils.cleanup_temp_results(res1, res2)
-
-            nt.assert_false(os.path.exists('temp_1'))
-            nt.assert_false(os.path.exists('temp_2'))
+                self.check_outcome()
 
     def test_with_layers(self):
         with utils.WorkSpace(self.workspace):
-            lyr1 = utils.load_data('temp_1', 'layer', greedyRasters=False)
-            lyr2 = utils.load_data('temp_2', 'layer', greedyRasters=False)
+            lyr1 = utils.load_data('temp_1.tif', 'layer', greedyRasters=False)
+            lyr2 = utils.load_data('temp_2.tif', 'layer', greedyRasters=False)
             utils.cleanup_temp_results(lyr1, lyr2)
-            nt.assert_false(os.path.exists('temp_1'))
-            nt.assert_false(os.path.exists('temp_2'))
+            self.check_outcome()
 
     @nt.raises(ValueError)
     def test_with_bad_input(self):
@@ -645,7 +659,7 @@ class Test_cleanup_temp_results(object):
 
     def teardown(self):
         with utils.WorkSpace(self.workspace):
-            utils.cleanup_temp_results('temp_1', 'temp_2')
+            utils.cleanup_temp_results('temp_1.tif', 'temp_2.tif')
 
 
 @nptest.dec.skipif(not tgtest.has_fiona)
