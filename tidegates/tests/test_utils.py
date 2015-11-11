@@ -347,9 +347,8 @@ class _polygons_to_raster_mixin(object):
     known_values = numpy.array([-999, 16, 150])
 
     def test_process(self):
-        raster, res = utils.polygons_to_raster(self.testfile, "GeoID", **self.kwargs)
+        raster = utils.polygons_to_raster(self.testfile, "GeoID", **self.kwargs)
         nt.assert_true(isinstance(raster, arcpy.Raster))
-        nt.assert_true(isinstance(res, arcpy.Result))
 
         array = utils.rasters_to_arrays(raster, squeeze=True)
         arcpy.management.Delete(raster)
@@ -401,7 +400,7 @@ class Test_polygons_to_raster_x16(_polygons_to_raster_mixin):
 def test_clip_dem_to_zones():
     demfile = resource_filename("tidegates.testing.clip_dem_to_zones", 'test_dem.tif')
     zonefile = resource_filename("tidegates.testing.clip_dem_to_zones", "test_zones_raster_small.tif")
-    raster, result = utils.clip_dem_to_zones(demfile, zonefile)
+    raster = utils.clip_dem_to_zones(demfile, zonefile)
 
     zone_r = utils.load_data(zonefile, 'raster')
 
@@ -411,7 +410,6 @@ def test_clip_dem_to_zones():
     arcpy.management.Delete(raster)
 
     nt.assert_true(isinstance(raster, arcpy.Raster))
-    nt.assert_true(isinstance(result, arcpy.Result))
 
     known_shape = (146, 172)
     nt.assert_tuple_equal(dem_a.shape, zone_a.shape)

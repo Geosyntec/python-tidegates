@@ -607,7 +607,7 @@ def polygons_to_raster(polygons, ID_column, cellsize=4, outfile=None):
 
     zones = result_to_raster(result)
 
-    return zones, result
+    return zones
 
 
 @update_status() # raster
@@ -650,7 +650,7 @@ def clip_dem_to_zones(dem, zones, outfile=None):
 
     dem_clipped = result_to_raster(result)
 
-    return dem_clipped, result
+    return dem_clipped
 
 
 @update_status() # layer
