@@ -899,8 +899,8 @@ def cleanup_temp_results(*results):
         else:
             raise ValueError("Input must be paths, Results, Rasters, or Layers")
 
-        if os.path.exists(path):
-            arcpy.management.Delete(path)
+        path = os.path.abspath(path)
+        arcpy.management.Delete(path)
 
 
 @update_status() # layer

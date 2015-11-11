@@ -95,18 +95,22 @@ def flood_area(dem, polygons, ID_column, elevation_feet,
     )
 
     # load the zones of influence, converting to a raster
-    zones_r, zone_res = utils.polygons_to_raster(
+    _p2r_outfile = os.path.join(arcpy.env.workspace, "_temp_pgon_as_rstr.tif")
+    zones_r = utils.polygons_to_raster(
         polygons=polygons,
         ID_column=ID_column,
         cellsize=raw_topo.meanCellWidth,
+        outfile=_p2r_outfile,
         msg='Processing {} polygons'.format(polygons),
         **verbose_options
     )
 
     # clip the DEM to the zones raster
-    topo_r, topo_res = utils.clip_dem_to_zones(
+    _cd2z_outfile = os.path.join(arcpy.env.workspace, "_temp_clipped2zones.tif")
+    topo_r = utils.clip_dem_to_zones(
         dem=raw_topo,
         zones=zones_r,
+        outfile=_cd2z_outfile,
         msg='Clipping DEM to extent of polygons',
         **verbose_options
     )
@@ -129,14 +133,14 @@ def flood_area(dem, polygons, ID_column, elevation_feet,
     )
 
     # convert flooded zone array back into a Raster
+    _fr_outfile = os.path.join(arcpy.env.workspace, '_temp_floods_raster.tif')
     flooded_r = utils.array_to_raster(
         array=flooded_a,
         template=zones_r,
+        outfile=_fr_outfile,
         msg='Converting flooded array to a raster dataset',
         **verbose_options
     )
-    with utils.OverwriteState(True):
-        flooded_r.save('tempraster')
 
     # convert raster into polygons
     temp_polygons = utils.raster_to_polygons(
@@ -160,9 +164,9 @@ def flood_area(dem, polygons, ID_column, elevation_feet,
         _temp_files = []
         utils.cleanup_temp_results(
             temp_polygons.dataSource,
-            flooded_r,
-            topo_r,
-            zones_r,
+            _fr_outfile,
+            _cd2z_outfile,
+            _p2r_outfile,
             msg="Removing intermediate files",
             **verbose_options
         )
