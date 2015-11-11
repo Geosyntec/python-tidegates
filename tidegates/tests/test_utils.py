@@ -383,7 +383,7 @@ class Test_polygons_to_raster_x08(_polygons_to_raster_mixin):
     def test_actual_arrays(self):
         known_raster_file = resource_filename("tidegates.testing.polygons_to_raster", "test_zones_raster.tif")
         known_raster = utils.load_data(known_raster_file, 'raster')
-        raster, result = utils.polygons_to_raster(self.testfile, "GeoID", **self.kwargs)
+        raster = utils.polygons_to_raster(self.testfile, "GeoID", **self.kwargs)
         arrays = utils.rasters_to_arrays(raster, known_raster)
         arcpy.management.Delete(raster)
 

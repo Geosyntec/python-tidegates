@@ -36,34 +36,32 @@ def test_flood_area():
 
 @nptest.dec.skipif(not tgtest.has_fiona)
 def test_assess_impact():
-    ws = resource_filename("tidegates", "testing")
-    floods = r"output\flood_impacts.shp"
-    known = r"known\flood_impacts.shp"
-    wetlands = r"input\test_wetlands.shp"
-    buildings = r"input\buildings.shp"
+    ws = resource_filename('tidegates.testing', 'assess_impact')
+    floods = os.path.join(ws, 'flood_impacts.shp')
+    known = os.path.join(ws, 'known_flood_impacts.shp')
+    wetlands = os.path.join(ws, 'wetlands.shp')
+    buildings = os.path.join(ws, 'buildings.shp')
     with utils.WorkSpace(ws), utils.OverwriteState(True):
-        floods, wetlands, buildings = tidegates.assess_impact(
+        floodslyr, wetlandslyr, buildingslyr = tidegates.assess_impact(
             floods_path=floods,
-            ID_column="GeoID",
+            ID_column='GeoID',
             wetlands_path=wetlands,
             buildings_path=buildings,
-            buildings_output=r"output\flooded_buildings.shp",
-            wetlands_output=r"output\flooded_wetlands.shp",
+            buildings_output='flooded_buildings.shp',
+            wetlands_output='flooded_wetlands.shp',
             cleanup=True,
         )
 
-    nt.assert_true(isinstance(floods, arcpy.mapping.Layer))
-    nt.assert_true(isinstance(wetlands, arcpy.mapping.Layer))
-    nt.assert_true(isinstance(buildings, arcpy.mapping.Layer))
-    tgtest.assert_shapefiles_are_close(
-        resource_filename("tidegates.testing.output", "flood_impacts.shp"),
-        resource_filename("tidegates.testing.known", "flood_impacts.shp")
-    )
+        nt.assert_true(isinstance(floodslyr, arcpy.mapping.Layer))
+        nt.assert_true(isinstance(wetlandslyr, arcpy.mapping.Layer))
+        nt.assert_true(isinstance(buildingslyr, arcpy.mapping.Layer))
+        tgtest.assert_shapefiles_are_close(floodslyr.dataSource, known)
 
-    utils.cleanup_temp_results(
-        r"output\flooded_buildings.shp",
-        r"output\flooded_wetlands.shp"
-    )
+        utils.cleanup_temp_results(
+            wetlandslyr,
+            buildingslyr,
+            os.path.join(ws, '_temp_flooded_wetlands.shp')
+        )
 
 
 @nptest.dec.skipif(not tgtest.has_fiona)
