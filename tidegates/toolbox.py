@@ -672,9 +672,9 @@ class StandardScenarios(object):
         fldlyr, wtlndlyr, blgdlyr = tidegates.assess_impact(
             floods_path=floods_path,
             ID_column=params['ID_column'],
-            wetlands_path=params['wetlands'],
+            wetlands_path=params.get('wetlands', None),
             wetlands_output=wl_path,
-            buildings_path=params['buildings'],
+            buildings_path=params.get('buildings', None),
             buildings_output=bldg_path,
             cleanup=True,
             verbose=True,
@@ -761,9 +761,13 @@ class StandardScenarios(object):
 
         """
 
+        wetlands = params.get('wetlands', None)
+        buildings = params.get('buildings', None)
+
         all_floods = []
         all_wetlands = []
         all_buildings = []
+
         with utils.WorkSpace(params['workspace']), utils.OverwriteState(True):
             for scenario in self._make_scenarios(**params):
                 fldlyr, wtlndlyr, blgdlyr = self.analyze(
@@ -773,8 +777,11 @@ class StandardScenarios(object):
                     **params
                 )
                 all_floods.append(fldlyr.dataSource)
-                all_wetlands.append(wtlndlyr.dataSource)
-                all_buildings.append(blgdlyr.dataSource)
+                if wetlands is not None:
+                    all_wetlands.append(wtlndlyr.dataSource)
+
+                if buildings is not None:
+                    all_buildings.append(blgdlyr.dataSource)
 
             self.finish_results(
                 params['flood_output'],
@@ -784,23 +791,33 @@ class StandardScenarios(object):
                 asMessage=True,
             )
 
-            self.finish_results(
-                params['wetland_output'],
-                all_wetlands,
-                sourcename=params['wetlands'],
-                msg="Merging and cleaning up all wetlands results",
-                verbose=True,
-                asMessage=True,
-            )
+            if wetlands is not None:
+                wtld_output = params.get(
+                    'wetland_output',
+                    utils.create_temp_filename(params['wetlands'], prefix='output_')
+                )
+                self.finish_results(
+                    wtld_output,
+                    all_wetlands,
+                    sourcename=params['wetlands'],
+                    msg="Merging and cleaning up all wetlands results",
+                    verbose=True,
+                    asMessage=True,
+                )
 
-            self.finish_results(
-                params['building_output'],
-                all_buildings,
-                sourcename=params['buildings'],
-                msg="Merging and cleaning up all buildings results",
-                verbose=True,
-                asMessage=True,
-            )
+            if buildings is not None:
+                bldg_output = params.get(
+                    'building_output',
+                    utils.create_temp_filename(params['buildings'], prefix='output_')
+                )
+                self.finish_results(
+                    bldg_output,
+                    all_buildings,
+                    sourcename=params['buildings'],
+                    msg="Merging and cleaning up all buildings results",
+                    verbose=True,
+                    asMessage=True,
+                )
 
 
 class Flooder(StandardScenarios):
