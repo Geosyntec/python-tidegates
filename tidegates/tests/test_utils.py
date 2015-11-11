@@ -25,12 +25,12 @@ class MockResult(object):
 
 class Test_EasyMapDoc(object):
     def setup(self):
-        self.mxd = resource_filename("tidegates.testing.input", "test.mxd")
+        self.mxd = resource_filename("tidegates.testing.EasyMapDoc", "test.mxd")
         self.ezmd = utils.EasyMapDoc(self.mxd)
 
         self.knownlayer_names = ['ZOI', 'wetlands', 'ZOI_first_few', 'wetlands_first_few']
         self.knowndataframe_names = ['Main', 'Subset']
-        self.add_layer_path = resource_filename("tidegates.testing.input", "ZOI.shp")
+        self.add_layer_path = resource_filename("tidegates.testing.EasyMapDoc", "ZOI.shp")
 
     def test_layers(self):
         nt.assert_true(hasattr(self.ezmd, 'layers'))
@@ -159,7 +159,7 @@ def test_create_temp_filename():
 
 
 class Test__check_fields(object):
-    table = resource_filename("tidegates.testing.input", "test_field_adder.shp")
+    table = resource_filename("tidegates.testing.check_fields", "test_file.shp")
 
     def test_should_exist_uni(self):
         utils._check_fields(self.table, "Id", should_exist=True)
@@ -228,9 +228,9 @@ class Test_rasters_to_arrays(object):
             [1500, 1600, 1700, 1800, 1900]
         ])
 
-        self.rasterfile1 = resource_filename("tidegates.testing.input", 'test_raster1')
-        self.rasterfile2 = resource_filename("tidegates.testing.input", 'test_raster2')
-        self.rasterfile3 = resource_filename("tidegates.testing.input", 'test_raster3')
+        self.rasterfile1 = resource_filename("tidegates.testing.rasters_to_arrays", 'test_raster1')
+        self.rasterfile2 = resource_filename("tidegates.testing.rasters_to_arrays", 'test_raster2')
+        self.rasterfile3 = resource_filename("tidegates.testing.rasters_to_arrays", 'test_raster3')
 
     def test_one_raster(self):
         array = utils.rasters_to_arrays(self.rasterfile1)
@@ -270,7 +270,7 @@ class Test_rasters_to_arrays(object):
 
 
 def test_array_to_raster():
-    template_file = resource_filename("tidegates.testing.input", 'test_raster2')
+    template_file = resource_filename("tidegates.testing.array_to_raster", 'test_raster2')
     template = arcpy.Raster(template_file)
     array = numpy.arange(5, 25).reshape(4, 5).astype(float)
 
@@ -282,8 +282,8 @@ def test_array_to_raster():
 
 
 class Test_load_data(object):
-    rasterpath = resource_filename("tidegates.testing.input", 'test_dem.tif')
-    vectorpath = resource_filename("tidegates.testing.input", 'test_wetlands.shp')
+    rasterpath = resource_filename("tidegates.testing.load_data", 'test_dem.tif')
+    vectorpath = resource_filename("tidegates.testing.load_data", 'test_wetlands.shp')
 
     @nt.raises(ValueError)
     def test_bad_datatype(self):
@@ -343,13 +343,12 @@ class Test_load_data(object):
 
 
 class _polygons_to_raster_mixin(object):
-    testfile = resource_filename("tidegates.testing.input", "test_zones.shp")
+    testfile = resource_filename("tidegates.testing.polygons_to_raster", "test_zones.shp")
     known_values = numpy.array([-999, 16, 150])
 
     def test_process(self):
-        raster, res = utils.polygons_to_raster(self.testfile, "GeoID", **self.kwargs)
+        raster = utils.polygons_to_raster(self.testfile, "GeoID", **self.kwargs)
         nt.assert_true(isinstance(raster, arcpy.Raster))
-        nt.assert_true(isinstance(res, arcpy.Result))
 
         array = utils.rasters_to_arrays(raster, squeeze=True)
         arcpy.management.Delete(raster)
@@ -382,9 +381,9 @@ class Test_polygons_to_raster_x08(_polygons_to_raster_mixin):
         self.known_counts = numpy.array([23828,  9172])
 
     def test_actual_arrays(self):
-        known_raster_file = resource_filename("tidegates.testing.input", "test_zones_raster.tif")
+        known_raster_file = resource_filename("tidegates.testing.polygons_to_raster", "test_zones_raster.tif")
         known_raster = utils.load_data(known_raster_file, 'raster')
-        raster, result = utils.polygons_to_raster(self.testfile, "GeoID", **self.kwargs)
+        raster = utils.polygons_to_raster(self.testfile, "GeoID", **self.kwargs)
         arrays = utils.rasters_to_arrays(raster, known_raster)
         arcpy.management.Delete(raster)
 
@@ -399,9 +398,9 @@ class Test_polygons_to_raster_x16(_polygons_to_raster_mixin):
 
 
 def test_clip_dem_to_zones():
-    demfile = resource_filename("tidegates.testing.input", 'test_dem.tif')
-    zonefile = resource_filename("tidegates.testing.input", "test_zones_raster_small.tif")
-    raster, result = utils.clip_dem_to_zones(demfile, zonefile)
+    demfile = resource_filename("tidegates.testing.clip_dem_to_zones", 'test_dem.tif')
+    zonefile = resource_filename("tidegates.testing.clip_dem_to_zones", "test_zones_raster_small.tif")
+    raster = utils.clip_dem_to_zones(demfile, zonefile)
 
     zone_r = utils.load_data(zonefile, 'raster')
 
@@ -411,7 +410,6 @@ def test_clip_dem_to_zones():
     arcpy.management.Delete(raster)
 
     nt.assert_true(isinstance(raster, arcpy.Raster))
-    nt.assert_true(isinstance(result, arcpy.Result))
 
     known_shape = (146, 172)
     nt.assert_tuple_equal(dem_a.shape, zone_a.shape)
@@ -419,9 +417,9 @@ def test_clip_dem_to_zones():
 
 @nptest.dec.skipif(not tgtest.has_fiona)
 def test_raster_to_polygons():
-    zonefile = resource_filename("tidegates.testing.input", "test_raster_to_polygon.tif")
-    knownfile = resource_filename("tidegates.testing.known", "known_polygons_from_raster.shp")
-    testfile = resource_filename("tidegates.testing.output", "test_polygons_from_raster.shp")
+    zonefile = resource_filename("tidegates.testing.raster_to_polygons", "input_raster_to_polygon.tif")
+    knownfile = resource_filename("tidegates.testing.raster_to_polygons", "known_polygons_from_raster_1.shp")
+    testfile = resource_filename("tidegates.testing.raster_to_polygons", "test_polygons_from_raster_1.shp")
 
     with utils.OverwriteState(True):
         zones = utils.load_data(zonefile, 'raster')
@@ -434,9 +432,9 @@ def test_raster_to_polygons():
 
 @nptest.dec.skipif(not tgtest.has_fiona)
 def test_raster_to_polygons_with_new_field():
-    zonefile = resource_filename("tidegates.testing.input", "test_raster_to_polygon.tif")
-    knownfile = resource_filename("tidegates.testing.known", "known_polygons_from_raster_2.shp")
-    testfile = resource_filename("tidegates.testing.output", "test_polygons_from_raster_2.shp")
+    zonefile = resource_filename("tidegates.testing.raster_to_polygons", "input_raster_to_polygon.tif")
+    knownfile = resource_filename("tidegates.testing.raster_to_polygons", "known_polygons_from_raster_2.shp")
+    testfile = resource_filename("tidegates.testing.raster_to_polygons", "test_polygons_from_raster_2.shp")
 
     with utils.OverwriteState(True):
         zones = utils.load_data(zonefile, 'raster')
@@ -449,12 +447,12 @@ def test_raster_to_polygons_with_new_field():
 
 @nptest.dec.skipif(not tgtest.has_fiona)
 def test_aggregate_polygons():
-    rawfile = resource_filename("tidegates.testing.known", "known_polygons_from_raster.shp")
-    knownfile = resource_filename("tidegates.testing.known", "known_dissolved_polygons.shp")
-    testfile = resource_filename("tidegates.testing.output", "test_dissolved_polygons.shp")
+    inputfile = resource_filename("tidegates.testing.aggregate_polygons", "input_polygons_from_raster.shp")
+    knownfile = resource_filename("tidegates.testing.aggregate_polygons", "known_dissolved_polygons.shp")
+    testfile = resource_filename("tidegates.testing.aggregate_polygons", "test_dissolved_polygons.shp")
 
     with utils.OverwriteState(True):
-        raw = utils.load_data(rawfile, 'layer')
+        raw = utils.load_data(inputfile, 'layer')
         known = utils.load_data(knownfile, 'layer')
         test = utils.aggregate_polygons(raw, "gridcode", testfile)
 
@@ -512,7 +510,7 @@ def test_mask_array_with_flood():
 
 class Test_add_field_with_value(object):
     def setup(self):
-        self.shapefile = resource_filename("tidegates.testing.input", 'test_field_adder.shp')
+        self.shapefile = resource_filename("tidegates.testing.add_field_with_value", 'field_adder.shp')
         self.fields_added = ["_text", "_unicode", "_int", "_float", '_no_valstr', '_no_valnum']
 
     def teardown(self):
@@ -601,54 +599,75 @@ class Test_add_field_with_value(object):
 
 class Test_cleanup_temp_results(object):
     def setup(self):
-        self.template_file = resource_filename('tidegates.testing.input', 'test_dem.tif')
+        self.workspace = os.path.abspath(resource_filename('tidegates.testing', 'cleanup_temp_results'))
+        self.template_file = resource_filename('tidegates.testing.cleanup_temp_results', 'test_dem.tif')
         self.template = utils.load_data(self.template_file, 'raster')
-        self.raster1 = utils.array_to_raster(numpy.random.normal(size=(30, 30)), self.template)
-        self.raster2 = utils.array_to_raster(numpy.random.normal(size=(60, 60)), self.template)
-        self.raster1.save('temp_1')
-        self.raster2.save('temp_2')
 
-    def test_with_paths(self):
-        utils.cleanup_temp_results(self.raster1.path, self.raster2.path)
-        nt.assert_false(os.path.exists('temp_1'))
-        nt.assert_false(os.path.exists('temp_2'))
+        raster1 = utils.array_to_raster(numpy.random.normal(size=(30, 30)), self.template)
+        raster2 = utils.array_to_raster(numpy.random.normal(size=(60, 60)), self.template)
+
+        self.name1 = 'temp_1.tif'
+        self.name2 = 'temp_2.tif'
+
+        self.path1 = os.path.join(self.workspace, self.name1)
+        self.path2 = os.path.join(self.workspace, self.name2)
+
+        with utils.OverwriteState(True), utils.WorkSpace(self.workspace):
+            raster1.save(self.path1)
+            raster2.save(self.path2)
+
+    @nt.nottest
+    def check_outcome(self):
+        nt.assert_false(os.path.exists(os.path.join(self.workspace, 'temp_1.tif')))
+        nt.assert_false(os.path.exists(os.path.join(self.workspace, 'temp_2.tif')))
+
+    def test_with_names_in_a_workspace(self):
+        with utils.WorkSpace(self.workspace):
+            utils.cleanup_temp_results(self.name1, self.name2)
+            self.check_outcome()
+
+    def test_with_paths_absolute(self):
+        utils.cleanup_temp_results(self.path1, self.path2)
+        self.check_outcome()
 
     def test_with_rasters(self):
-        utils.cleanup_temp_results(self.raster1, self.raster2)
-        nt.assert_false(os.path.exists('temp_1'))
-        nt.assert_false(os.path.exists('temp_2'))
+        with utils.WorkSpace(self.workspace):
+            raster1 = utils.load_data(self.path1, 'raster')
+            raster2 = utils.load_data(self.path2, 'raster')
+            utils.cleanup_temp_results(raster1, raster2)
+            self.check_outcome()
 
     def test_with_results(self):
-        res1 = arcpy.Result(toolname='Clip_management')
-        res2 = arcpy.Result(toolname='Clip_management')
-        with mock.patch.object(res1, 'getOutput', return_value='temp_1'), \
-             mock.patch.object(res2, 'getOutput', return_value='temp_2'):
-            utils.cleanup_temp_results(res1, res2)
-
-        nt.assert_false(os.path.exists('temp_1'))
-        nt.assert_false(os.path.exists('temp_2'))
+        with utils.WorkSpace(self.workspace):
+            res1 = arcpy.Result(toolname='Clip_management')
+            res2 = arcpy.Result(toolname='Clip_management')
+            with mock.patch.object(res1, 'getOutput', return_value='temp_1.tif'), \
+                 mock.patch.object(res2, 'getOutput', return_value='temp_2.tif'):
+                utils.cleanup_temp_results(res1, res2)
+                self.check_outcome()
 
     def test_with_layers(self):
-        lyr1 = utils.load_data('temp_1', 'layer', greedyRasters=False)
-        lyr2 = utils.load_data('temp_2', 'layer', greedyRasters=False)
-        utils.cleanup_temp_results(lyr1, lyr2)
-        nt.assert_false(os.path.exists('temp_1'))
-        nt.assert_false(os.path.exists('temp_2'))
+        with utils.WorkSpace(self.workspace):
+            lyr1 = utils.load_data('temp_1.tif', 'layer', greedyRasters=False)
+            lyr2 = utils.load_data('temp_2.tif', 'layer', greedyRasters=False)
+            utils.cleanup_temp_results(lyr1, lyr2)
+            self.check_outcome()
 
     @nt.raises(ValueError)
     def test_with_bad_input(self):
         utils.cleanup_temp_results(1, 2, ['a', 'b', 'c'])
 
     def teardown(self):
-        utils.cleanup_temp_results(self.raster1, self.raster2)
+        with utils.WorkSpace(self.workspace):
+            utils.cleanup_temp_results('temp_1.tif', 'temp_2.tif')
 
 
 @nptest.dec.skipif(not tgtest.has_fiona)
 def test_intersect_polygon_layers():
-    input1_file = resource_filename("tidegates.testing.input", "intersect_input1.shp")
-    input2_file = resource_filename("tidegates.testing.input", "intersect_input2.shp")
-    known_file = resource_filename("tidegates.testing.known", "intersect_output.shp")
-    output_file = resource_filename("tidegates.testing.output", "intersect_output.shp")
+    input1_file = resource_filename("tidegates.testing.intersect_polygons", "intersect_input1.shp")
+    input2_file = resource_filename("tidegates.testing.intersect_polygons", "intersect_input2.shp")
+    known_file = resource_filename("tidegates.testing.intersect_polygons", "intersect_known.shp")
+    output_file = resource_filename("tidegates.testing.intersect_polygons", "intersect_output.shp")
 
     with utils.OverwriteState(True):
         output = utils.intersect_polygon_layers(
@@ -665,12 +684,12 @@ def test_intersect_polygon_layers():
 
 class Test_groupby_and_aggregate():
     known_counts = {16.0: 32, 150.0: 2}
-    buildings = resource_filename("tidegates.testing.known", "flooded_buildings.shp")
+    buildings = resource_filename("tidegates.testing.groupby_and_aggregate", "flooded_buildings.shp")
     group_col = 'GeoID'
     count_col = 'STRUCT_ID'
     area_op = 'SHAPE@AREA'
 
-    areas = resource_filename("tidegates.testing.input", "intersect_input1.shp")
+    areas = resource_filename("tidegates.testing.groupby_and_aggregate", "intersect_input1.shp")
     known_areas = {2: 1327042.1024, 7: 1355433.0192, 12: 1054529.2882}
 
     def test_defaults(self):
@@ -732,7 +751,7 @@ class Test_groupby_and_aggregate():
 
 @nt.raises(NotImplementedError)
 def test_rename_column():
-    layer = resource_filename("tidegates.testing.input", "test_field_adder.dbf")
+    layer = resource_filename("tidegates.testing.rename_column", "rename_col.dbf")
     oldname = "existing"
     newname = "exists"
 
@@ -749,7 +768,7 @@ def test_rename_column():
 
 class Test_populate_field(object):
     def setup(self):
-        self.shapefile = resource_filename("tidegates.testing.input", 'test_field_adder.shp')
+        self.shapefile = resource_filename("tidegates.testing.populate_field", 'populate_field.shp')
         self.field_added = "newfield"
 
     def teardown(self):
@@ -786,16 +805,19 @@ class Test_populate_field(object):
 
 
 class Test_copy_data(object):
-    destfolder = resource_filename("tidegates.testing", "output")
+    destfolder = resource_filename("tidegates.testing.copy_data", "output")
     srclayers = [
-        resource_filename("tidegates.testing.input", "intersect_input2.shp"),
-        resource_filename("tidegates.testing.input", "intersect_input1.shp"),
+        resource_filename("tidegates.testing.copy_data", "copy2.shp"),
+        resource_filename("tidegates.testing.copy_data", "copy1.shp"),
     ]
 
     output = [
-        resource_filename("tidegates.testing.output", "intersect_input2.shp"),
-        resource_filename("tidegates.testing.output", "intersect_input1.shp"),
+        resource_filename("tidegates.testing.copy_data.output", "copy2.shp"),
+        resource_filename("tidegates.testing.copy_data.output", "copy1.shp"),
     ]
+
+    def teardown(self):
+        utils.cleanup_temp_results(*self.output)
 
 
     @nptest.dec.skipif(not tgtest.has_fiona)
@@ -809,8 +831,6 @@ class Test_copy_data(object):
             nt.assert_true(isinstance(newlyr, arcpy.mapping.Layer))
             tgtest.assert_shapefiles_are_close(newname, oldname)
 
-        utils.cleanup_temp_results(*self.output)
-
     @nptest.dec.skipif(not tgtest.has_fiona)
     def test_single_squeeze_false(self):
         with utils.OverwriteState(True):
@@ -822,8 +842,6 @@ class Test_copy_data(object):
             nt.assert_true(isinstance(newlyr, arcpy.mapping.Layer))
             tgtest.assert_shapefiles_are_close(newname, oldname)
 
-        utils.cleanup_temp_results(*self.output[:1])
-
     @nptest.dec.skipif(not tgtest.has_fiona)
     def test_single_squeeze_true(self):
         with utils.OverwriteState(True):
@@ -834,17 +852,15 @@ class Test_copy_data(object):
         nt.assert_true(isinstance(newlayer, arcpy.mapping.Layer))
         tgtest.assert_shapefiles_are_close(self.output[0], self.srclayers[0])
 
-        utils.cleanup_temp_results(self.output[0])
-
 
 @nptest.dec.skipif(not tgtest.has_fiona)
 def test_concat_results():
-    known = resource_filename('tidegates.testing.known', 'concat_result.shp')
+    known = resource_filename('tidegates.testing.concat_results', 'known.shp')
     with utils.OverwriteState(True):
         test = utils.concat_results(
-            resource_filename('tidegates.testing.output', 'concat_result.shp'),
-            resource_filename('tidegates.testing.input', 'intersect_input1.shp'),
-            resource_filename('tidegates.testing.input', 'intersect_input2.shp')
+            resource_filename('tidegates.testing.concat_results', 'result.shp'),
+            resource_filename('tidegates.testing.concat_results', 'input1.shp'),
+            resource_filename('tidegates.testing.concat_results', 'input2.shp')
         )
 
     nt.assert_true(isinstance(test, arcpy.mapping.Layer))
@@ -855,12 +871,12 @@ def test_concat_results():
 
 @nptest.dec.skipif(not tgtest.has_fiona)
 def test_join_results_to_baseline():
-    known = resource_filename('tidegates.testing.known', 'merge_result.shp')
+    known = resource_filename('tidegates.testing.join_results', 'merge_result.shp')
     with utils.OverwriteState(True):
         test = utils.join_results_to_baseline(
-            resource_filename('tidegates.testing.output', 'merge_result.shp'),
-            resource_filename('tidegates.testing.input', 'merge_join.shp'),
-            resource_filename('tidegates.testing.input', 'merge_baseline.shp')
+            resource_filename('tidegates.testing.join_results', 'merge_result.shp'),
+            resource_filename('tidegates.testing.join_results', 'merge_join.shp'),
+            resource_filename('tidegates.testing.join_results', 'merge_baseline.shp')
         )
     nt.assert_true(isinstance(test, arcpy.mapping.Layer))
     tgtest.assert_shapefiles_are_close(test.dataSource, known)
