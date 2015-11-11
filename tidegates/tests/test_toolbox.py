@@ -59,7 +59,7 @@ class CheckToolbox_Mixin(object):
 
     def test_execute(self):
         messages = ['message1', 'message2']
-        with mock.patch.object(self.tbx, '_execute') as _exe:
+        with mock.patch.object(self.tbx, 'main_execute') as _exe:
             self.tbx.execute(self.parameters, messages)
             _exe.assert_called_once_with(**self.parameter_dict)
 
@@ -268,7 +268,7 @@ class CheckToolbox_Mixin(object):
             nt.assert_true(ts['slr'] in toolbox.SEALEVELRISE)
 
     @nptest.dec.skipif(not tgtest.has_fiona)
-    def test__finish_results_no_source(self):
+    def test_finish_results_no_source(self):
         results = [
             resource_filename('tidegates.testing.finish_result', 'res1.shp'),
             resource_filename('tidegates.testing.finish_result', 'res2.shp'),
@@ -287,7 +287,7 @@ class CheckToolbox_Mixin(object):
         )
 
     @nptest.dec.skipif(not tgtest.has_fiona)
-    def test__finish_results_with_source(self):
+    def test_finish_results_with_source(self):
         results = [
             resource_filename('tidegates.testing.finish_result', 'res1.shp'),
             resource_filename('tidegates.testing.finish_result', 'res2.shp'),

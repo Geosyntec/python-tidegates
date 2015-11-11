@@ -680,7 +680,9 @@ class StandardScenarios(object):
             verbose=True,
             asMessage=True,
         )
-        self._add_scenario_columns(wtlndlyr.dataSource, elev=elev, surge=surge, slr=slr)
+
+        if wtlndlyr is not None:
+            self._add_scenario_columns(wtlndlyr.dataSource, elev=elev, surge=surge, slr=slr)
 
         return fldlyr, wtlndlyr, blgdlyr
 

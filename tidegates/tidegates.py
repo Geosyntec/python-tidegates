@@ -301,7 +301,8 @@ def _impact_to_buildings(floods_path, ID_column, buildings_path, buildings_outpu
                          **verbose_options):
 
     if buildings_output is None:
-        wetlands_output = utils.create_temp_filename('flooded_buildings')
+        buildings_output = utils.create_temp_filename('flooded_buildings')
+
 
     # intersect the buildings with the floods
     flooded_buildings = utils.intersect_polygon_layers(
