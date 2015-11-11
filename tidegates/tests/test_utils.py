@@ -343,7 +343,7 @@ class Test_load_data(object):
 
 
 class _polygons_to_raster_mixin(object):
-    testfile = resource_filename("tidegates.testing.input", "test_zones.shp")
+    testfile = resource_filename("tidegates.testing.polygons_to_raster", "test_zones.shp")
     known_values = numpy.array([-999, 16, 150])
 
     def test_process(self):
@@ -382,7 +382,7 @@ class Test_polygons_to_raster_x08(_polygons_to_raster_mixin):
         self.known_counts = numpy.array([23828,  9172])
 
     def test_actual_arrays(self):
-        known_raster_file = resource_filename("tidegates.testing.input", "test_zones_raster.tif")
+        known_raster_file = resource_filename("tidegates.testing.polygons_to_raster", "test_zones_raster.tif")
         known_raster = utils.load_data(known_raster_file, 'raster')
         raster, result = utils.polygons_to_raster(self.testfile, "GeoID", **self.kwargs)
         arrays = utils.rasters_to_arrays(raster, known_raster)
