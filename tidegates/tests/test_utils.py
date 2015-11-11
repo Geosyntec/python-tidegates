@@ -843,12 +843,12 @@ class Test_copy_data(object):
 
 @nptest.dec.skipif(not tgtest.has_fiona)
 def test_concat_results():
-    known = resource_filename('tidegates.testing.known', 'concat_result.shp')
+    known = resource_filename('tidegates.testing.concat_results', 'known.shp')
     with utils.OverwriteState(True):
         test = utils.concat_results(
-            resource_filename('tidegates.testing.output', 'concat_result.shp'),
-            resource_filename('tidegates.testing.input', 'intersect_input1.shp'),
-            resource_filename('tidegates.testing.input', 'intersect_input2.shp')
+            resource_filename('tidegates.testing.concat_results', 'result.shp'),
+            resource_filename('tidegates.testing.concat_results', 'input1.shp'),
+            resource_filename('tidegates.testing.concat_results', 'input2.shp')
         )
 
     nt.assert_true(isinstance(test, arcpy.mapping.Layer))
