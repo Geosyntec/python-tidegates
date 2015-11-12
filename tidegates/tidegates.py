@@ -70,7 +70,7 @@ def flood_area(dem, zones, ID_column, elevation_feet,
 
     See also
     --------
-    assess_impact
+    assess_impact, area_of_impacts, count_of_impacts
 
     """
 
@@ -215,7 +215,7 @@ def assess_impact(floods_path, ID_column, cleanup=False,
 
     See also
     --------
-    flood_area
+    flood_area, area_of_impacts, count_of_impacts
 
     """
 
@@ -229,11 +229,11 @@ def assess_impact(floods_path, ID_column, cleanup=False,
     )
 
     if wetlands_path is not None:
-        flooded_wetlands = _impact_to_wetlands(
+        flooded_wetlands = area_of_impacts(
             floods_path=floods_path,
             ID_column=ID_column,
-            wetlands_path=wetlands_path,
-            wetlands_output=wetlands_output,
+            assets_input=wetlands_path,
+            assets_output=wetlands_output,
             msg='Assessing impact to wetlands',
             **verbose_options
         )
@@ -244,11 +244,11 @@ def assess_impact(floods_path, ID_column, cleanup=False,
 
 
     if buildings_path is not None:
-        flooded_buildings = _impact_to_buildings(
+        flooded_buildings = count_of_impacts(
             floods_path=floods_path,
             ID_column=ID_column,
-            buildings_path=buildings_path,
-            buildings_output=buildings_output,
+            assets_input=buildings_path,
+            assets_output=buildings_output,
             msg='Assessing impact to Buildings',
             **verbose_options
         )
@@ -261,80 +261,151 @@ def assess_impact(floods_path, ID_column, cleanup=False,
 
 
 @utils.update_status()
-def _impact_to_wetlands(floods_path, ID_column, wetlands_path,
-                        wetlands_output=None, cleanup=False,
-                        **verbose_options):
-    if wetlands_output is None:
-        wetlands_output = 'flooded_wetlands'
+def area_of_impacts(floods_path, ID_column, assets_input,
+                    fieldname='wetlands', assets_output=None,
+                    cleanup=False, **verbose_options):
+
+    """ Computes the area of assets impacted by a flooded area.
+
+    The impacted area is anywhere an asset and the flooded areas
+    overlap. This is useful for such tasks as determine the amount of
+    wetlands inundated by a flood.
+
+    Parameters
+    ----------
+    floods_path : str
+        Path/filename of the dataset of flooded areas. Ideally this is
+        output from :func:`flood_area`.
+    ID_column : str
+        Name of the field in ``floods_path`` that associates each
+        flooded area with a tidegate.
+    assets_input : str
+        Path/filename of the dataset of assets (e.g., wetland
+        boundaries).
+    fieldname : str, optional ('wetlands')
+        The name of the field that will be added to ``floods_path``
+        containing the count of impacted assets for each flooded area.
+    assets_output : str, optional
+        Path/filename of the dataset in which only the impacted assets
+        will be saved.
+
+    Returns
+    -------
+    flooded_assets : arcpy.mapping.Layer
+        Layer of the flooded assets.
+
+    See also
+    --------
+    flood_area, assess_impact, count_of_impacts
+
+    """
+
+    if assets_output is None:
+        assets_output = 'flooded_continuous'
 
     # intersect wetlands with the floods
-    temp_flooded_wetlands = utils.intersect_polygon_layers(
-        utils.create_temp_filename(wetlands_output),
+    temp_flooded_assets = utils.intersect_polygon_layers(
+        utils.create_temp_filename(assets_output),
         utils.load_data(floods_path, 'layer'),
-        utils.load_data(wetlands_path, 'layer'),
+        utils.load_data(assets_input, 'layer'),
         **verbose_options
     )
 
     # aggregate the wetlands based on the flood zone
-    flooded_wetlands = utils.aggregate_polygons(
-        temp_flooded_wetlands,
+    flooded_assets = utils.aggregate_polygons(
+        temp_flooded_assets,
         ID_column,
-        wetlands_output
+        assets_output
     )
 
     # get area of flooded wetlands
-    wetland_areas = utils.groupby_and_aggregate(
-        input_path=wetlands_output,
+    flooded_asset_areas = utils.groupby_and_aggregate(
+        input_path=assets_output,
         groupfield=ID_column,
         valuefield='SHAPE@AREA',
         aggfxn=lambda group: sum([row[1] for row in group])
     )
     # add a wetlands area field and populate
-    utils.add_field_with_value(floods_path, 'wetlands', field_type='DOUBLE', overwrite=True)
+    utils.add_field_with_value(floods_path, fieldname, field_type='DOUBLE', overwrite=True)
     utils.populate_field(
         floods_path,
-        lambda row: wetland_areas.get(row[0], -999),
+        lambda row: flooded_asset_areas.get(row[0], -999),
         'wetlands',
         ID_column,
     )
 
     if cleanup:
-        utils.cleanup_temp_results(temp_flooded_wetlands    )
+        utils.cleanup_temp_results(temp_flooded_assets)
 
-    return flooded_wetlands
+    return flooded_assets
 
 
 @utils.update_status()
-def _impact_to_buildings(floods_path, ID_column, buildings_path,
-                         buildings_output=None, **verbose_options):
+def count_of_impacts(floods_path, ID_column, assets_input,
+                     fieldname='buildings', assets_output=None,
+                     **verbose_options):
+    """ Counts of the number of assets impacted by a flooded area.
 
-    if buildings_output is None:
-        buildings_output = utils.create_temp_filename('flooded_buildings')
+    An asset is considered impacted if a flooded area overlaps its
+    boundary in anyway. This is useful for such tasks as counting the
+    number of building footprints within a flood area.
+
+    Parameters
+    ----------
+    floods_path : str
+        Path/filename of the dataset of flooded areas. Ideally this is
+        output from :func:`flood_area`.
+    ID_column : str
+        Name of the field in ``floods_path`` that associates each
+        flooded area with a tidegate.
+    assets_input : str
+        Path/filename of the dataset of assets (e.g., building
+        footprints).
+    fieldname : str, optional ('buildings')
+        The name of the field that will be added to ``floods_path``
+        containing the count of impacted assets for each flooded area.
+    assets_output : str, optional
+        Path/filename of the dataset in which only the impacted assets
+        will be saved.
+
+    Returns
+    -------
+    touched_assets : arcpy.mapping.Layer
+        Layer of the impacted assets.
+
+    See also
+    --------
+    flood_area, assess_impact, area_of_impacts
+
+    """
+
+    if assets_output is None:
+        assets_output = utils.create_temp_filename('flooded_discrete')
 
 
     # intersect the buildings with the floods
-    flooded_buildings = utils.intersect_polygon_layers(
-        buildings_output,
+    touched_assets = utils.intersect_polygon_layers(
+        assets_output,
         utils.load_data(floods_path, 'layer'),
-        utils.load_data(buildings_path, 'layer'),
+        utils.load_data(assets_input, 'layer'),
         msg='Assessing impact to buildings',
         **verbose_options
     )
 
     # count the number of flooding buildings in each flood zone
-    building_counts = utils.groupby_and_aggregate(
-        input_path=buildings_output,
+    counts = utils.groupby_and_aggregate(
+        input_path=assets_output,
         groupfield=ID_column,
         valuefield='STRUCT_ID'
     )
 
     # add a building count column and populate
-    utils.add_field_with_value(floods_path, 'buildings', field_type='LONG', overwrite=True)
+    utils.add_field_with_value(floods_path, fieldname, field_type='LONG', overwrite=True)
     utils.populate_field(
         floods_path,
-        lambda row: building_counts.get(row[0], -1),
+        lambda row: counts.get(row[0], -1),
         'buildings',
         ID_column,
     )
 
-    return flooded_buildings
+    return touched_assets

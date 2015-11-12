@@ -65,18 +65,18 @@ def test_assess_impact():
 
 
 @nptest.dec.skipif(not tgtest.has_fiona)
-def test__impact_to_wetlands():
+def test_area_of_impacts():
     ws = resource_filename('tidegates.testing', 'impact_to_wetlands')
     floods = 'flood_impacts.shp'
     known = 'known_flooded_wetlands.shp'
     wetlands = 'wetlands.shp'
     flooded_output = 'output_flooded_wetlands.shp'
     with utils.WorkSpace(ws), utils.OverwriteState(True):
-        flooded_wetlands = tidegates._impact_to_wetlands(
+        flooded_wetlands = tidegates.area_of_impacts(
             floods_path=floods,
             ID_column='GeoID',
-            wetlands_path=wetlands,
-            wetlands_output=flooded_output,
+            assets_input=wetlands,
+            assets_output=flooded_output,
             cleanup=True
         )
 
@@ -90,18 +90,18 @@ def test__impact_to_wetlands():
 
 
 @nptest.dec.skipif(not tgtest.has_fiona)
-def test__impact_to_buildings():
+def test_count_of_impacts():
     ws = resource_filename('tidegates.testing', 'impact_to_buildings')
     floods = 'flood_impacts.shp'
     known = 'known_flooded_buildings.shp'
     buildings = 'buildings.shp'
     flooded_output = 'output_flooded_buildings.shp'
     with utils.WorkSpace(ws), utils.OverwriteState(True):
-        flooded_buildings = tidegates._impact_to_buildings(
+        flooded_buildings = tidegates.count_of_impacts(
             floods_path=floods,
             ID_column='GeoID',
-            buildings_path=buildings,
-            buildings_output=flooded_output,
+            assets_input=buildings,
+            assets_output=flooded_output,
         )
 
     nt.assert_true(isinstance(flooded_buildings, arcpy.mapping.Layer))

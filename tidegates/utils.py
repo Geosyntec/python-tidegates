@@ -3,7 +3,7 @@
 This contains basic file I/O, coversion, and spatial analysis functions
 to support the python-tidegates library. In most cases, these functions
 are simply wrappers around their ``arcpy`` counter parts. This was done
-so that in the future, these functions could be replaces with calls to
+so that in the future, these functions could be replaced with calls to
 a different geoprocessing library and eventually ween the code base off
 of its ``arcpy`` dependency.
 
