@@ -16,7 +16,7 @@ def test_flood_area():
         filename = 'test_flood_area_output.shp'
         floods = tidegates.flood_area(
             dem='test_dem.tif',
-            polygons='test_zones.shp',
+            zones='test_zones.shp',
             ID_column='GeoID',
             elevation_feet=7.8,
             filename=filename,

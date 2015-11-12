@@ -66,24 +66,24 @@ class CheckToolbox_Mixin(object):
     def test__set_parameter_dependency_single(self):
         self.tbx._set_parameter_dependency(
             self.tbx.ID_column,
-            self.tbx.polygons
+            self.tbx.zones
         )
 
         nt.assert_list_equal(
             self.tbx.ID_column.parameterDependencies,
-            [self.tbx.polygons.name]
+            [self.tbx.zones.name]
         )
 
     def test__set_parameter_dependency_many(self):
         self.tbx._set_parameter_dependency(
             self.tbx.ID_column,
             self.tbx.workspace,
-            self.tbx.polygons,
+            self.tbx.zones,
         )
 
         nt.assert_list_equal(
             self.tbx.ID_column.parameterDependencies,
-            [self.tbx.workspace.name, self.tbx.polygons.name]
+            [self.tbx.workspace.name, self.tbx.zones.name]
         )
 
     def test__show_header(self):
@@ -180,13 +180,13 @@ class CheckToolbox_Mixin(object):
         nt.assert_equal(self.tbx.dem.datatype, "Raster Dataset")
         nt.assert_equal(self.tbx.dem.name, 'dem')
 
-    def test_polygons(self):
-        nt.assert_true(hasattr(self.tbx, 'polygons'))
-        nt.assert_true(isinstance(self.tbx.polygons, arcpy.Parameter))
-        nt.assert_equal(self.tbx.polygons.parameterType, "Required")
-        nt.assert_equal(self.tbx.polygons.direction, "Input")
-        nt.assert_equal(self.tbx.polygons.datatype, "Feature Class")
-        nt.assert_equal(self.tbx.polygons.name, 'polygons')
+    def test_zones(self):
+        nt.assert_true(hasattr(self.tbx, 'zones'))
+        nt.assert_true(isinstance(self.tbx.zones, arcpy.Parameter))
+        nt.assert_equal(self.tbx.zones.parameterType, "Required")
+        nt.assert_equal(self.tbx.zones.direction, "Input")
+        nt.assert_equal(self.tbx.zones.datatype, "Feature Class")
+        nt.assert_equal(self.tbx.zones.name, 'zones')
 
     def test_ID_column(self):
         nt.assert_true(hasattr(self.tbx, 'ID_column'))
@@ -322,7 +322,7 @@ class CheckToolbox_Mixin(object):
                 surge=self.surge,
                 flood_output=output,
                 dem=test_dem,
-                polygons=test_zones,
+                zones=test_zones,
                 ID_column='GeoID',
                 wetlands=test_wetlands,
                 buildings=test_buidlings,
@@ -354,7 +354,7 @@ class CheckToolbox_Mixin(object):
                 surge=self.surge,
                 flood_output=output,
                 dem=test_dem,
-                polygons=test_zones,
+                zones=test_zones,
                 ID_column='GeoID',
                 wetlands=None,
                 buildings=None
@@ -375,7 +375,7 @@ class CheckToolbox_Mixin(object):
     def test_main_execute(self):
         with utils.OverwriteState(True), utils.WorkSpace(self.main_execute_ws):
             self.tbx.main_execute(
-                polygons='zones.shp',
+                zones='zones.shp',
                 workspace=self.main_execute_ws,
                 flood_output='test_floods.shp',
                 wetland_output='test_wetlands.shp',
@@ -409,7 +409,7 @@ class CheckToolbox_Mixin(object):
     def test_main_execute_no_assets(self):
         with utils.OverwriteState(True), utils.WorkSpace(self.main_execute_ws):
             self.tbx.main_execute(
-                polygons='zones.shp',
+                zones='zones.shp',
                 workspace=self.main_execute_ws,
                 flood_output='test_floods_no_assets.shp',
                 ID_column='GeoID',
@@ -450,7 +450,7 @@ class Test_Flooder(CheckToolbox_Mixin):
     def test_params_as_list(self):
         params = self.tbx._params_as_list()
         names = [str(p.name) for p in params]
-        known_names = ['workspace', 'dem', 'polygons', 'ID_column', 'elevation',
+        known_names = ['workspace', 'dem', 'zones', 'ID_column', 'elevation',
                        'flood_output', 'wetlands', 'wetland_output',
                        'buildings', 'building_output']
         nt.assert_list_equal(names, known_names)
@@ -473,7 +473,7 @@ class Test_StandardScenarios(CheckToolbox_Mixin):
     def test_params_as_list(self):
         params = self.tbx._params_as_list()
         names = [str(p.name) for p in params]
-        known_names = ['workspace', 'dem', 'polygons', 'ID_column',
+        known_names = ['workspace', 'dem', 'zones', 'ID_column',
                        'flood_output', 'wetlands', 'wetland_output',
                        'buildings', 'building_output']
         nt.assert_list_equal(names, known_names)

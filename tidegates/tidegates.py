@@ -29,7 +29,7 @@ __all__ = ["flood_area", "assess_impact"]
 METERS_PER_FOOT = 0.3048
 
 
-def flood_area(dem, polygons, ID_column, elevation_feet,
+def flood_area(dem, zones, ID_column, elevation_feet,
                filename=None, cleanup=True, **verbose_options):
     """ Mask out portions of a a tidegates area of influence below
     a certain elevation.
@@ -38,11 +38,11 @@ def flood_area(dem, polygons, ID_column, elevation_feet,
     ----------
     dem : str or arcpy.Raster
         The (filepath to the ) Digital Elevation Model of the area.
-    polygons : str or arcpy.mapping.Layer
+    zones : str or arcpy.mapping.Layer
         The (filepath to the) zones that will be flooded. If a string,
         a Layer will be created.
     ID_column : str
-        Name of the column in the ``polygons`` layer that associates
+        Name of the column in the ``zones`` layer that associates
         each geomstry with a tidegate.
     elevation_feet: float
         The theoritical flood elevation (in ft MSL) that will be
@@ -64,8 +64,8 @@ def flood_area(dem, polygons, ID_column, elevation_feet,
 
     Returns
     -------
-    flood_polygons : arcpy.mapping.Layer
-        arcpy Layer of the polygons showing the extent flooded behind
+    flood_zones : arcpy.mapping.Layer
+        arcpy Layer of the zones showing the extent flooded behind
         each tidegate.
 
     See also
@@ -97,11 +97,11 @@ def flood_area(dem, polygons, ID_column, elevation_feet,
     # load the zones of influence, converting to a raster
     _p2r_outfile = os.path.join(arcpy.env.workspace, "_temp_pgon_as_rstr.tif")
     zones_r = utils.polygons_to_raster(
-        polygons=polygons,
+        polygons=zones,
         ID_column=ID_column,
         cellsize=raw_topo.meanCellWidth,
         outfile=_p2r_outfile,
-        msg='Processing {} polygons'.format(polygons),
+        msg='Processing {} polygons'.format(zones),
         **verbose_options
     )
 
@@ -111,7 +111,7 @@ def flood_area(dem, polygons, ID_column, elevation_feet,
         dem=raw_topo,
         zones=zones_r,
         outfile=_cd2z_outfile,
-        msg='Clipping DEM to extent of polygons',
+        msg='Clipping DEM to extent of {}'.format(zones),
         **verbose_options
     )
 
@@ -152,7 +152,7 @@ def flood_area(dem, polygons, ID_column, elevation_feet,
     )
 
     # dissolve (merge) broken polygons for each tidegate
-    flood_polygons = utils.aggregate_polygons(
+    flood_zones = utils.aggregate_polygons(
         polygons=temp_polygons,
         ID_field=ID_column,
         filename=filename,
@@ -171,7 +171,7 @@ def flood_area(dem, polygons, ID_column, elevation_feet,
             **verbose_options
         )
 
-    return flood_polygons
+    return flood_zones
 
 
 def assess_impact(floods_path, ID_column, cleanup=False,

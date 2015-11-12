@@ -48,6 +48,7 @@ class StandardScenarios(object):
     Flooder
 
     """
+
     def __init__(self):
         """Define the tool (tool name is the name of the class)."""
         # std attributes
@@ -65,7 +66,7 @@ class StandardScenarios(object):
         # lazy properties
         self._workspace = None
         self._dem = None
-        self._polygons = None
+        self._zones = None
         self._ID_column = None
         self._flood_output = None
         self._building_output = None
@@ -108,10 +109,11 @@ class StandardScenarios(object):
 
         Automatically called when any parameter is updated in the GUI.
 
-        Flow is like this:
-            1. User interacts with GUI, filling out some input element
-            2. self.getParameterInfo is called
-            3. Parameteter are fed to this method as a list
+        The general flow is like this:
+
+          1. User interacts with GUI, filling out some input element
+          2. ``self.getParameterInfo`` is called
+          3. Parameteter are fed to this method as a list
 
         I used to set the parameter dependecies in here, but that didn't
         work. So now this does nothing and dependecies are set when the
@@ -425,26 +427,26 @@ class StandardScenarios(object):
         return self._dem
 
     @property
-    def polygons(self):
+    def zones(self):
         """ The Zones of influence polygons to be used in the analysis.
 
         """
 
-        if self._polygons is None:
-            self._polygons = arcpy.Parameter(
+        if self._zones is None:
+            self._zones = arcpy.Parameter(
                 displayName="Tidegate Zones of Influence",
-                name="polygons",
+                name="zones",
                 datatype="DEFeatureClass",
                 parameterType="Required",
                 direction="Input",
                 multiValue=False
             )
-            self._set_parameter_dependency(self._polygons, self.workspace)
-        return self._polygons
+            self._set_parameter_dependency(self._zones, self.workspace)
+        return self._zones
 
     @property
     def ID_column(self):
-        """ Name of the field in `polygons` that uniquely identifies
+        """ Name of the field in `zones` that uniquely identifies
         each zone of influence.
 
         """
@@ -458,7 +460,7 @@ class StandardScenarios(object):
                 direction="Input",
                 multiValue=False
             )
-            self._set_parameter_dependency(self._ID_column, self.polygons)
+            self._set_parameter_dependency(self._ID_column, self.zones)
         return self._ID_column
 
     @property
@@ -549,7 +551,7 @@ class StandardScenarios(object):
         params = [
             self.workspace,
             self.dem,
-            self.polygons,
+            self.zones,
             self.ID_column,
             self.flood_output,
             self.wetlands,
@@ -653,16 +655,16 @@ class StandardScenarios(object):
         self._show_header(title)
 
         # run the scenario and add its info the output attribute table
-        flooded_polygons = tidegates.flood_area(
+        flooded_zones = tidegates.flood_area(
             dem=params['dem'],
-            polygons=params['polygons'],
+            zones=params['zones'],
             ID_column=params['ID_column'],
             elevation_feet=elev,
             filename=floods_path,
             verbose=True,
             asMessage=True
         )
-        self._add_scenario_columns(flooded_polygons.dataSource, elev=elev, surge=surge, slr=slr)
+        self._add_scenario_columns(flooded_zones.dataSource, elev=elev, surge=surge, slr=slr)
 
         # setup temporary files for impacted wetlands and buildings
         wl_path = utils.create_temp_filename(floods_path, prefix="_wetlands_")
@@ -738,22 +740,26 @@ class StandardScenarios(object):
         workspace : str
             The folder or geodatabase where the analysis will be
             executed.
-        polygons : str
-            Name of zones of influence layer.
-        ID_column : str
-            Name of the field in ``polygons`` that uniquely identifies
-            each zone of influence.
-        wetlands, buildings : str
-            Names of the wetland and building footprint layers.
-        flood_output, wetland_output, building_output : str
-            Filenames where the output will be saved.
         dem : str
             Filename of the digital elevation model (topography data)
             to be used in determinging the inundated areas.
+        zones : str
+            Name of zones of influence layer.
+        ID_column : str
+            Name of the field in ``zones`` that uniquely identifies
+            each zone of influence.
         elevation : list, optional
             List of (custom) flood elevations to be analyzed. If this is
             not provided, *all* of the standard scenarios will be
             evaluated.
+        flood_output : str
+            Filename where the extent of flooding and damage will be
+            saved.
+        wetlands, buildings : str, optional
+            Names of the wetland and building footprint layers.
+        wetland_output, building_output : str, optional
+            Filenames where the flooded wetlands and building footprints
+            will be saved.
 
         Returns
         -------
@@ -837,7 +843,7 @@ class Flooder(StandardScenarios):
     def __init__(self):
         # std attributes
         super(Flooder, self).__init__()
-        self.label = "1 - Create Flood Scenarios"
+        self.label = "1 - Create flood scenarios"
         self.description = dedent("""
         Allows the user to create a custom flooding scenario given the
         following:
@@ -853,7 +859,7 @@ class Flooder(StandardScenarios):
         params = [
             self.workspace,
             self.dem,
-            self.polygons,
+            self.zones,
             self.ID_column,
             self.elevation,
             self.flood_output,
