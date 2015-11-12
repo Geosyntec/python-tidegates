@@ -27,6 +27,8 @@ numpydoc_show_class_members = False
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 
 sys.path.insert(0, os.path.abspath('..'))
+sys.path.insert(0, os.path.abspath('sphinxext'))
+
 
 # -- General configuration ------------------------------------------------
 
@@ -42,8 +44,13 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinx.ext.todo',
     'sphinx.ext.coverage',
+    # 'plot_generator',
+    # 'plot_directive',
     'numpydoc',
+    'ipython_directive',
+    'ipython_console_highlighting',
 ]
+
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -300,3 +307,7 @@ texinfo_documents = [
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {'https://docs.python.org/': None}
+
+def setup(app):
+    app.add_javascript('copybutton.js')
+    app.add_stylesheet('style.css')
