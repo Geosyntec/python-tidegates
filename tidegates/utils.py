@@ -1,7 +1,11 @@
 """ Basic utility functions for python-tidegates.
 
 This contains basic file I/O, coversion, and spatial analysis functions
-to support the python-tidegates library.
+to support the python-tidegates library. In most cases, these functions
+are simply wrappers around their ``arcpy`` counter parts. This was done
+so that in the future, these functions could be replaces with calls to
+a different geoprocessing library and eventually ween the code base off
+of its ``arcpy`` dependency.
 
 (c) Geosyntec Consultants, 2015.
 
@@ -13,8 +17,6 @@ Written by Paul Hobson (phobson@geosyntec.com)
 
 
 import os
-import sys
-import glob
 import datetime
 from functools import wraps
 import itertools
