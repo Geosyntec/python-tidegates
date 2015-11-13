@@ -6,7 +6,8 @@ import numpy.testing as nptest
 import tidegates.testing as tgtest
 import arcpy
 
-from tidegates import tidegates, utils
+import tidegates
+from tidegates import utils
 
 
 @nptest.dec.skipif(not tgtest.has_fiona)
