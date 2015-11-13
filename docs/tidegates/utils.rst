@@ -1,5 +1,6 @@
+.. _utils_auto:
 
-``utils`` documentation
+``utils`` API Reference
 =======================
 
 .. automodule:: tidegates.utils

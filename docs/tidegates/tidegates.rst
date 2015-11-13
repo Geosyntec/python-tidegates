@@ -1,7 +1,9 @@
+.. _tidegates_auto:
+   The ``analysis`` API
 
-Top-level analysis functions documentation
-==========================================
+``analysis`` API Reference
+===========================
 
-.. automodule:: tidegates.tidegates
+.. automodule:: tidegates.analysis
    :members:
    :undoc-members:
