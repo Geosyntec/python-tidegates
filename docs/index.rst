@@ -9,7 +9,7 @@ Documentation for **python-tidegates**
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
    guides/install.rst
 
@@ -19,7 +19,7 @@ Contents:
 
    tidegates/toolbox.rst
 
-   tidegates/tidegates.rst
+   tidegates/analysis.rst
 
    tidegates/utils.rst
 

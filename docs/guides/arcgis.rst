@@ -1,7 +1,7 @@
 .. _arcgis:
 
 Using **python-tidegates** as a python-toolbox in ArcGIS
-====================================================
+========================================================
 
 Finding the toolbox
 --------------------
@@ -56,30 +56,30 @@ All parameters are required except where noted.
 Analysis Workspace (**workspace**)
     This is the folder or geodatabase that contains all of the input for the analysis.
 
-    .. note: All of the input for the analysis (see below) *must* be in this workspace.
+    .. note:: All of the input for the analysis (see below) *must* be in this workspace.
 
 Digital Elevation Model (**dem**)
     This is the raster dataset that contains the gridded topographic and bathymetric data that will be used to determine the extent of flooding.
     The original geodatabases provided contain DEMs: one at 4-m, and a second at 8-m resolution.
     The finer resolution DEM provides more detailed output, however it also requires more runtime and the analysis requires more computational resources.
-    If the tool runs into a ``MemeoryError`` during an analysis, try using the lower resolution raster.
+    If the tool runs into a ``MemoryError`` during an analysis, try using the lower resolution raster.
     If these errors persist, Other things to try include limiting the number of **zones** analyzed or reducing the resolution of the raster even further.
 
-    .. note: The elevations of the DEMs provided in the standard geodatabase are measured in meters.
+    .. note:: The elevations of the DEMs provided in the standard geodatabase are measured in meters.
              However, care is taken to convert the properly convert the user input into meters to match the DEM when determining the extent of flooding.
 
 Tidegate Zone of Influence (**zones**)
     This is a polygon layer found in *workspace* that delineates the zone of influence of each tidegate.
-    The original geodatabases provided include a dataset called "ZOI" that incclude this information.
+    The original geodatabases provided include a dataset called "ZOI" that include this information.
 
 Column with Tidegate IDs (**ID_column**)
     This is the name of the field in the **zones** parameter that contains the unique idenifier of each tidegate.
     When using the "ZOI" layers provided in the geodatabases, this should be set to "GeoID".
 
 Output floods layer/filename (**flood_output**)
-    This is the filename to which the extent of flooding will be saved withing **workspace**.
+    This is the filename to which the extent of flooding will be saved within **workspace**.
 
-    .. warning: Both toolboxes will overwrite any previous output if duplicate filenames are provided.
+    .. warning:: Both toolboxes will overwrite any previous output if duplicate filenames are provided.
 
 Wetlands, optional (**wetlands**)
     This is a polygon layer found within **workspace** that delineates wetlands within a study area.
@@ -100,7 +100,8 @@ Output layer/filename of impacted buildings, optional (**building_output**)
     This is the filename of an output layer that contains all of the impacted buildings for each flood scenario.
     If **building_output** is not provided, the information is not saved to disk.
 
-    .. warning: Both toolboxes will overwrite any previous output if duplicate filenames are provided.
+
+    .. warning:: Both toolboxes will overwrite any previous output if duplicate filenames are provided.
 
 
 Custom elevations

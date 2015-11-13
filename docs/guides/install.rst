@@ -79,12 +79,12 @@ To run the full suite of tests packages with this system, you additionally need:
 Both nose and mock can be installed via pip (e.g., `pip install mock`), however fiona can be quite tricky to install on some systems.
 For that reason fiona is an optional dependency.
 Tests requiring it are skipped if it is not found while the tests are running.
-The nose and mock modules is absolutely required, however.
+The nose and mock modules are absolutely required, however.
 
-Installating **python-tidegates**
----------------------------------
+Installing **python-tidegates**
+-------------------------------
 This is a pure-python library, so installation from source (even on Windows) is not an issue.
-After acquiring and unzipping the source-code in some fashion, open a command window, navigate into the directory, and execute
+After acquiring and unzipping the source-code in some fashion, open a terminal, navigate into the directory, and execute
 
 ::
 
@@ -105,8 +105,7 @@ Inside a fresh, new terminal, that looks like this:
     Processing c:\users\phobson\downloads\python-tidegates-master
     Building wheels for collected packages: tidegates
       Running setup.py bdist_wheel for tidegates
-      Stored in directory: C:\Users\phobson\AppData\Local\pip\Cache\wheels\bc\1d\a3\fae5dffd5c58635786503464001432a9c5b8e8f5
-    de28171a77
+      Stored in directory: C:\Users\phobson\AppData\Local\pip\Cache\wheels\bc\1d\a3\fae5dffd5c5863...
     Successfully built tidegates
     Installing collected packages: tidegates
     Successfully installed tidegates-0.1
@@ -116,8 +115,11 @@ At that point, **python-tidegates** as been installed.
 
 Running the test suite
 ----------------------
-The code base that powers the GIS toolboxes uses a code QC technique known as [unit testing](https://en.wikipedia.org/wiki/Unit_testing).
-In this case, we rely on the python package [`nose`](https://nose.readthedocs.org/en/latest/) to find, collect, and execute all of the tests.
+The code base that powers the GIS toolboxes uses a code QC technique known as `unit testing`_.
+In this case, we rely on the python package `_nose` to find, collect, and execute all of the tests.
+
+.. _unit testing: https://en.wikipedia.org/wiki/Unit_testing
+.. _nose: https://nose.readthedocs.org/en/latest/
 
 With all of the required testing dependencies installed, navigate to the source directory and execute the ``nosetests`` command.
 That entire process looks something like this.
