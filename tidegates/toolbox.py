@@ -655,7 +655,7 @@ class StandardScenarios(object):
         flooded_zones = tidegates.flood_area(
             dem=params['dem'],
             zones=params['zones'],
-            flood_idcol=params['ID_column'],
+            ID_column=params['ID_column'],
             elevation_feet=elev,
             filename=floods_path,
             verbose=True,
@@ -664,13 +664,13 @@ class StandardScenarios(object):
         self._add_scenario_columns(flooded_zones.dataSource, elev=elev, surge=surge, slr=slr)
 
         # setup temporary files for impacted wetlands and buildings
-        wl_path = utils.create_temp_filename(floods_path, prefix="_wetlands_")
-        bldg_path = utils.create_temp_filename(floods_path, prefix="_buildings_")
+        wl_path = utils.create_temp_filename(floods_path, prefix="_wetlands_", filetype='shape')
+        bldg_path = utils.create_temp_filename(floods_path, prefix="_buildings_", filetype='shape')
 
         # asses impacts due to flooding
         fldlyr, wtlndlyr, blgdlyr = tidegates.assess_impact(
             floods_path=floods_path,
-            ID_column=params['ID_column'],
+            flood_idcol=params['ID_column'],
             wetlands_path=params.get('wetlands', None),
             wetlands_output=wl_path,
             buildings_path=params.get('buildings', None),
@@ -694,7 +694,7 @@ class StandardScenarios(object):
         ----------
         outputname : str
             Path to where the final file sould be saved.
-        *results : list of str
+        results : list of str
             Lists of all of the floods, flooded wetlands, and flooded
             buildings, respectively, that will be merged and deleted.
         sourcename : str, optional
@@ -713,11 +713,11 @@ class StandardScenarios(object):
 
         if outputname is not None:
             if sourcename is not None:
-                tmp_fname = utils.create_temp_filename(outputname)
+                tmp_fname = utils.create_temp_filename(outputname, filetype='shape')
                 utils.concat_results(tmp_fname, *results)
                 utils.join_results_to_baseline(
                     outputname,
-                    utils.load_data(tmp_fname, "layer"),
+                    utils.load_data(tmp_fname, 'layer'),
                     utils.load_data(sourcename, 'layer')
                 )
                 utils.cleanup_temp_results(tmp_fname)
@@ -797,7 +797,7 @@ class StandardScenarios(object):
             if wetlands is not None:
                 wtld_output = params.get(
                     'wetland_output',
-                    utils.create_temp_filename(params['wetlands'], prefix='output_')
+                    utils.create_temp_filename(params['wetlands'], prefix='output_', filetype='shape')
                 )
                 self.finish_results(
                     wtld_output,
@@ -811,7 +811,7 @@ class StandardScenarios(object):
             if buildings is not None:
                 bldg_output = params.get(
                     'building_output',
-                    utils.create_temp_filename(params['buildings'], prefix='output_')
+                    utils.create_temp_filename(params['buildings'], prefix='output_', filetype='shape')
                 )
                 self.finish_results(
                     bldg_output,

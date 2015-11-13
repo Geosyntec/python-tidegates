@@ -287,7 +287,7 @@ def update_status(): # pragma: no cover
     return decorate
 
 
-def create_temp_filename(filepath, prefix='_temp_'):
+def create_temp_filename(filepath, filetype=None, prefix='_temp_'):
     """ Helper function to create temporary filenames before to be saved
     before the final output has been generated.
 
@@ -295,6 +295,9 @@ def create_temp_filename(filepath, prefix='_temp_'):
     ----------
     filepath : str
         The file path/name of what the final output will eventually be.
+    filetype : str, optional
+        The type of file to be created. Valid values: "Raster" or
+        "Shape".
     prefix : str, optional ('_temp_')
         The prefix that will be applied to ``filepath``.
 
@@ -304,14 +307,31 @@ def create_temp_filename(filepath, prefix='_temp_'):
 
     Examples
     --------
-    >>> create_temp_filename('path/to/flooded_wetlands.shp')
+    >>> create_temp_filename('path/to/flooded_wetlands', filetype='shape')
     path/to/_temp_flooded_wetlands.shp
 
     """
 
-    file_with_ext = os.path.basename(filepath)
+    file_extensions = {
+        'raster': '.tif',
+        'shape': '.shp'
+    }
+
+    ws = arcpy.env.workspace or '.'
+    filename, _ = os.path.splitext(os.path.basename(filepath))
     folder = os.path.dirname(filepath)
-    return os.path.join(folder, prefix + file_with_ext)
+    if folder != '':
+        final_workspace = os.path.join(ws, folder)
+    else:
+        final_workspace = ws
+
+    if os.path.splitext(final_workspace)[1] == '.gdb':
+        ext = ''
+    else:
+        ext = file_extensions[filetype.lower()]
+
+
+    return os.path.join(ws, folder, prefix + filename + ext)
 
 
 def _check_fields(table, *fieldnames, **kwargs):

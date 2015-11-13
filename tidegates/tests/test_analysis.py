@@ -45,7 +45,7 @@ def test_assess_impact():
     with utils.WorkSpace(ws), utils.OverwriteState(True):
         floodslyr, wetlandslyr, buildingslyr = tidegates.assess_impact(
             floods_path=floods,
-            ID_column='GeoID',
+            flood_idcol='GeoID',
             wetlands_path=wetlands,
             buildings_path=buildings,
             buildings_output='flooded_buildings.shp',

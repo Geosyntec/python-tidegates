@@ -80,7 +80,7 @@ def flood_area(dem, zones, ID_column, elevation_feet,
         datestring = datetime.datetime.now().strftime(datefmt)
         temp_filename = "_temp_FloodedZones_" + datestring
     else:
-        temp_filename = utils.create_temp_filename(filename)
+        temp_filename = utils.create_temp_filename(filename, filetype='shape')
 
     utils._status('WorkSpace set to {}'.format(arcpy.env.workspace), **verbose_options)
 
@@ -93,7 +93,7 @@ def flood_area(dem, zones, ID_column, elevation_feet,
     )
 
     # load the zones of influence, converting to a raster
-    _p2r_outfile = os.path.join(arcpy.env.workspace, "_temp_pgon_as_rstr.tif")
+    _p2r_outfile = utils.create_temp_filename("pgon_as_rstr", filetype='raster')
     zones_r = utils.polygons_to_raster(
         polygons=zones,
         ID_column=ID_column,
@@ -104,7 +104,7 @@ def flood_area(dem, zones, ID_column, elevation_feet,
     )
 
     # clip the DEM to the zones raster
-    _cd2z_outfile = os.path.join(arcpy.env.workspace, "_temp_clipped2zones.tif")
+    _cd2z_outfile = utils.create_temp_filename("clipped2zones", filetype='raster')
     topo_r = utils.clip_dem_to_zones(
         dem=raw_topo,
         zones=zones_r,
@@ -131,7 +131,7 @@ def flood_area(dem, zones, ID_column, elevation_feet,
     )
 
     # convert flooded zone array back into a Raster
-    _fr_outfile = os.path.join(arcpy.env.workspace, '_temp_floods_raster.tif')
+    _fr_outfile = utils.create_temp_filename('floods_raster', filetype='raster')
     flooded_r = utils.array_to_raster(
         array=flooded_a,
         template=zones_r,
@@ -305,7 +305,7 @@ def area_of_impacts(floods_path, flood_idcol, assets_input,
 
     # intersect wetlands with the floods
     temp_flooded_assets = utils.intersect_polygon_layers(
-        utils.create_temp_filename(assets_output),
+        utils.create_temp_filename(assets_output, filetype='shape'),
         utils.load_data(floods_path, 'layer'),
         utils.load_data(assets_input, 'layer'),
         **verbose_options
@@ -380,7 +380,7 @@ def count_of_impacts(floods_path, flood_idcol, assets_input,
     """
 
     if assets_output is None:
-        assets_output = utils.create_temp_filename('flooded_discrete')
+        assets_output = utils.create_temp_filename('flooded_discrete', filetype='shape')
 
 
     # intersect the buildings with the floods
