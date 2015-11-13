@@ -66,7 +66,7 @@ def test_assess_impact():
 
 
 @nptest.dec.skipif(not tgtest.has_fiona)
-def test_area_of_impacts():
+def test_area_of_impacts_wetlands():
     ws = resource_filename('tidegates.testing', 'impact_to_wetlands')
     floods = 'flood_impacts.shp'
     known = 'known_flooded_wetlands.shp'
@@ -75,7 +75,7 @@ def test_area_of_impacts():
     with utils.WorkSpace(ws), utils.OverwriteState(True):
         flooded_wetlands = tidegates.area_of_impacts(
             floods_path=floods,
-            ID_column='GeoID',
+            flood_idcol='GeoID',
             assets_input=wetlands,
             assets_output=flooded_output,
             cleanup=True
@@ -91,7 +91,7 @@ def test_area_of_impacts():
 
 
 @nptest.dec.skipif(not tgtest.has_fiona)
-def test_count_of_impacts():
+def test_count_of_impacts_buildings():
     ws = resource_filename('tidegates.testing', 'impact_to_buildings')
     floods = 'flood_impacts.shp'
     known = 'known_flooded_buildings.shp'
@@ -100,7 +100,7 @@ def test_count_of_impacts():
     with utils.WorkSpace(ws), utils.OverwriteState(True):
         flooded_buildings = tidegates.count_of_impacts(
             floods_path=floods,
-            ID_column='GeoID',
+            flood_idcol='GeoID',
             assets_input=buildings,
             assets_output=flooded_output,
         )

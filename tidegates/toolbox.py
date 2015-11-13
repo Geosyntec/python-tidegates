@@ -655,7 +655,7 @@ class StandardScenarios(object):
         flooded_zones = tidegates.flood_area(
             dem=params['dem'],
             zones=params['zones'],
-            ID_column=params['ID_column'],
+            flood_idcol=params['ID_column'],
             elevation_feet=elev,
             filename=floods_path,
             verbose=True,
