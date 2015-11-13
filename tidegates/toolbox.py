@@ -561,7 +561,7 @@ class StandardScenarios(object):
         ]
         return params
 
-    def _make_scenarios(self, **params):
+    def make_scenarios(self, **params):
         """ Makes a list of dictionaries of all scenario parameters that
         will be analyzed by the toolbox.
 
@@ -775,7 +775,7 @@ class StandardScenarios(object):
         all_buildings = []
 
         with utils.WorkSpace(params['workspace']), utils.OverwriteState(True):
-            for scenario in self._make_scenarios(**params):
+            for scenario in self.make_scenarios(**params):
                 fldlyr, wtlndlyr, blgdlyr = self.analyze(
                     elev=scenario['elev'],
                     surge=scenario['surge_name'],

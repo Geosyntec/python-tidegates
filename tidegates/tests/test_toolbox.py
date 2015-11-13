@@ -243,7 +243,7 @@ class CheckToolbox_Mixin(object):
             {'elev': 9.2, 'surge_name': None, 'surge_elev': None, 'slr': None},
         ]
 
-        test = self.tbx._make_scenarios(elevation=['7.8', '8.6', '9.2'])
+        test = self.tbx.make_scenarios(elevation=['7.8', '8.6', '9.2'])
 
         for ts, es in zip(test, expected):
             nt.assert_dict_equal(ts, es)
@@ -253,13 +253,13 @@ class CheckToolbox_Mixin(object):
             {'elev': 7.8, 'surge_name': None, 'surge_elev': None, 'slr': None},
         ]
 
-        test = self.tbx._make_scenarios(elevation='7.8')
+        test = self.tbx.make_scenarios(elevation='7.8')
 
         for ts, es in zip(test, expected):
             nt.assert_dict_equal(ts, es)
 
     def test__make_scenarios_no_elev(self):
-        test = self.tbx._make_scenarios()
+        test = self.tbx.make_scenarios()
 
         for ts in test:
             nt.assert_true(ts['elev'] is None)
