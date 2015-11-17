@@ -1,6 +1,8 @@
+.. _toolbox_auto:
+   The ``toolbox`` API
 
-Documentation of the ArcGIS python tooboxes
-===========================================
+``toolbox`` API Reference
+=========================
 
 .. autoclass:: tidegates.toolbox.StandardScenarios
    :members:

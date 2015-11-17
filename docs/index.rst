@@ -3,17 +3,25 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-python-tidegates's documentation
-================================
+Documentation for **python-tidegates**
+========================================
 
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
-   ArcGIS Python Toolbox <tidegates/toolbox>
-   Top-level API <tidegates/tidegates>
-   Utility functions <tidegates/utils>
+   guides/install.rst
+
+   guides/arcgis.rst
+
+   guides/python.rst
+
+   tidegates/toolbox.rst
+
+   tidegates/analysis.rst
+
+   tidegates/utils.rst
 
 
 Indices and tables
