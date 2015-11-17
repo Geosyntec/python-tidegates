@@ -1,6 +1,7 @@
 import nose.tools as nt
 from numpy import errstate, hstack, array
 import numpy.testing as nptest
+import arcpy
 
 from warnings import simplefilter
 import sys
@@ -13,6 +14,11 @@ except ImportError:
     fiona = None
     has_fiona = False
 
+# Check for availability of ArcGIS Spatial Analyst (required to run certain tests)
+if arcpy.CheckExtension("Spatial") == u'Available':
+    has_spatial = True
+else:
+    has_spatial = False
 
 def assert_shapefiles_are_close(baselinefile, outputfile, atol=0.001, ngeom=5):
     with fiona.open(outputfile, 'r') as result:

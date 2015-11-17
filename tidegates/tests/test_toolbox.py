@@ -306,6 +306,7 @@ class CheckToolbox_Mixin(object):
             resource_filename('tidegates.testing.finish_result', 'known_finished_with_src.shp'),
         )
 
+    @nptest.dec.skipif(not tgtest.has_fiona)
     def test_analyze(self):
         ws = resource_filename('tidegates.testing', 'analyze')
         testdir = 'tidegates.testing.analyze'

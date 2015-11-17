@@ -190,7 +190,7 @@ class Extension(object):
             raise RuntimeError("%s license isn't available" % self.name)
 
     def __exit__(self, *args):
-        arcpy.CheckOutExtension(self.name)
+        arcpy.CheckInExtension(self.name)
 
 
 class OverwriteState(object):
