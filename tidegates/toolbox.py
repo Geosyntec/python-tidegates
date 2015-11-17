@@ -653,10 +653,10 @@ class StandardScenarios(object):
 
         # run the scenario and add its info the output attribute table
         flooded_zones = tidegates.flood_area(
-            params['dem'],
-            params['zones'],
-            params['ID_column'],
-            elev,
+            dem=params['dem'],
+            zones=params['zones'],
+            ID_column=params['ID_column'],
+            elevation_feet=elev,
             filename=floods_path,
             verbose=True,
             asMessage=True
