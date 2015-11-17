@@ -1,7 +1,11 @@
 """ Basic utility functions for python-tidegates.
 
 This contains basic file I/O, coversion, and spatial analysis functions
-to support the python-tidegates library.
+to support the python-tidegates library. In most cases, these functions
+are simply wrappers around their ``arcpy`` counter parts. This was done
+so that in the future, these functions could be replaced with calls to
+a different geoprocessing library and eventually ween the code base off
+of its ``arcpy`` dependency.
 
 (c) Geosyntec Consultants, 2015.
 
@@ -13,8 +17,6 @@ Written by Paul Hobson (phobson@geosyntec.com)
 
 
 import os
-import sys
-import glob
 import datetime
 from functools import wraps
 import itertools
@@ -285,7 +287,7 @@ def update_status(): # pragma: no cover
     return decorate
 
 
-def create_temp_filename(filepath, prefix='_temp_'):
+def create_temp_filename(filepath, filetype=None, prefix='_temp_'):
     """ Helper function to create temporary filenames before to be saved
     before the final output has been generated.
 
@@ -293,6 +295,9 @@ def create_temp_filename(filepath, prefix='_temp_'):
     ----------
     filepath : str
         The file path/name of what the final output will eventually be.
+    filetype : str, optional
+        The type of file to be created. Valid values: "Raster" or
+        "Shape".
     prefix : str, optional ('_temp_')
         The prefix that will be applied to ``filepath``.
 
@@ -302,14 +307,31 @@ def create_temp_filename(filepath, prefix='_temp_'):
 
     Examples
     --------
-    >>> create_temp_filename('path/to/flooded_wetlands.shp')
+    >>> create_temp_filename('path/to/flooded_wetlands', filetype='shape')
     path/to/_temp_flooded_wetlands.shp
 
     """
 
-    file_with_ext = os.path.basename(filepath)
+    file_extensions = {
+        'raster': '.tif',
+        'shape': '.shp'
+    }
+
+    ws = arcpy.env.workspace or '.'
+    filename, _ = os.path.splitext(os.path.basename(filepath))
     folder = os.path.dirname(filepath)
-    return os.path.join(folder, prefix + file_with_ext)
+    if folder != '':
+        final_workspace = os.path.join(ws, folder)
+    else:
+        final_workspace = ws
+
+    if os.path.splitext(final_workspace)[1] == '.gdb':
+        ext = ''
+    else:
+        ext = file_extensions[filetype.lower()]
+
+
+    return os.path.join(ws, folder, prefix + filename + ext)
 
 
 def _check_fields(table, *fieldnames, **kwargs):
@@ -409,7 +431,7 @@ def result_to_layer(result):
 @update_status() # list of arrays
 def rasters_to_arrays(*rasters, **kwargs):
     """ Converts an arbitrary number of `rasters`_ to `numpy arrays`_.
-    Relies on `arcpy.
+    Relies on `arcpy.RasterToNumPyArray`_.
 
     .. _rasters: http://resources.arcgis.com/EN/HELP/MAIN/10.2/index.html#/Raster/018z00000051000000/
     .. _numpy arrays: http://docs.scipy.org/doc/numpy/reference/generated/numpy.array.html

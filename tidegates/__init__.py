@@ -1,3 +1,3 @@
-from .tidegates import *
-from . import toolbox
+from .analysis import *
+from .toolbox import *
 from . import utils
