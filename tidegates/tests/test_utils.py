@@ -400,7 +400,7 @@ class _polygons_to_raster_mixin(object):
     known_values = numpy.array([-999, 16, 150])
 
     def test_process(self):
-        raster = utils.polygons_to_raster(self.testfile, "GeoID", **self.kwargs)
+        raster = utils.polygons_to_raster(self.testfile, "GeoID")
         nt.assert_true(isinstance(raster, arcpy.Raster))
 
         array = utils.rasters_to_arrays(raster, squeeze=True)
