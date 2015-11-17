@@ -431,7 +431,7 @@ def result_to_layer(result):
 @update_status() # list of arrays
 def rasters_to_arrays(*rasters, **kwargs):
     """ Converts an arbitrary number of `rasters`_ to `numpy arrays`_.
-    Relies on `arcpy.
+    Relies on `arcpy.RasterToNumPyArray`_.
 
     .. _rasters: http://resources.arcgis.com/EN/HELP/MAIN/10.2/index.html#/Raster/018z00000051000000/
     .. _numpy arrays: http://docs.scipy.org/doc/numpy/reference/generated/numpy.array.html
