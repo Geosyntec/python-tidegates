@@ -401,7 +401,7 @@ class _polygons_to_raster_mixin(object):
 
     @nptest.dec.skipif(not tgtest.has_spatial)
     def test_process(self):
-        raster = utils.polygons_to_raster(self.testfile, "GeoID")
+        raster = utils.polygons_to_raster(self.testfile, "GeoID", **self.kwargs)
         nt.assert_true(isinstance(raster, arcpy.Raster))
 
         array = utils.rasters_to_arrays(raster, squeeze=True)
