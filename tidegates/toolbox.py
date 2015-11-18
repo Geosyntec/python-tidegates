@@ -41,7 +41,7 @@ class StandardScenarios(object):
 
     See also
     --------
-    :class:`tidegates.toolbox.Flooder`
+    Flooder
 
     """
 
@@ -832,7 +832,7 @@ class Flooder(StandardScenarios):
 
     See also
     --------
-    :class:`tidegates.toolbox.StandardScenarios`
+    StandardScenarios
 
     """
 
