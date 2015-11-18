@@ -136,6 +136,31 @@ Examples of filled out forms
    Note that some, but not all, of the optional input parameters are specified.
 
 
+If you encounter a `MemoryError`
+--------------------------------
+By default, ArcGIS geoprocessing operations occur in the "foreground".
+What this means is that the geoprocessing occurs within ArcMap or ArcCatalog, rather than in a separate computation process.
+The major implication of this are is those geoprocessing operations are limited to ArcGIS's 32-bit version of python.
+Any 32-bit process is only able to access roughly 3 gigabytes of RAM (this various with other hardware in the machine).
+
+In constrast, 64-bit applications have a theoretical maximum RAM limit of server million terabytes.
+In other words, about as much RAM as you have on a modern personal computer that happily runs ArcGIS.
+Recognizing this, Esri also provides a 64-bit python that can operate in the "background" (i.e., a separate process from ArcGIS).
+
+This can be enabled from the *Geoprocessing | Geoprocessing options* menu in ArcGIS.
+Doing so *may* solve issues where the toolboxes fail due to an `MemoryError` (running out of RAM).
+However, some datasets are Just-Too-Big for ArcGIS or your computer and will continue to raise errors.
+In these cases, it's best to split up the datasets -- especially -- the rasters into multiple layers.
+
+.. figure:: images/background_gp.png
+   :scale: 100 %
+   :alt: Enabling background processing
+   :align: center
+   :figwidth: image
+
+   Enabling background (64-bit) geoprocessing in ArcMap.
+
+
 Other ways of using **python-tidegates**
 ----------------------------------------
 Since **python-tidegates** is a python-based toolbox for ArcGIS, great care was taken to create the tool such that it could be called from python without opening ArcMap or ArcCatalog.
