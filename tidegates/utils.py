@@ -37,9 +37,9 @@ class EasyMapDoc(object):
     `arcpy.mapping.Layer`_ and `arcpy.mapping.DataFrame`_ objects in the
     map, respectively.
 
-    .. _arcpy.mapping.MapDocument: http://resources.arcgis.com/EN/HELP/MAIN/10.2/index.html#/MapDocument/00s30000000n000000/
-    .. _arcpy.mapping.DataFrame: http://resources.arcgis.com/EN/HELP/MAIN/10.2/index.html#/DataFrame/00s300000003000000/
-    .. _arcpy.mapping.Layer: http://resources.arcgis.com/EN/HELP/MAIN/10.2/index.html#/Layer/00s300000008000000/
+    .. _arcpy.mapping.MapDocument: http://goo.gl/rf4GBH
+    .. _arcpy.mapping.DataFrame: http://goo.gl/ctJu3B
+    .. _arcpy.mapping.Layer: http://goo.gl/KfrGNa
 
     Attributes
     ----------
@@ -86,7 +86,7 @@ class EasyMapDoc(object):
         """ Finds a `layer`_ in the map by searching for an exact match
         of its name.
 
-        .. _layer: http://resources.arcgis.com/EN/HELP/MAIN/10.2/index.html#/Layer/00s300000008000000/
+        .. _layer: http://goo.gl/KfrGNa
 
         Parameters
         ----------
@@ -117,7 +117,7 @@ class EasyMapDoc(object):
     def add_layer(self, layer, df=None, position='top'):
         """ Simply adds a `layer`_ to a map.
 
-        .. _layer: http://resources.arcgis.com/EN/HELP/MAIN/10.2/index.html#/Layer/00s300000008000000/
+        .. _layer: http://goo.gl/KfrGNa
 
         Parameters
         ----------
@@ -230,7 +230,7 @@ class WorkSpace(object):
     block by any means (e.g., sucessful execution, raised exception),
     `arcpy.env.workspace`_ will reset to its original value.
 
-    .. _arcpy.env.workspace: http://resources.arcgis.com/EN/HELP/MAIN/10.2/index.html#/Current_Workspace/001w00000002000000/
+    .. _arcpy.env.workspace: http://goo.gl/0NpeFN
 
     Parameters
     ----------
@@ -339,7 +339,7 @@ def _check_fields(table, *fieldnames, **kwargs):
     Checks that field are (or are not) in a table. The check fails, a
     ``ValueError`` is raised. Relies on `arcpy.ListFields`_.
 
-    .. _arcpy.ListFields: http://resources.arcgis.com/EN/HELP/MAIN/10.2/index.html#/ListFields/03q30000001t000000/
+    .. _arcpy.ListFields: http://goo.gl/Siq5y7
 
     Parameters
     ----------
@@ -380,8 +380,8 @@ def _check_fields(table, *fieldnames, **kwargs):
 def result_to_raster(result):
     """ Gets the actual `arcpy.Raster`_ from an `arcpy.Result`_ object.
 
-    .. _arcpy.Raster: http://resources.arcgis.com/EN/HELP/MAIN/10.2/index.html#/Raster/018z00000051000000/
-    .. _arcpy.Result: http://resources.arcgis.com/EN/HELP/MAIN/10.2/index.html#/Result/018z00000046000000/
+    .. _arcpy.Raster: http://goo.gl/AQgFXW
+    .. _arcpy.Result: http://goo.gl/xPIbHi
 
     Parameters
     ----------
@@ -406,8 +406,8 @@ def result_to_layer(result):
     """ Gets the actual `arcpy.mapping.Layer`_ from an `arcpy.Result`_
     object.
 
-    .. _arcpy.mapping.Layer: http://resources.arcgis.com/EN/HELP/MAIN/10.2/index.html#/Layer/00s300000008000000/
-    .. _arcpy.Result: http://resources.arcgis.com/EN/HELP/MAIN/10.2/index.html#/Result/018z00000046000000/
+    .. _arcpy.mapping.Layer: http://goo.gl/KfrGNa
+    .. _arcpy.Result: http://goo.gl/xPIbHi
 
     Parameters
     ----------
@@ -433,9 +433,9 @@ def rasters_to_arrays(*rasters, **kwargs):
     """ Converts an arbitrary number of `rasters`_ to `numpy arrays`_.
     Relies on `arcpy.RasterToNumPyArray`_.
 
-    .. _rasters: http://resources.arcgis.com/EN/HELP/MAIN/10.2/index.html#/Raster/018z00000051000000/
-    .. _numpy arrays: http://docs.scipy.org/doc/numpy/reference/generated/numpy.array.html
-    .. _arcpy.RasterToNumPyArray: http://resources.arcgis.com/EN/HELP/MAIN/10.2/index.html#/RasterToNumPyArray/03q300000029000000/
+    .. _rasters: http://goo.gl/AQgFXW
+    .. _numpy arrays: http://goo.gl/iaDlli
+    .. _arcpy.RasterToNumPyArray: http://goo.gl/fy8Fnx
 
     Parameters
     ----------
@@ -476,7 +476,7 @@ def array_to_raster(array, template, outfile=None):
     """ Create an arcpy.Raster from a numpy.ndarray based on a template.
     This wrapper around `arcpy.NumPyArrayToRaster`_.
 
-    .. _arcpy.NumPyArrayToRaster: http://resources.arcgis.com/en/help/main/10.2/03q3/03q30000007q000000.htm
+    .. _arcpy.NumPyArrayToRaster: http://goo.gl/xQsaIz
 
     Parameters
     ----------
@@ -541,8 +541,8 @@ def load_data(datapath, datatype, greedyRasters=True, **verbosity):
     data : `arcpy.Raster`_ or `arcpy.mapping.Layer`_
         The data loaded as an arcpy object.
 
-    .. _arcpy.Raster: http://resources.arcgis.com/EN/HELP/MAIN/10.2/index.html#/Raster/018z00000051000000/
-    .. _arcpy.mapping.Layer: http://resources.arcgis.com/EN/HELP/MAIN/10.2/index.html#/Layer/00s300000008000000/
+    .. _arcpy.Raster: http://goo.gl/fy8Fnx
+    .. _arcpy.mapping.Layer: http://goo.gl/KfrGNa
 
     """
 
@@ -556,7 +556,8 @@ def load_data(datapath, datatype, greedyRasters=True, **verbosity):
     try:
         objtype = dtype_lookup[datatype.lower()]
     except KeyError:
-        raise ValueError("Datatype {} not supported. Must be raster or layer".format(datatype))
+        msg = "Datatype {} not supported. Must be raster or layer".format(datatype)
+        raise ValueError(msg)
 
     # if the input is already a Raster or Layer, just return it
     if isinstance(datapath, objtype):
@@ -580,7 +581,7 @@ def polygons_to_raster(polygons, ID_column, cellsize=4, outfile=None):
     by converting to a raster. Relies on
     `arcpy.conversion.PolygonToRaster`_.
 
-    .. _arcpy.conversion.PolygonToRaster: http://resources.arcgis.com/EN/HELP/MAIN/10.2/index.html#//001200000030000000
+    .. _arcpy.conversion.PolygonToRaster: http://goo.gl/TG2wD7
 
     Parameters
     ----------
@@ -638,7 +639,7 @@ def clip_dem_to_zones(dem, zones, outfile=None):
     the zones of influence  so that we can easily use array
     representations of the rasters. Relies on `arcpy.management.Clip`_.
 
-    .. _arcpy.management.Clip: http://resources.arcgis.com/EN/HELP/MAIN/10.2/index.html#//00170000009n000000
+    .. _arcpy.management.Clip: http://goo.gl/md4nFF
 
     Parameters
     ----------
@@ -686,7 +687,7 @@ def raster_to_polygons(zonal_raster, filename, newfield=None):
 
     Relies on `arcpy.conversion.RasterToPolygon`_.
 
-    .. _arcpy.conversion.RasterToPolygon: http://resources.arcgis.com/EN/HELP/MAIN/10.2/index.html#//001200000008000000
+    .. _arcpy.conversion.RasterToPolygon: http://goo.gl/QOeOCq
 
 
     Parameters
@@ -739,7 +740,7 @@ def aggregate_polygons(polygons, ID_field, filename):
     values in the provided field. This is basically just a thim wrapper
     around `arcpy.management.Dissolve`_.
 
-    .. _arcpy.management.Dissolve: http://resources.arcgis.com/en/help/main/10.2/index.html#//00170000005n000000
+    .. _arcpy.management.Dissolve: http://goo.gl/tsmiQH
 
     Parameters
     ----------
@@ -825,7 +826,7 @@ def add_field_with_value(table, field_name, field_value=None,
 
     Relies on `arcpy.management.AddField`_.
 
-    .. _arcpy.management.AddField: http://resources.arcgis.com/en/help/main/10.2/index.html#//001700000047000000
+    .. _arcpy.management.AddField: http://goo.gl/wivgDX
 
     Parameters
     ----------
@@ -897,7 +898,7 @@ def cleanup_temp_results(*results):
 
     Relies on `arcpy.management.Delete`_.
 
-    .. _arcpy.management.Delete: http://resources.arcgis.com/en/help/main/10.2/index.html#//001700000052000000
+    .. _arcpy.management.Delete: http://goo.gl/LW85an
 
     Parameters
     ----------
@@ -934,7 +935,7 @@ def intersect_polygon_layers(destination, *layers, **intersect_options):
     Intersect polygon layers with each other. Basically a thin wrapper
     around `arcpy.analysis.Intersect`_.
 
-    .. _arcpy.analysis.Intersect: http://resources.arcgis.com/en/help/main/10.2/index.html#//00080000000p000000
+    .. _arcpy.analysis.Intersect: http://goo.gl/O9YMY6
 
     Parameters
     ----------
@@ -984,7 +985,7 @@ def groupby_and_aggregate(input_path, groupfield, valuefield,
 
     Relies on `arcpy.da.TableToNumPyArray`_.
 
-    .. _arcpy.da.TableToNumPyArray: http://resources.arcgis.com/en/help/main/10.2/index.html#/TableToNumPyArray/018w00000018000000/
+    .. _arcpy.da.TableToNumPyArray: http://goo.gl/NzS6sB
 
 
     Parameters
@@ -1058,7 +1059,7 @@ def groupby_and_aggregate(input_path, groupfield, valuefield,
 @update_status() # None
 def rename_column(table, oldname, newname, newalias=None): # pragma: no cover
     """
-    .. note: Not yet implemented.
+    .. warning: Not yet implemented.
     """
     raise NotImplementedError
     if newalias is None:
@@ -1086,7 +1087,7 @@ def populate_field(table, value_fxn, valuefield, *keyfields):
 
     Relies on `arcpy.da.UpdateCursor`_.
 
-    .. _arcpy.da.UpdateCursor: http://resources.arcgis.com/en/help/main/10.2/index.html#/UpdateCursor/018w00000014000000/
+    .. _arcpy.da.UpdateCursor: http://goo.gl/sa3mW6
 
     Parameters
     ----------
@@ -1134,7 +1135,7 @@ def copy_data(destfolder, *source_layers, **kwargs):
 
     Relies on `arcpy.conversion.FeatureClassToShapefile`_.
 
-    .. _arcpy.conversion.FeatureClassToShapefile: http://resources.arcgis.com/en/help/main/10.2/index.html#//00120000003m000000
+    .. _arcpy.conversion.FeatureClassToShapefile: http://goo.gl/8c83s1
 
     Parameters
     ----------
@@ -1177,7 +1178,7 @@ def concat_results(destination, *input_files):
 
     Relies on `arcpy.management.Merge`_.
 
-    .. _arcpy.management.Merge: http://resources.arcgis.com/en/help/main/10.2/index.html#//001700000055000000
+    .. _arcpy.management.Merge: http://goo.gl/JD3q0f
 
     Parameters
     ----------
@@ -1198,6 +1199,7 @@ def concat_results(destination, *input_files):
 
     result = arcpy.management.Merge(input_files, destination)
     return result_to_layer(result)
+
 
 @update_status()
 def join_results_to_baseline(destination, result_file, baseline_file):

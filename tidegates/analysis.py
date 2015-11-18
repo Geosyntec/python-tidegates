@@ -219,7 +219,9 @@ def assess_impact(floods_path, flood_idcol, cleanup=False,
     """
 
     # add total area_column and populate
-    utils.add_field_with_value(floods_path, 'totalarea', field_type='DOUBLE', overwrite=True)
+    utils.add_field_with_value(floods_path, 'totalarea',
+                               field_type='DOUBLE',
+                               overwrite=True)
     utils.populate_field(
         floods_path,
         lambda row: row[0],

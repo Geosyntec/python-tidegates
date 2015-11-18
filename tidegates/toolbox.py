@@ -221,8 +221,8 @@ class StandardScenarios(object):
         Examples
         --------
         >>> Flooder._show_header('Hello, world', verbose=True)
-            'Hello, world'
-             --------------
+        'Hello, world'
+         --------------
 
         """
         underline = ''.join(['-'] * len(title))
