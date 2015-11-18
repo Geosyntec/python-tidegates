@@ -8,8 +8,8 @@ Installing **python-tidegates**
 Terminology
 -----------
 ArcGIS
-    The suite of proprietarty software application licensed by Esri.
-    Includes the ArcMap and ArcCatalog applications.
+    The suite of proprietarty GIS applications licensed by Esri.
+    Includes ArcMap and ArcCatalog.
 
 ArcGIS session
     Use of either ArcMap or ArcCatalog.
@@ -17,13 +17,13 @@ ArcGIS session
 command prompt or terminal
     The Windows interface to its command-line tools.
 
-Python
+python
     An open source, dynamic programming language that Esri bundles with ArcGIS.
     The current version (as of 2015-11-11) is Python 3.5.
     However ArcGIS 10 installations use Python 2.7, released 2010-07-03.
 
 numpy
-    An open source numerical extension to python that provides the basis for must scientific libraries in python.
+    An open source numerical extension to python that provides the basis for must scientific/numeric libraries in python.
 
 arcpy
     A proprietary Python-based interface to some of the geoprocessing and cartographic functionality of ArcGIS.
@@ -35,17 +35,17 @@ mock
     An open source unit testing library that allows you to replace complex parts of a system and inspect how they are used.
 
 fiona
-    An open source python library for readinga and writing shapefiles.
+    An open source python library for reading and writing shapefiles.
 
 jupyter
     An open source, programming language-agnostic suite tools aimed at facilitating reproducible scientific work.
-    The name stands for "Julia", "Python", and "R", the names of three of the dominating scientific computing languages.
+    The name stands for "Julia", "Python", and "R", the names of three scientific computing languages.
 
 git
     A distributed version control software. See https://git-scm.com/ for more details.
 
 API
-  "Application programming interface". This is essentially the public, developer-faceing functions an classes of one library that a developer can used to create yet another library.
+  "Application programming interface". This is essentially the public, developer-facing functions an classes of one library that a developer can used to create yet another library.
 
 
 
@@ -65,7 +65,7 @@ Dependencies
 Runtime
 ~~~~~~~
 This library requires the following python-packages to be installed on your system:
-  1. Python 2.7
+  1. python 2.7
   2. arcpy
   3. numpy
 
@@ -116,7 +116,7 @@ At that point, **python-tidegates** as been installed.
 Running the test suite
 ----------------------
 The code base that powers the GIS toolboxes uses a code QC technique known as `unit testing`_.
-In this case, we rely on the python package `_nose` to find, collect, and execute all of the tests.
+In this case, we rely on the python package `nose`_ to find, collect, and execute all of the tests.
 
 .. _unit testing: https://en.wikipedia.org/wiki/Unit_testing
 .. _nose: https://nose.readthedocs.org/en/latest/

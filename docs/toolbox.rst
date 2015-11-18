@@ -1,12 +1,11 @@
 .. _toolbox_auto:
+
    The ``toolbox`` API
 
 ``toolbox`` API Reference
 =========================
 
-.. autoclass:: tidegates.toolbox.StandardScenarios
+.. automodule:: tidegates.toolbox
    :members:
-
-.. autoclass:: tidegates.toolbox.Flooder
-   :members:
+   :undoc-members:
    :show-inheritance:

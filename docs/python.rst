@@ -3,7 +3,7 @@
 Using **python-tidegates** from python
 ======================================
 
-You don't have to start an ArcGIS session to use *python-tidegates**.
+You don't have to start an ArcGIS session to use **python-tidegates**.
 The analytical guts of the library are completely isolated from the ArcGIS interface portions.
 This allows users to directly use the analytical capabilities from a python script or an interactive python session.
 
@@ -30,17 +30,21 @@ The following import statements are prerequisites for all of the code snippets b
 The ``toolbox`` API
 --------------------------------
 
-For a full description of the API, see the :mod:`tidegates.toolbox`.
+
+(see :ref:`install instructions <install>`)
+
+
+For a full description of the API, see the :ref:`reference guide <toolbox_auto>`
 
 The :mod:`tidegates.toolbox` interface provides a very high-level interface to **python-tidgeates** that very closely mimics the tooboxes.
-Just like how there are two forms in the ArcGIS toolbox, there are two analagous classes avialable in the :mod:`tidegates.toolbox` API.
+Just like how there are two forms in the ArcGIS toolbox, there are two analagous classes available in the :mod:`tidegates.toolbox` API.
 
-The ``Flooder`` class allows the user to estimate the extent and impact of flooding at custom elevations.
+The :class:`tidegates.toolbox.Flooder` class allows the user to estimate the extent and impact of flooding at custom elevations.
 
-The ``StandardScenarios`` class automatically estimates the extent and impact of flooding for all combinates of the four storm surge events and sea level rise in 1-ft increments up to 6 feet.
+The :class:`tidegates.toolbox.StandardScenarios` class automatically estimates the extent and impact of flooding for all combinations of the four storm surge events and sea level rise in 1-ft increments up to 6 feet.
 
 Both classes are instantiated without any arguments and have identical ``main_execute`` methods to evaluate their scenarios.
-The only difference is that ``Flooder`` requires values for the flood elevations.
+The only difference is that :class:`tidegates.toolbox.Flooder` requires values for the flood elevations.
 
 Common input parameters
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -48,59 +52,59 @@ Common input parameters
 The following are the parameters shared by both toolboxes.
 All parameters are required except where noted.
 
-Analysis Workspace (**workspace**)
+Analysis Workspace (``workspace``)
     This is the folder or geodatabase that contains all of the input for the analysis.
 
     .. note:: All of the input for the analysis (see below) *must* be in this workspace.
 
-Digital Elevation Model (**dem**)
+Digital Elevation Model (``dem``)
     This is the raster dataset that contains the gridded topographic and bathymetric data that will be used to determine the extent of flooding.
     The original geodatabases provided contain DEMs: one at 4-m, and a second at 8-m resolution.
     The finer resolution DEM provides more detailed output, however it also requires more runtime and the analysis requires more computational resources.
     If the tool runs into a ``MemoryError`` during an analysis, try using the lower resolution raster.
-    If these errors persist, Other things to try include limiting the number of **zones** analyzed or reducing the resolution of the raster even further.
+    If these errors persist, other things to try include limiting the number of ``zones`` analyzed or reducing the resolution of the raster even further.
 
     .. note:: The elevations of the DEMs provided in the standard geodatabase are measured in meters.
              However, care is taken to convert the properly convert the user input into meters to match the DEM when determining the extent of flooding.
 
-Tidegate Zone of Influence (**zones**)
+Tidegate Zone of Influence (``zones``)
     This is a polygon layer found in *workspace* that delineates the zone of influence of each tidegate.
     The original geodatabases provided include a dataset called "ZOI" that include this information.
 
-Column with Tidegate IDs (**ID_column**)
-    This is the name of the field in the **zones** parameter that contains the unique idenifier of each tidegate.
+Column with Tidegate IDs (``ID_column``)
+    This is the name of the field in the ``zones`` parameter that contains the unique idenifier of each tidegate.
     When using the "ZOI" layers provided in the geodatabases, this should be set to "GeoID".
 
-Output floods layer/filename (**flood_output**)
-    This is the filename to which the extent of flooding will be saved within **workspace**.
+Output floods layer/filename (``flood_output``)
+    This is the filename to which the extent of flooding will be saved within ``workspace``.
 
     .. warning:: Both toolboxes will overwrite any previous output if duplicate filenames are provided.
 
-Wetlands, optional (**wetlands**)
-    This is a polygon layer found within **workspace** that delineates wetlands within a study area.
-    If provided, the area of wetlands inundated during each flood scenario will be added to the **flood_output** layer.
+Wetlands, optional (``wetlands``)
+    This is a polygon layer found within ``workspace`` that delineates wetlands within a study area.
+    If provided, the area of wetlands inundated during each flood scenario will be added to the ``flood_output`` layer.
 
-Output layer/filename of impacted wetlands, optional (**wetlands_output**)
-    This is the filename of the layer created by computing the intersections of **flood_output** and **wetlands**.
+Output layer/filename of impacted wetlands, optional (``wetlands_output``)
+    This is the filename of the layer created by computing the intersections of ``flood_output`` and ``wetlands``.
     The result is a shapefile/feature class that contains only the inundated areas of the wetlands.
-    If **wetlands_output** is not provided, the information is not saved to disk.
+    If ``wetlands_output`` is not provided, the information is not saved to disk.
 
     .. warning: Both toolboxes will overwrite any previous output if duplicate filenames are provided.
 
-Building footprints, optional (**buildings**)
+Building footprints, optional (``buildings``)
     This is a polygon layer of the building footprints in the study area.
-    If provided the *number* of impacted buildings will be added to each record of **flood_output**.
+    If provided the *number* of impacted buildings will be added to each record of ``flood_output``.
 
-Output layer/filename of impacted buildings, optional (**building_output**)
+Output layer/filename of impacted buildings, optional (``building_output``)
     This is the filename of an output layer that contains all of the impacted buildings for each flood scenario.
-    If **building_output** is not provided, the information is not saved to disk.
+    If ``building_output`` is not provided, the information is not saved to disk.
 
     .. warning:: Both toolboxes will overwrite any previous output if duplicate filenames are provided.
 
 Custom elevations
 ~~~~~~~~~~~~~~~~~
-The ``Flooder`` class allows the user to input multiple elevations to be analyzed.
-Thus, it has an ``elevation`` parameter not used by the ``StandardScenarios`` class.
+The :class:`tidegates.toolbox.Flooder` class allows the user to input multiple elevations to be analyzed.
+Thus, it has an ``elevation`` parameter not used by the :class:`tidegates.toolbox.StandardScenarios` class.
 In keeping with the formatted definitions below:
 
 elevation
@@ -109,7 +113,7 @@ elevation
 Code examples
 ~~~~~~~~~~~~~
 
-Below is an example of using the ``Flooder`` class to evaluate custom flood elevations.
+Below is an example of using the :class:`tidegates.toolbox.Flooder` class to evaluate custom flood elevations.
 
 .. code-block:: python
 
@@ -137,7 +141,7 @@ Below is an example of using the ``Flooder`` class to evaluate custom flood elev
         )
 
 
-Below is an example of using the ``StandardScenarios`` class to evaluate custom flood elevations.
+Below is an example of using the :class:`tidegates.toolbox.StandardScenarios` class to evaluate custom flood elevations.
 
 .. code-block:: python
 
@@ -196,12 +200,12 @@ The :mod:`tidegates.analysis` submodule contains four functions:
 Code examples
 ~~~~~~~~~~~~~
 
-The classes in :mod:`tidegates.toolbox` are capable of evaluating
-   1. the extent and area of flooding
-   2. the number of buildings that recieve some amount of flooding
-   3. the extent and area of flooding within wetlands.
+The classes in :mod:`tidegates.toolbox` rely on the function in :mod:`tidegates.analysis` to determine
+   - the extent and area of flooding
+   - the number of buildings that recieve some amount of flooding
+   - the extent and area of flooding within wetlands.
 
-The sample script below does all of that and count the number of distinct wetlands impacted by each flood
+The sample script below does all of that and count the number of distinct wetlands impacted by each flood using :mod:`tidegates.analysis` directly.
 
 
 .. code-block:: python
