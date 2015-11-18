@@ -11,17 +11,17 @@ Contents:
 .. toctree::
    :maxdepth: 3
 
-   guides/install.rst
+   install.rst
 
-   guides/arcgis.rst
+   arcgis.rst
 
-   guides/python.rst
+   python.rst
 
-   tidegates/toolbox.rst
+   toolbox.rst
 
-   tidegates/analysis.rst
+   analysis.rst
 
-   tidegates/utils.rst
+   utils.rst
 
 
 Indices and tables

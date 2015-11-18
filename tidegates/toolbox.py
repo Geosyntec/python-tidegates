@@ -41,7 +41,7 @@ class StandardScenarios(object):
 
     See also
     --------
-    :class:`tidegates.toolbox.Flooder`
+    Flooder
 
     """
 
@@ -221,8 +221,8 @@ class StandardScenarios(object):
         Examples
         --------
         >>> Flooder._show_header('Hello, world', verbose=True)
-            'Hello, world'
-             --------------
+        'Hello, world'
+         --------------
 
         """
         underline = ''.join(['-'] * len(title))
@@ -832,7 +832,7 @@ class Flooder(StandardScenarios):
 
     See also
     --------
-    :class:`tidegates.toolbox.StandardScenarios`
+    StandardScenarios
 
     """
 

@@ -21,6 +21,7 @@ import sphinx
 source_suffix = ['.rst']
 
 numpydoc_show_class_members = False
+autodoc_member_order = 'bysource'
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the

@@ -68,7 +68,9 @@ def flood_area(dem, zones, ID_column, elevation_feet,
 
     See also
     --------
-    assess_impact, area_of_impacts, count_of_impacts
+    assess_impact,
+    area_of_impacts,
+    count_of_impacts
 
     """
 
@@ -214,12 +216,16 @@ def assess_impact(floods_path, flood_idcol, cleanup=False,
 
     See also
     --------
-    flood_area, area_of_impacts, count_of_impacts
+    flood_area,
+    area_of_impacts,
+    count_of_impacts
 
     """
 
     # add total area_column and populate
-    utils.add_field_with_value(floods_path, 'totalarea', field_type='DOUBLE', overwrite=True)
+    utils.add_field_with_value(floods_path, 'totalarea',
+                               field_type='DOUBLE',
+                               overwrite=True)
     utils.populate_field(
         floods_path,
         lambda row: row[0],
@@ -296,7 +302,9 @@ def area_of_impacts(floods_path, flood_idcol, assets_input,
 
     See also
     --------
-    flood_area, assess_impact, count_of_impacts
+    flood_area
+    assess_impact
+    count_of_impacts
 
     """
 
@@ -375,7 +383,9 @@ def count_of_impacts(floods_path, flood_idcol, assets_input,
 
     See also
     --------
-    flood_area, assess_impact, area_of_impacts
+    flood_area,
+    assess_impact,
+    area_of_impacts
 
     """
 
