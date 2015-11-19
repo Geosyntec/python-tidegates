@@ -28,6 +28,11 @@ class MockParam(object):
         self.valueAsText = value
 
 
+@nt.nottest
+def mock_status(*args, **kwargs):
+    pass
+
+
 class CheckToolbox_Mixin(object):
     mockMap = mock.Mock(spec=utils.EasyMapDoc)
     mockLayer = mock.Mock(spec=arcpy.mapping.Layer)
@@ -426,6 +431,7 @@ class CheckToolbox_Mixin(object):
         )
 
 
+@mock.patch('tidegates.utils._status', mock_status)
 class Test_Flooder(CheckToolbox_Mixin):
     def setup(self):
         self.tbx = toolbox.Flooder()
@@ -457,6 +463,7 @@ class Test_Flooder(CheckToolbox_Mixin):
         nt.assert_list_equal(names, known_names)
 
 
+@mock.patch('tidegates.utils._status', mock_status)
 class Test_StandardScenarios(CheckToolbox_Mixin):
     def setup(self):
         self.tbx = toolbox.StandardScenarios()
