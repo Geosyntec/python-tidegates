@@ -18,8 +18,10 @@ Written by Paul Hobson (phobson@geosyntec.com)
 
 import os
 import datetime
-from functools import wraps
 import itertools
+from functools import wraps
+from contextlib import contextmanager
+
 
 import numpy
 
@@ -163,7 +165,8 @@ class EasyMapDoc(object):
         return layer
 
 
-class Extension(object):
+@contextmanager
+def Extension(name):
     """ Context manager to facilitate the use of ArcGIS extensions
 
     Inside the context manager, the extension will be checked out. Once
@@ -178,22 +181,17 @@ class Extension(object):
 
     """
 
+    if arcpy.CheckExtension(name) == u"Available":
+        status = arcpy.CheckOutExtension(name)
+        yield status
+    else:
+        raise RuntimeError("%s license isn't available" % name)
 
-    def __init__(self, name):
-        self.name = name
-
-    def __enter__(self):
-        if arcpy.CheckExtension(self.name) == u"Available":
-            status = arcpy.CheckOutExtension(self.name)
-            return status
-        else:
-            raise RuntimeError("%s license isn't available" % self.name)
-
-    def __exit__(self, *args):
-        arcpy.CheckInExtension(self.name)
+    arcpy.CheckInExtension(name)
 
 
-class OverwriteState(object):
+@contextmanager
+def OverwriteState(state):
     """ Context manager to temporarily set the ``overwriteOutput``
     environment variable.
 
@@ -201,6 +199,11 @@ class OverwriteState(object):
     be set to the given value. Once the interpreter leaves the code
     block by any means (e.g., sucessful execution, raised exception),
     ``arcpy.env.overwriteOutput`` will reset to its original value.
+
+    Parameters
+    ----------
+    path : str
+        Path to the directory that will be set as the current workspace.
 
     Examples
     --------
@@ -210,18 +213,14 @@ class OverwriteState(object):
 
     """
 
-    def __init__(self, overwrite):
-        self.orig_state = arcpy.env.overwriteOutput
-        self.new_state = bool(overwrite)
-
-    def __enter__(self, *args, **kwargs):
-        arcpy.env.overwriteOutput = self.new_state
-
-    def __exit__(self, *args, **kwargs):
-        arcpy.env.overwriteOutput = self.orig_state
+    orig_state = arcpy.env.overwriteOutput
+    arcpy.env.overwriteOutput = bool(state)
+    yield
+    arcpy.env.overwriteOutput = orig_state
 
 
-class WorkSpace(object):
+@contextmanager
+def WorkSpace(path):
     """ Context manager to temporarily set the ``workspace``
     environment variable.
 
@@ -245,15 +244,10 @@ class WorkSpace(object):
 
     """
 
-    def __init__(self, path):
-        self.orig_workspace = arcpy.env.workspace
-        self.new_workspace = path
-
-    def __enter__(self, *args, **kwargs):
-        arcpy.env.workspace = self.new_workspace
-
-    def __exit__(self, *args, **kwargs):
-        arcpy.env.workspace = self.orig_workspace
+    orig_workspace = arcpy.env.workspace
+    arcpy.env.workspace = path
+    yield
+    arcpy.env.workspace = orig_workspace
 
 
 def _status(msg, verbose=False, asMessage=False, addTab=False): # pragma: no cover
@@ -713,13 +707,13 @@ def raster_to_polygons(zonal_raster, filename, newfield=None):
 
     """
 
-    results = arcpy.conversion.RasterToPolygon(
-        in_raster=zonal_raster,
-        out_polygon_features=filename,
-        simplify="SIMPLIFY",
-        raster_field="Value",
-    )
-
+    with OverwriteState(True), Extension("spatial"):
+        results = arcpy.conversion.RasterToPolygon(
+            in_raster=zonal_raster,
+            out_polygon_features=filename,
+            simplify="SIMPLIFY",
+            raster_field="Value",
+        )
 
     if newfield is not None:
         for field in arcpy.ListFields(filename):
