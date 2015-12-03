@@ -1,0 +1,335 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Using python-tidegates as a python-toolbox in ArcGIS &mdash; python-tidegates v0.1.0 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="_static/style.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="python-tidegates v0.1.0 documentation" href="index.html"/>
+        <link rel="next" title="Using python-tidegates from python" href="python.html"/>
+        <link rel="prev" title="Installing python-tidegates" href="install.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+          <a href="index.html" class="fa fa-home"> python-tidegates</a>
+        
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installing <strong>python-tidegates</strong></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="install.html#terminology">Terminology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#downloading-python-tidegates">Downloading <strong>python-tidegates</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#dependencies">Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#id1">Installing <strong>python-tidegates</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#running-the-test-suite">Running the test suite</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Using <strong>python-tidegates</strong> as a python-toolbox in ArcGIS</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#finding-the-toolbox">Finding the toolbox</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#inputs-to-the-toolboxes">Inputs to the toolboxes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#examples-of-filled-out-forms">Examples of filled out forms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#if-you-encounter-a-memoryerror">If you encounter a <code class="docutils literal"><span class="pre">MemoryError</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#other-ways-of-using-python-tidegates">Other ways of using <strong>python-tidegates</strong></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="python.html">Using <strong>python-tidegates</strong> from python</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="python.html#common-elements-of-examples">Common elements of examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python.html#the-toolbox-api">The <code class="docutils literal"><span class="pre">toolbox</span></code> API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python.html#the-analysis-api">The <code class="docutils literal"><span class="pre">analysis</span></code> API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="toolbox.html"><code class="docutils literal"><span class="pre">toolbox</span></code> API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis.html"><code class="docutils literal"><span class="pre">analysis</span></code> API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html"><code class="docutils literal"><span class="pre">utils</span></code> API Reference</a></li>
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">python-tidegates</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Using <strong>python-tidegates</strong> as a python-toolbox in ArcGIS</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="_sources/arcgis.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <div class="section" id="using-python-tidegates-as-a-python-toolbox-in-arcgis">
+<span id="arcgis"></span><h1>Using <strong>python-tidegates</strong> as a python-toolbox in ArcGIS<a class="headerlink" href="#using-python-tidegates-as-a-python-toolbox-in-arcgis" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="finding-the-toolbox">
+<h2>Finding the toolbox<a class="headerlink" href="#finding-the-toolbox" title="Permalink to this headline">¶</a></h2>
+<p>After you download or clone the source code (see <a class="reference internal" href="install.html#install"><span>install instructions</span></a>), you can navigate to the source directory in ArcCatalog:</p>
+<div class="figure align-center" id="id1" style="width: 360px">
+<a class="reference internal image-reference" href="_images/toolbox_in_catalog.png"><img alt="Finding the toolbox in ArcCatalog" src="_images/toolbox_in_catalog.png" style="width: 360.0px; height: 304.0px;" /></a>
+<p class="caption"><span class="caption-text">An ArcCatalog window after navigating to the source code of <strong>python-tidegates</strong>.</span></p>
+</div>
+<p>At this point you can double click either of the tools to use them.</p>
+<div class="figure align-center" id="id2" style="width: 957px">
+<a class="reference internal image-reference" href="_images/flooder_unfilled.png"><img alt="Finding the toolbox in ArcCatalog" src="_images/flooder_unfilled.png" style="width: 957.0px; height: 695.0px;" /></a>
+<p class="caption"><span class="caption-text">An empty form for the toolbox titled <em>1 - Create flood scenarios</em>.</span></p>
+</div>
+<div class="figure align-center" id="id3" style="width: 957px">
+<a class="reference internal image-reference" href="_images/stdscen_unfilled.png"><img alt="Finding the toolbox in ArcCatalog" src="_images/stdscen_unfilled.png" style="width: 957.0px; height: 695.0px;" /></a>
+<p class="caption"><span class="caption-text">An empty form for the toolbox titled <em>2 - Evaluate all standard scenarios</em>.</span></p>
+</div>
+</div>
+<div class="section" id="inputs-to-the-toolboxes">
+<h2>Inputs to the toolboxes<a class="headerlink" href="#inputs-to-the-toolboxes" title="Permalink to this headline">¶</a></h2>
+<p>Both toolboxes take identical parameters with one exeception:
+the toolbox titled <em>1 - Create flood scenarios</em> allows the user to input multiple elevations to be analyzed.
+In contrast, the form titled <em>2 - Evaluate all standard scenarios</em> automatically evaluates all of the elevations associated with the so-called &#8220;standard scenarios&#8221;.
+These include all of the combinations of sea level rise in 1-ft increments from 0 to 6 ft MSL, and storm surges events including:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>Mean higher high water</li>
+<li>10-yr storm surge</li>
+<li>50-yr storm surge</li>
+<li>100-yr storm surge.</li>
+</ol>
+</div></blockquote>
+<div class="section" id="common-input-parameters">
+<h3>Common input parameters<a class="headerlink" href="#common-input-parameters" title="Permalink to this headline">¶</a></h3>
+<p>The following are the parameters shared by both toolboxes.
+All parameters are required except where noted.</p>
+<dl class="docutils">
+<dt>Analysis Workspace (<code class="docutils literal"><span class="pre">workspace</span></code>)</dt>
+<dd><p class="first">This is the folder or geodatabase that contains all of the input for the analysis.</p>
+<div class="last admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">All of the input for the analysis (see below) <em>must</em> be in this workspace.</p>
+</div>
+</dd>
+<dt>Digital Elevation Model (<code class="docutils literal"><span class="pre">dem</span></code>)</dt>
+<dd><p class="first">This is the raster dataset that contains the gridded topographic and bathymetric data that will be used to determine the extent of flooding.
+The original geodatabases provided contain DEMs: one at 4-m, and a second at 8-m resolution.
+The finer resolution DEM provides more detailed output, however it also requires more runtime and the analysis requires more computational resources.
+If the tool runs into a <code class="docutils literal"><span class="pre">MemoryError</span></code> during an analysis, try using the lower resolution raster.
+If these errors persist, Other things to try include limiting the number of <code class="docutils literal"><span class="pre">zones</span></code> analyzed or reducing the resolution of the raster even further.</p>
+<div class="last admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The elevations of the DEMs provided in the standard geodatabase are measured in meters.
+However, care is taken to convert the properly convert the user input into meters to match the DEM when determining the extent of flooding.</p>
+</div>
+</dd>
+<dt>Tidegate Zone of Influence (<code class="docutils literal"><span class="pre">zones</span></code>)</dt>
+<dd>This is a polygon layer found in <em>workspace</em> that delineates the zone of influence of each tidegate.
+The original geodatabases provided include a dataset called &#8220;ZOI&#8221; that include this information.</dd>
+<dt>Column with Tidegate IDs (<code class="docutils literal"><span class="pre">ID_column</span></code>)</dt>
+<dd>This is the name of the field in the <code class="docutils literal"><span class="pre">zones</span></code> parameter that contains the unique idenifier of each tidegate.
+When using the &#8220;ZOI&#8221; layers provided in the geodatabases, this should be set to &#8220;GeoID&#8221;.</dd>
+<dt>Output floods layer/filename (<code class="docutils literal"><span class="pre">flood_output</span></code>)</dt>
+<dd><p class="first">This is the filename to which the extent of flooding will be saved within <code class="docutils literal"><span class="pre">workspace</span></code>.</p>
+<div class="last admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Both toolboxes will overwrite any previous output if duplicate filenames are provided.</p>
+</div>
+</dd>
+<dt>Wetlands, optional (<code class="docutils literal"><span class="pre">wetlands</span></code>)</dt>
+<dd>This is a polygon layer found within <code class="docutils literal"><span class="pre">workspace</span></code> that delineates wetlands within a study area.
+If provided, the area of wetlands inundated during each flood scenario will be added to the <code class="docutils literal"><span class="pre">flood_output</span></code> layer.</dd>
+<dt>Output layer/filename of impacted wetlands, optional (<code class="docutils literal"><span class="pre">wetlands_output</span></code>)</dt>
+<dd>This is the filename of the layer created by computing the intersections of <code class="docutils literal"><span class="pre">flood_output</span></code> and <code class="docutils literal"><span class="pre">wetlands</span></code>.
+The result is a shapefile/feature class that contains only the inundated areas of the wetlands.
+If <code class="docutils literal"><span class="pre">wetlands_output</span></code> is not provided, the information is not saved to disk.</dd>
+<dt>Building footprints, optional (<code class="docutils literal"><span class="pre">buildings</span></code>)</dt>
+<dd>This is a polygon layer of the building footprints in the study area.
+If provided the <em>number</em> of impacted buildings will be added to each record of <code class="docutils literal"><span class="pre">flood_output</span></code>.</dd>
+<dt>Output layer/filename of impacted buildings, optional (<code class="docutils literal"><span class="pre">building_output</span></code>)</dt>
+<dd><p class="first">This is the filename of an output layer that contains all of the impacted buildings for each flood scenario.
+If <code class="docutils literal"><span class="pre">building_output</span></code> is not provided, the information is not saved to disk.</p>
+<div class="last admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Both toolboxes will overwrite any previous output if duplicate filenames are provided.</p>
+</div>
+</dd>
+</dl>
+</div>
+<div class="section" id="custom-elevations">
+<h3>Custom elevations<a class="headerlink" href="#custom-elevations" title="Permalink to this headline">¶</a></h3>
+<p>The toolbox titled <em>1 - Create flood scenarios</em> allows the user to input multiple elevations to be analyzed.
+Thus, it has an <cite>elevation</cite> user-input parameters that is not used by <em>2 - Evaluate all standard scenarios</em>.
+In keeping with the formatted definitions below:</p>
+<dl class="docutils">
+<dt>Water Surface Elevation (<code class="docutils literal"><span class="pre">elevation</span></code>)</dt>
+<dd>A series of multiple custom flood elevations (in feet MSL) to be analyzed.</dd>
+</dl>
+</div>
+</div>
+<div class="section" id="examples-of-filled-out-forms">
+<h2>Examples of filled out forms<a class="headerlink" href="#examples-of-filled-out-forms" title="Permalink to this headline">¶</a></h2>
+<div class="figure align-center" id="id4" style="width: 957px">
+<a class="reference internal image-reference" href="_images/flooder_filled.png"><img alt="Finding the toolbox in ArcCatalog" src="_images/flooder_filled.png" style="width: 957.0px; height: 695.0px;" /></a>
+<p class="caption"><span class="caption-text">A completed form for the toolbox titled <em>1 - Create flood scenarios</em>.
+Note that some, but not all, of the optional input parameters are specified.</span></p>
+</div>
+<div class="figure align-center" id="id5" style="width: 957px">
+<a class="reference internal image-reference" href="_images/stdscen_filled.png"><img alt="Finding the toolbox in ArcCatalog" src="_images/stdscen_filled.png" style="width: 957.0px; height: 695.0px;" /></a>
+<p class="caption"><span class="caption-text">An completed form for the toolbox titled <em>2 - Evaluate all standard scenarios</em>.
+Note that some, but not all, of the optional input parameters are specified.</span></p>
+</div>
+</div>
+<div class="section" id="if-you-encounter-a-memoryerror">
+<h2>If you encounter a <code class="docutils literal"><span class="pre">MemoryError</span></code><a class="headerlink" href="#if-you-encounter-a-memoryerror" title="Permalink to this headline">¶</a></h2>
+<p>By default, ArcGIS geoprocessing operations occur in the &#8220;foreground&#8221;.
+What this means is that the geoprocessing occurs within ArcMap or ArcCatalog, rather than in a separate computation process.
+The major implication of this are is those geoprocessing operations are limited to ArcGIS&#8217;s 32-bit version of python.
+Any 32-bit process is only able to access roughly 3 gigabytes of RAM (this various with other hardware in the machine).</p>
+<p>In constrast, 64-bit applications have a theoretical maximum RAM limit of server million terabytes.
+In other words, about as much RAM as you have on a modern personal computer that happily runs ArcGIS.
+Recognizing this, Esri also provides a 64-bit python that can operate in the &#8220;background&#8221; (i.e., a separate process from ArcGIS).</p>
+<p>This can be enabled from the <em>Geoprocessing | Geoprocessing options</em> menu in ArcGIS.
+Doing so <em>may</em> solve issues where the toolboxes fail due to an <cite>MemoryError</cite> (running out of RAM).
+However, some datasets are Just-Too-Big for ArcGIS or your computer and will continue to raise errors.
+In these cases, it&#8217;s best to split up the datasets &#8211; especially &#8211; the rasters into multiple layers.</p>
+<div class="figure align-center" id="id6" style="width: 425px">
+<a class="reference internal image-reference" href="_images/background_gp.png"><img alt="Enabling background processing" src="_images/background_gp.png" style="width: 425.0px; height: 535.0px;" /></a>
+<p class="caption"><span class="caption-text">Enabling background (64-bit) geoprocessing in ArcMap.</span></p>
+</div>
+</div>
+<div class="section" id="other-ways-of-using-python-tidegates">
+<h2>Other ways of using <strong>python-tidegates</strong><a class="headerlink" href="#other-ways-of-using-python-tidegates" title="Permalink to this headline">¶</a></h2>
+<p>Since <strong>python-tidegates</strong> is a python-based toolbox for ArcGIS, great care was taken to create the tool such that it could be called from python without opening ArcMap or ArcCatalog.
+Using the tools from a python intepreter is described in <a class="reference internal" href="python.html#python"><span>the next section</span></a>.</p>
+</div>
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="python.html" class="btn btn-neutral float-right" title="Using python-tidegates from python">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="install.html" class="btn btn-neutral" title="Installing python-tidegates"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Geosyntec Consultants.
+    </p>
+  </div>
+
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'v0.1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="_static/copybutton.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

@@ -1,0 +1,1163 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>utils API Reference &mdash; python-tidegates v0.1.0 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="_static/style.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="python-tidegates v0.1.0 documentation" href="index.html"/>
+        <link rel="prev" title="analysis API Reference" href="analysis.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+          <a href="index.html" class="fa fa-home"> python-tidegates</a>
+        
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installing <strong>python-tidegates</strong></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="install.html#terminology">Terminology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#downloading-python-tidegates">Downloading <strong>python-tidegates</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#dependencies">Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#id1">Installing <strong>python-tidegates</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#running-the-test-suite">Running the test suite</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="arcgis.html">Using <strong>python-tidegates</strong> as a python-toolbox in ArcGIS</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="arcgis.html#finding-the-toolbox">Finding the toolbox</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arcgis.html#inputs-to-the-toolboxes">Inputs to the toolboxes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arcgis.html#examples-of-filled-out-forms">Examples of filled out forms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arcgis.html#if-you-encounter-a-memoryerror">If you encounter a <code class="docutils literal"><span class="pre">MemoryError</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="arcgis.html#other-ways-of-using-python-tidegates">Other ways of using <strong>python-tidegates</strong></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="python.html">Using <strong>python-tidegates</strong> from python</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="python.html#common-elements-of-examples">Common elements of examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python.html#the-toolbox-api">The <code class="docutils literal"><span class="pre">toolbox</span></code> API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python.html#the-analysis-api">The <code class="docutils literal"><span class="pre">analysis</span></code> API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="toolbox.html"><code class="docutils literal"><span class="pre">toolbox</span></code> API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis.html"><code class="docutils literal"><span class="pre">analysis</span></code> API Reference</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href=""><code class="docutils literal"><span class="pre">utils</span></code> API Reference</a></li>
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">python-tidegates</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li><code class="docutils literal"><span class="pre">utils</span></code> API Reference</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="_sources/utils.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <div class="section" id="module-tidegates.utils">
+<span id="utils-api-reference"></span><span id="utils-auto"></span><h1><code class="docutils literal"><span class="pre">utils</span></code> API Reference<a class="headerlink" href="#module-tidegates.utils" title="Permalink to this headline">¶</a></h1>
+<p>Basic utility functions for python-tidegates.</p>
+<p>This contains basic file I/O, coversion, and spatial analysis functions
+to support the python-tidegates library. In most cases, these functions
+are simply wrappers around their <code class="docutils literal"><span class="pre">arcpy</span></code> counter parts. This was done
+so that in the future, these functions could be replaced with calls to
+a different geoprocessing library and eventually ween the code base off
+of its <code class="docutils literal"><span class="pre">arcpy</span></code> dependency.</p>
+<ol class="loweralpha simple" start="3">
+<li>Geosyntec Consultants, 2015.</li>
+</ol>
+<p>Released under the BSD 3-clause license (see LICENSE file for more info)</p>
+<p>Written by Paul Hobson (<a class="reference external" href="mailto:phobson&#37;&#52;&#48;geosyntec&#46;com">phobson<span>&#64;</span>geosyntec<span>&#46;</span>com</a>)</p>
+<dl class="class">
+<dt id="tidegates.utils.EasyMapDoc">
+<em class="property">class </em><code class="descclassname">tidegates.utils.</code><code class="descname">EasyMapDoc</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#tidegates.utils.EasyMapDoc" title="Permalink to this definition">¶</a></dt>
+<dd><p>The object-oriented map class Esri should have made.</p>
+<p>Create this the same you would make any other
+<a class="reference external" href="http://goo.gl/rf4GBH">arcpy.mapping.MapDocument</a>. But now, you can directly list and
+add layers and dataframes. See the two examples below.</p>
+<p>Has <code class="docutils literal"><span class="pre">layers</span></code> and <code class="docutils literal"><span class="pre">dataframes</span></code> attributes that return all of the
+<a class="reference external" href="http://goo.gl/KfrGNa">arcpy.mapping.Layer</a> and <a class="reference external" href="http://goo.gl/ctJu3B">arcpy.mapping.DataFrame</a> objects in the
+map, respectively.</p>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="c"># Adding a layer with the Esri version:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">arpcy</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">md</span> <span class="o">=</span> <span class="n">arcpy</span><span class="o">.</span><span class="n">mapping</span><span class="o">.</span><span class="n">MapDocument</span><span class="p">(</span><span class="s">&#39;CURRENT&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">arcpy</span><span class="o">.</span><span class="n">mapping</span><span class="o">.</span><span class="n">ListDataFrames</span><span class="p">(</span><span class="n">md</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">arcpy</span><span class="o">.</span><span class="n">mapping</span><span class="o">.</span><span class="n">AddLayer</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">myLayer</span><span class="p">,</span> <span class="s">&#39;TOP&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="c"># And now with an ``EasyMapDoc``:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">tidegates</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ezmd</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">EasyMapDoc</span><span class="p">(</span><span class="s">&#39;CURRENT&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ezmd</span><span class="o">.</span><span class="n">add_layer</span><span class="p">(</span><span class="n">myLayer</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="rubric">Attributes</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="6%" />
+<col width="94%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>mapdoc</td>
+<td>(arcpy.mapping.MapDocument) The underlying arcpy MapDocument that serves as the basis for this class.</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="tidegates.utils.EasyMapDoc.layers">
+<code class="descname">layers</code><a class="headerlink" href="#tidegates.utils.EasyMapDoc.layers" title="Permalink to this definition">¶</a></dt>
+<dd><p>All of the layers in the map.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tidegates.utils.EasyMapDoc.dataframes">
+<code class="descname">dataframes</code><a class="headerlink" href="#tidegates.utils.EasyMapDoc.dataframes" title="Permalink to this definition">¶</a></dt>
+<dd><p>All of the dataframes in the map.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tidegates.utils.EasyMapDoc.findLayerByName">
+<code class="descname">findLayerByName</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#tidegates.utils.EasyMapDoc.findLayerByName" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds a <a class="reference external" href="http://goo.gl/KfrGNa">layer</a> in the map by searching for an exact match
+of its name.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>name</strong> : str</p>
+<blockquote>
+<div><p>The name of the layer you want to find.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>lyr</strong> : arcpy.mapping.Layer</p>
+<blockquote>
+<div><p>The map layer or None if no match is found.</p>
+</div></blockquote>
+<div class="last admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Group Layers are not returned.</p>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">tidegates</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ezmd</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">EasyMapDoc</span><span class="p">(</span><span class="s">&#39;CURRENT&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">wetlands</span> <span class="o">=</span> <span class="n">ezmd</span><span class="o">.</span><span class="n">findLayerByName</span><span class="p">(</span><span class="s">&quot;wetlands&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">if</span> <span class="n">wetlands</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="c"># do something with `wetlands`</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="tidegates.utils.EasyMapDoc.add_layer">
+<code class="descname">add_layer</code><span class="sig-paren">(</span><em>layer</em>, <em>df=None</em>, <em>position='top'</em><span class="sig-paren">)</span><a class="headerlink" href="#tidegates.utils.EasyMapDoc.add_layer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simply adds a <a class="reference external" href="http://goo.gl/KfrGNa">layer</a> to a map.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>layer</strong> : str or arcpy.mapping.Layer</p>
+<blockquote>
+<div><p>The dataset to be added to the map.</p>
+</div></blockquote>
+<p><strong>df</strong> : arcpy.mapping.DataFrame, optional</p>
+<blockquote>
+<div><p>The specific dataframe to which the layer will be added. If
+not provided, the data will be added to the first dataframe
+in the map.</p>
+</div></blockquote>
+<p><strong>position</strong> : str, optional (&#8216;TOP&#8217;)</p>
+<blockquote>
+<div><p>The positional within <cite>df</cite> where the data will be added.
+Valid options are: &#8216;auto_arrange&#8217;, &#8216;bottom&#8217;, and &#8216;top&#8217;.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>layer</strong> : arcpy.mapping.Layer</p>
+<blockquote class="last">
+<div><p>The sucessfully added layer.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">tidegates</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ezmd</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">EasyMapDoc</span><span class="p">(</span><span class="s">&#39;CURRENT&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ezmd</span><span class="o">.</span><span class="n">add_layer</span><span class="p">(</span><span class="n">myLayer</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="tidegates.utils.Extension">
+<code class="descclassname">tidegates.utils.</code><code class="descname">Extension</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwds</em><span class="sig-paren">)</span><a class="headerlink" href="#tidegates.utils.Extension" title="Permalink to this definition">¶</a></dt>
+<dd><p>Context manager to facilitate the use of ArcGIS extensions</p>
+<p>Inside the context manager, the extension will be checked out. Once
+the interpreter leaves the code block by any means (e.g., sucessful
+execution, raised exception) the extension will be checked back in.</p>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">tidegates</span><span class="o">,</span> <span class="nn">arcpy</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">tidegates</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">Extension</span><span class="p">(</span><span class="s">&quot;spatial&quot;</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">arcpy</span><span class="o">.</span><span class="n">sa</span><span class="o">.</span><span class="n">Hillshade</span><span class="p">(</span><span class="s">&quot;C:/data/dem.tif&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="tidegates.utils.OverwriteState">
+<code class="descclassname">tidegates.utils.</code><code class="descname">OverwriteState</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwds</em><span class="sig-paren">)</span><a class="headerlink" href="#tidegates.utils.OverwriteState" title="Permalink to this definition">¶</a></dt>
+<dd><p>Context manager to temporarily set the <code class="docutils literal"><span class="pre">overwriteOutput</span></code>
+environment variable.</p>
+<p>Inside the context manager, the <code class="docutils literal"><span class="pre">arcpy.env.overwriteOutput</span></code> will
+be set to the given value. Once the interpreter leaves the code
+block by any means (e.g., sucessful execution, raised exception),
+<code class="docutils literal"><span class="pre">arcpy.env.overwriteOutput</span></code> will reset to its original value.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>path</strong> : str</p>
+<blockquote class="last">
+<div><p>Path to the directory that will be set as the current workspace.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">tidegates</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">tidegates</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">OverwriteState</span><span class="p">(</span><span class="bp">False</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="c"># some operation that should fail if output already exists</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="tidegates.utils.WorkSpace">
+<code class="descclassname">tidegates.utils.</code><code class="descname">WorkSpace</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwds</em><span class="sig-paren">)</span><a class="headerlink" href="#tidegates.utils.WorkSpace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Context manager to temporarily set the <code class="docutils literal"><span class="pre">workspace</span></code>
+environment variable.</p>
+<p>Inside the context manager, the <a class="reference external" href="http://goo.gl/0NpeFN">arcpy.env.workspace</a> will
+be set to the given value. Once the interpreter leaves the code
+block by any means (e.g., sucessful execution, raised exception),
+<a class="reference external" href="http://goo.gl/0NpeFN">arcpy.env.workspace</a> will reset to its original value.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>path</strong> : str</p>
+<blockquote class="last">
+<div><p>Path to the directory that will be set as the current workspace.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">tidegates</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">tidegates</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">OverwriteState</span><span class="p">(</span><span class="bp">False</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="c"># some operation that should fail if output already exists</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="tidegates.utils.update_status">
+<code class="descclassname">tidegates.utils.</code><code class="descname">update_status</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tidegates.utils.update_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorator to allow a function to take a additional keyword
+arguments related to printing status messages to stdin or as arcpy
+messages.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="tidegates.utils.create_temp_filename">
+<code class="descclassname">tidegates.utils.</code><code class="descname">create_temp_filename</code><span class="sig-paren">(</span><em>filepath</em>, <em>filetype=None</em>, <em>prefix='_temp_'</em><span class="sig-paren">)</span><a class="headerlink" href="#tidegates.utils.create_temp_filename" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper function to create temporary filenames before to be saved
+before the final output has been generated.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>filepath</strong> : str</p>
+<blockquote>
+<div><p>The file path/name of what the final output will eventually be.</p>
+</div></blockquote>
+<p><strong>filetype</strong> : str, optional</p>
+<blockquote>
+<div><p>The type of file to be created. Valid values: &#8220;Raster&#8221; or
+&#8220;Shape&#8221;.</p>
+</div></blockquote>
+<p><strong>prefix</strong> : str, optional (&#8216;_temp_&#8217;)</p>
+<blockquote>
+<div><p>The prefix that will be applied to <code class="docutils literal"><span class="pre">filepath</span></code>.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">str</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">create_temp_filename</span><span class="p">(</span><span class="s">&#39;path/to/flooded_wetlands&#39;</span><span class="p">,</span> <span class="n">filetype</span><span class="o">=</span><span class="s">&#39;shape&#39;</span><span class="p">)</span>
+<span class="go">path/to/_temp_flooded_wetlands.shp</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="tidegates.utils.result_to_raster">
+<code class="descclassname">tidegates.utils.</code><code class="descname">result_to_raster</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#tidegates.utils.result_to_raster" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the actual <a href="#id6"><span class="problematic" id="id7">`arcpy.Raster`_</span></a> from an <a class="reference external" href="http://goo.gl/xPIbHi">arcpy.Result</a> object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>result</strong> : arcpy.Result</p>
+<blockquote>
+<div><p>The <cite>Result</cite> object returned from some other geoprocessing
+function.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">arcpy.Raster</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#tidegates.utils.result_to_layer" title="tidegates.utils.result_to_layer"><code class="xref py py-obj docutils literal"><span class="pre">result_to_layer</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="tidegates.utils.result_to_layer">
+<code class="descclassname">tidegates.utils.</code><code class="descname">result_to_layer</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#tidegates.utils.result_to_layer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the actual <a class="reference external" href="http://goo.gl/KfrGNa">arcpy.mapping.Layer</a> from an <a class="reference external" href="http://goo.gl/xPIbHi">arcpy.Result</a>
+object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>result</strong> : arcpy.Result</p>
+<blockquote>
+<div><p>The <cite>Result</cite> object returned from some other geoprocessing
+function.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">arcpy.mapping.Layer</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#tidegates.utils.result_to_raster" title="tidegates.utils.result_to_raster"><code class="xref py py-obj docutils literal"><span class="pre">result_to_raster</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="tidegates.utils.rasters_to_arrays">
+<code class="descclassname">tidegates.utils.</code><code class="descname">rasters_to_arrays</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#tidegates.utils.rasters_to_arrays" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts an arbitrary number of <a class="reference external" href="http://goo.gl/AQgFXW">rasters</a> to <a class="reference external" href="http://goo.gl/iaDlli">numpy arrays</a>.
+Relies on <a class="reference external" href="http://goo.gl/fy8Fnx">arcpy.RasterToNumPyArray</a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>rasters</strong> : args of numpy.arrays</p>
+<blockquote>
+<div><p>Rasters that will be converted to arrays.</p>
+</div></blockquote>
+<p><strong>squeeze</strong> : bool, optional (False)</p>
+<blockquote>
+<div><p>By default (<code class="docutils literal"><span class="pre">squeeze</span> <span class="pre">=</span> <span class="pre">False</span></code>) a list of arrays is always
+returned. However, when <code class="docutils literal"><span class="pre">squeeze</span> <span class="pre">=</span> <span class="pre">True</span></code> and only one raster
+is provided, the array will be <strong>squeezed</strong> out of the list
+and returned directly.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><strong>arrays</strong> : list of arrays or array.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#tidegates.utils.array_to_raster" title="tidegates.utils.array_to_raster"><code class="xref py py-obj docutils literal"><span class="pre">array_to_raster</span></code></a>, <a class="reference internal" href="#tidegates.utils.result_to_raster" title="tidegates.utils.result_to_raster"><code class="xref py py-obj docutils literal"><span class="pre">result_to_raster</span></code></a>, <a class="reference internal" href="#tidegates.utils.polygons_to_raster" title="tidegates.utils.polygons_to_raster"><code class="xref py py-obj docutils literal"><span class="pre">polygons_to_raster</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="tidegates.utils.array_to_raster">
+<code class="descclassname">tidegates.utils.</code><code class="descname">array_to_raster</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#tidegates.utils.array_to_raster" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an arcpy.Raster from a numpy.ndarray based on a template.
+This wrapper around <a class="reference external" href="http://goo.gl/xQsaIz">arcpy.NumPyArrayToRaster</a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>array</strong> : numpy.ndarray</p>
+<blockquote>
+<div><p>The array of values to be coverted to a raster.</p>
+</div></blockquote>
+<p><strong>template</strong> : arcpy.Raster</p>
+<blockquote>
+<div><p>The raster whose, extent, position, and cell size will be
+applied to <code class="docutils literal"><span class="pre">array</span></code>.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><strong>newraster</strong> : arcpy.Raster</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#tidegates.utils.rasters_to_arrays" title="tidegates.utils.rasters_to_arrays"><code class="xref py py-obj docutils literal"><span class="pre">rasters_to_arrays</span></code></a>, <a class="reference internal" href="#tidegates.utils.polygons_to_raster" title="tidegates.utils.polygons_to_raster"><code class="xref py py-obj docutils literal"><span class="pre">polygons_to_raster</span></code></a></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">tidegates</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">raster</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span><span class="s">&#39;dem.tif&#39;</span><span class="p">,</span> <span class="s">&#39;raster&#39;</span><span class="p">)</span> <span class="c"># in meters</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">array</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">rasters_to_arrays</span><span class="p">(</span><span class="n">raster</span><span class="p">,</span> <span class="n">squeeze</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">array</span> <span class="o">=</span> <span class="n">array</span> <span class="o">/</span> <span class="mf">0.3048</span> <span class="c"># convert elevations to feet</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">newraster</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">array_to_raster</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">raster</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">newraster</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s">&#39;&lt;path_to_output&gt;&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="tidegates.utils.load_data">
+<code class="descclassname">tidegates.utils.</code><code class="descname">load_data</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#tidegates.utils.load_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads vector and raster data from filepaths.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>datapath</strong> : str, arcpy.Raster, or arcpy.mapping.Layer</p>
+<blockquote>
+<div><p>The (filepath to the) data you want to load.</p>
+</div></blockquote>
+<p><strong>datatype</strong> : str</p>
+<blockquote>
+<div><p>The type of data you are trying to load. Must be either
+&#8220;shape&#8221; (for polygons) or &#8220;raster&#8221; (for rasters).</p>
+</div></blockquote>
+<p><strong>greedyRasters</strong> : bool (default = True)</p>
+<blockquote>
+<div><p>Currently, arcpy lets you load raster data as a &#8220;Raster&#8221; or as a
+&#8220;Layer&#8221;. When <code class="docutils literal"><span class="pre">greedyRasters</span></code> is True, rasters loaded as type
+&#8220;Layer&#8221; will be forced to type &#8220;Raster&#8221;.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>data</strong> : <a href="#id8"><span class="problematic" id="id9">`arcpy.Raster`_</span></a> or <a class="reference external" href="http://goo.gl/KfrGNa">arcpy.mapping.Layer</a></p>
+<blockquote class="last">
+<div><p>The data loaded as an arcpy object.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="tidegates.utils.polygons_to_raster">
+<code class="descclassname">tidegates.utils.</code><code class="descname">polygons_to_raster</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#tidegates.utils.polygons_to_raster" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prepare tidegates&#8217; areas of influence polygons for flooding
+by converting to a raster. Relies on
+<a class="reference external" href="http://goo.gl/TG2wD7">arcpy.conversion.PolygonToRaster</a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>polygons</strong> : str or arcpy.mapping.Layer</p>
+<blockquote>
+<div><p>The (filepath to the) zones that will be flooded. If a string,
+a Layer will be created.</p>
+</div></blockquote>
+<p><strong>ID_column</strong> : str</p>
+<blockquote>
+<div><p>Name of the column in the <code class="docutils literal"><span class="pre">polygons</span></code> layer that associates
+each geomstry with a tidegate.</p>
+</div></blockquote>
+<p><strong>cellsize</strong> : int</p>
+<blockquote>
+<div><p>Desired cell dimension of the output raster. Default is 4 m.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>zones</strong> : arcpy.Raster</p>
+<blockquote>
+<div><p>The zones of influence as a raster dataset</p>
+</div></blockquote>
+<p><strong>result</strong> : arcpy.Result</p>
+<blockquote class="last">
+<div><p>The weird, crpyric results object that so many (but not all)
+ESRI arcpy function return.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#tidegates.utils.raster_to_polygons" title="tidegates.utils.raster_to_polygons"><code class="xref py py-obj docutils literal"><span class="pre">raster_to_polygons</span></code></a>, <a class="reference internal" href="#tidegates.utils.rasters_to_arrays" title="tidegates.utils.rasters_to_arrays"><code class="xref py py-obj docutils literal"><span class="pre">rasters_to_arrays</span></code></a>, <a class="reference internal" href="#tidegates.utils.array_to_raster" title="tidegates.utils.array_to_raster"><code class="xref py py-obj docutils literal"><span class="pre">array_to_raster</span></code></a></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">zone_raster</span><span class="p">,</span> <span class="n">res</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">polygons_to_raster</span><span class="p">(</span><span class="s">&#39;ZOI.shp&#39;</span><span class="p">,</span> <span class="s">&#39;GeoID&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">zone_array</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">rasters_to_arrays</span><span class="p">(</span><span class="n">zone_raster</span><span class="p">,</span> <span class="n">squeeze</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># remove all zones with a GeoID less than 5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">zone_array</span><span class="p">[</span><span class="n">zone_array</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">filtered_raster</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">array_to_raster</span><span class="p">(</span><span class="n">zone_array</span><span class="p">,</span> <span class="n">zone_raster</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="tidegates.utils.clip_dem_to_zones">
+<code class="descclassname">tidegates.utils.</code><code class="descname">clip_dem_to_zones</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#tidegates.utils.clip_dem_to_zones" title="Permalink to this definition">¶</a></dt>
+<dd><p>Limits the extent of the topographic data (<code class="docutils literal"><span class="pre">dem</span></code>) to that of
+the zones of influence  so that we can easily use array
+representations of the rasters. Relies on <a class="reference external" href="http://goo.gl/md4nFF">arcpy.management.Clip</a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>dem</strong> : arcpy.Raster</p>
+<blockquote>
+<div><p>Digital elevation model of the area of interest.</p>
+</div></blockquote>
+<p><strong>zones</strong> : arcpy.Raster</p>
+<blockquote>
+<div><p>The raster whose cell values represent the zones of influence
+of each tidegate.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>dem_clipped</strong> : arcpy.Raster</p>
+<blockquote>
+<div><p>The zones of influence as a raster dataset</p>
+</div></blockquote>
+<p><strong>result</strong> : arcpy.Result</p>
+<blockquote class="last">
+<div><p>The weird, cryptic results object that so many (but not all)
+ESRI arcpy function return.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="tidegates.utils.raster_to_polygons">
+<code class="descclassname">tidegates.utils.</code><code class="descname">raster_to_polygons</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#tidegates.utils.raster_to_polygons" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts zonal rasters to polygons layers. This is basically just
+a thing wrapper around arcpy.conversion.RasterToPolygon. The
+returned layers will have a field that corresponds to the values of
+the raster. The name of this field can be controlled with the
+<code class="docutils literal"><span class="pre">newfield</span></code> parameter.</p>
+<p>Relies on <a class="reference external" href="http://goo.gl/QOeOCq">arcpy.conversion.RasterToPolygon</a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>zonal_raster</strong> : arcpy.Raster</p>
+<blockquote>
+<div><p>An integer raster of reasonably small set distinct values.</p>
+</div></blockquote>
+<p><strong>filename</strong> : str</p>
+<blockquote>
+<div><p>Path to where the polygons will be saved.</p>
+</div></blockquote>
+<p><strong>newfield</strong> : str, optional</p>
+<blockquote>
+<div><p>By default, the field that contains the raster values is called
+&#8220;gridcode&#8221;. Use this parameter to change the name of that field.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>polygons</strong> : arcpy.mapping.Layer</p>
+<blockquote class="last">
+<div><p>The converted polygons.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#tidegates.utils.polygons_to_raster" title="tidegates.utils.polygons_to_raster"><code class="xref py py-obj docutils literal"><span class="pre">polygons_to_raster</span></code></a>, <a class="reference internal" href="#tidegates.utils.add_field_with_value" title="tidegates.utils.add_field_with_value"><code class="xref py py-obj docutils literal"><span class="pre">add_field_with_value</span></code></a>, <a class="reference internal" href="#tidegates.utils.populate_field" title="tidegates.utils.populate_field"><code class="xref py py-obj docutils literal"><span class="pre">populate_field</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="tidegates.utils.aggregate_polygons">
+<code class="descclassname">tidegates.utils.</code><code class="descname">aggregate_polygons</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#tidegates.utils.aggregate_polygons" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dissolves (aggregates) polygons into a single feature the unique
+values in the provided field. This is basically just a thim wrapper
+around <a class="reference external" href="http://goo.gl/tsmiQH">arcpy.management.Dissolve</a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>polygons</strong> : arcpy.mapping.Layer</p>
+<blockquote>
+<div><p>The layer of polygons to be aggregated.</p>
+</div></blockquote>
+<p><strong>ID_field</strong> : string</p>
+<blockquote>
+<div><p>The name of the field in <code class="docutils literal"><span class="pre">polygons</span></code> on which the individual
+polygons will be grouped.</p>
+</div></blockquote>
+<p><strong>filename</strong> : string</p>
+<blockquote>
+<div><p>Path to where the aggregated polygons will be saved.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>dissolved</strong> : arcpy.mapping.Layer</p>
+<blockquote class="last">
+<div><p>The aggregated polygons.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><code class="xref py py-obj docutils literal"><span class="pre">arcpy.management.Dissolve</span></code></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">tidegates</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dissolved</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">aggregate_polygons</span><span class="p">(</span><span class="s">&#39;wetlands.shp&#39;</span><span class="p">,</span> <span class="s">&#39;GeoID&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                                     <span class="s">&#39;dissolved.shp&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="tidegates.utils.flood_zones">
+<code class="descclassname">tidegates.utils.</code><code class="descname">flood_zones</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#tidegates.utils.flood_zones" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mask out non-flooded portions of arrays.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>zones_array</strong> : numpy.array</p>
+<blockquote>
+<div><p>Array of zone IDs from each zone of influence.</p>
+</div></blockquote>
+<p><strong>topo_array</strong> : numpy.array</p>
+<blockquote>
+<div><p>Digital elevation model (as an array) of the areas.</p>
+</div></blockquote>
+<p><strong>elevation</strong> : float</p>
+<blockquote>
+<div><p>The flood elevation <em>above</em> which everything will be masked.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>flooded_array</strong> : numpy.array</p>
+<blockquote class="last">
+<div><p>Array of zone IDs only where there is flooding.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="tidegates.utils.add_field_with_value">
+<code class="descclassname">tidegates.utils.</code><code class="descname">add_field_with_value</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#tidegates.utils.add_field_with_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a numeric or text field to an attribute table and sets it
+to a constant value. Operates in-place and therefore does not
+return anything.</p>
+<p>Relies on <a class="reference external" href="http://goo.gl/wivgDX">arcpy.management.AddField</a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>table</strong> : Layer, table, or file path</p>
+<blockquote>
+<div><p>This is the layer/file that will have a new field created.</p>
+</div></blockquote>
+<p><strong>field_name</strong> : string</p>
+<blockquote>
+<div><p>The name of the field to be created.</p>
+</div></blockquote>
+<p><strong>field_value</strong> : float or string, optional</p>
+<blockquote>
+<div><p>The value of the new field. If provided, it will be used to
+infer the <code class="docutils literal"><span class="pre">field_type</span></code> parameter required by
+<cite>arcpy.management.AddField</cite> if <code class="docutils literal"><span class="pre">field_type</span></code> is itself not
+explicitly provided.</p>
+</div></blockquote>
+<p><strong>overwrite</strong> : bool, optonal (False)</p>
+<blockquote>
+<div><p>If True, an existing field will be overwritting. The default
+behaviour will raise a <cite>ValueError</cite> if the field already exists.</p>
+</div></blockquote>
+<p><strong>**field_opts</strong> : keyword options</p>
+<blockquote>
+<div><p>Keyword arguments that are passed directly to
+<cite>arcpy.management.AddField</cite>.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="c"># add a text field to shapefile (text fields need a length spec)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">utils</span><span class="o">.</span><span class="n">add_field_with_value</span><span class="p">(</span><span class="s">&quot;mypolygons.shp&quot;</span><span class="p">,</span> <span class="s">&quot;storm_event&quot;</span><span class="p">,</span>
+<span class="go">                               &quot;100-yr&quot;, field_length=10)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># add a numeric field (doesn&#39;t require additional options)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">utils</span><span class="o">.</span><span class="n">add_field_with_value</span><span class="p">(</span><span class="s">&quot;polygons.shp&quot;</span><span class="p">,</span> <span class="s">&quot;flood_level&quot;</span><span class="p">,</span> <span class="mf">3.14</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="tidegates.utils.cleanup_temp_results">
+<code class="descclassname">tidegates.utils.</code><code class="descname">cleanup_temp_results</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#tidegates.utils.cleanup_temp_results" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deletes temporary results from the current workspace.</p>
+<p>Relies on <a class="reference external" href="http://goo.gl/LW85an">arcpy.management.Delete</a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>*results</strong> : str</p>
+<blockquote>
+<div><p>Paths to the temporary results</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="tidegates.utils.intersect_polygon_layers">
+<code class="descclassname">tidegates.utils.</code><code class="descname">intersect_polygon_layers</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#tidegates.utils.intersect_polygon_layers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Intersect polygon layers with each other. Basically a thin wrapper
+around <a class="reference external" href="http://goo.gl/O9YMY6">arcpy.analysis.Intersect</a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>destination</strong> : str</p>
+<blockquote>
+<div><p>Filepath where the intersected output will be saved.</p>
+</div></blockquote>
+<p><strong>*layers</strong> : str or arcpy.Mapping.Layer</p>
+<blockquote>
+<div><p>The polygon layers (or their paths) that will be intersected
+with each other.</p>
+</div></blockquote>
+<p><strong>**intersect_options</strong> : keyword arguments</p>
+<blockquote>
+<div><p>Additional arguments that will be passed directly to
+<cite>arcpy.analysis.Intersect</cite>.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>intersected</strong> : arcpy.mapping.Layer</p>
+<blockquote class="last">
+<div><p>The arcpy Layer of the intersected polygons.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">tidedates</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">blobs</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">intersect_polygon_layers</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="s">&quot;flood_damage_intersect.shp&quot;</span>
+<span class="gp">... </span>    <span class="s">&quot;floods.shp&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="s">&quot;wetlands.shp&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="s">&quot;buildings.shp&quot;</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="tidegates.utils.groupby_and_aggregate">
+<code class="descclassname">tidegates.utils.</code><code class="descname">groupby_and_aggregate</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#tidegates.utils.groupby_and_aggregate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Counts the number of distinct values of <cite>valuefield</cite> are associated
+with each value of <cite>groupfield</cite> in a data source found at
+<cite>input_path</cite>.</p>
+<p>Relies on <a class="reference external" href="http://goo.gl/NzS6sB">arcpy.da.TableToNumPyArray</a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>input_path</strong> : str</p>
+<blockquote>
+<div><p>File path to a shapefile or feature class whose attribute table
+can be loaded with <cite>arcpy.da.TableToNumPyArray</cite>.</p>
+</div></blockquote>
+<p><strong>groupfield</strong> : str</p>
+<blockquote>
+<div><p>The field name that would be used to group all of the records.</p>
+</div></blockquote>
+<p><strong>valuefield</strong> : str</p>
+<blockquote>
+<div><p>The field name whose distinct values will be counted in each
+group defined by <cite>groupfield</cite>.</p>
+</div></blockquote>
+<p><strong>aggfxn</strong> : callable, optional.</p>
+<blockquote>
+<div><p>Function to aggregate the values in each group to a single group.
+This function should accept an <cite>itertools._grouper</cite> as its only
+input. If not provided, unique number of value in the group will
+be returned.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>counts</strong> : dict</p>
+<blockquote class="last">
+<div><p>A dictionary whose keys are the distinct values of <cite>groupfield</cite>
+and values are the number of distinct records in each group.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference external" href="https://docs.python.org/library/itertools.html#itertools.groupby" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">itertools.groupby</span></code></a>, <a class="reference internal" href="#tidegates.utils.populate_field" title="tidegates.utils.populate_field"><code class="xref py py-obj docutils literal"><span class="pre">populate_field</span></code></a></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="c"># compute total areas for each &#39;GeoID&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">wetland_areas</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">groupby_and_aggregate</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">input_path</span><span class="o">=</span><span class="s">&#39;wetlands.shp&#39;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">groupfield</span><span class="o">=</span><span class="s">&#39;GeoID&#39;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">valuefield</span><span class="o">=</span><span class="s">&#39;SHAPE@AREA&#39;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">aggfxn</span><span class="o">=</span><span class="k">lambda</span> <span class="n">group</span><span class="p">:</span> <span class="nb">sum</span><span class="p">([</span><span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">group</span><span class="p">])</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="c"># count the number of structures associated with each &#39;GeoID&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">building_counts</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">groupby_and_aggregate</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">input_path</span><span class="o">=</span><span class="n">buildingsoutput</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">groupfield</span><span class="o">=</span><span class="n">ID_column</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">valuefield</span><span class="o">=</span><span class="s">&#39;STRUCT_ID&#39;</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="tidegates.utils.rename_column">
+<code class="descclassname">tidegates.utils.</code><code class="descname">rename_column</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#tidegates.utils.rename_column" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="tidegates.utils.populate_field">
+<code class="descclassname">tidegates.utils.</code><code class="descname">populate_field</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#tidegates.utils.populate_field" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loops through the records of a table and populates the value of one
+field (<cite>valuefield</cite>) based on another field (<cite>keyfield</cite>) by passing
+the entire row through a function (<cite>value_fxn</cite>).</p>
+<p>Relies on <a class="reference external" href="http://goo.gl/sa3mW6">arcpy.da.UpdateCursor</a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>table</strong> : Layer, table, or file path</p>
+<blockquote>
+<div><p>This is the layer/file that will have a new field created.</p>
+</div></blockquote>
+<p><strong>value_fxn</strong> : callable</p>
+<blockquote>
+<div><p>Any function that accepts a row from an <cite>arcpy.da.SearchCursor</cite>
+and returns a <em>single</em> value.</p>
+</div></blockquote>
+<p><strong>valuefield</strong> : string</p>
+<blockquote>
+<div><p>The name of the field to be computed.</p>
+</div></blockquote>
+<p><strong>*keyfields</strong> : strings, optional</p>
+<blockquote>
+<div><p>The other fields that need to be present in the rows of the
+cursor.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">None</p>
+<div class="last admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">In the row object, the <cite>valuefield</cite> will be the last item.
+In other words, <cite>row[0]</cite> will return the first values in
+<cite>*keyfields</cite> and <cite>row[-1]</cite> will return the existing value of
+<cite>valuefield</cite> in that row.</p>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="c"># populate field (&quot;Company&quot;) with a constant value (&quot;Geosyntec&quot;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">populate_field</span><span class="p">(</span><span class="s">&quot;wetlands.shp&quot;</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="s">&quot;Geosyntec&quot;</span><span class="p">,</span> <span class="s">&quot;Company&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="tidegates.utils.copy_data">
+<code class="descclassname">tidegates.utils.</code><code class="descname">copy_data</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#tidegates.utils.copy_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Copies an arbitrary number of spatial files to a new folder.</p>
+<p>Relies on <a class="reference external" href="http://goo.gl/8c83s1">arcpy.conversion.FeatureClassToShapefile</a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>destfolder</strong> : str</p>
+<blockquote>
+<div><p>Path the folder that is the destination for the files.</p>
+</div></blockquote>
+<p><strong>*source_layers</strong> : str</p>
+<blockquote>
+<div><p>Paths to the files that need to be copied</p>
+</div></blockquote>
+<p><strong>squeeze</strong> : bool, optional (False)</p>
+<blockquote>
+<div><p>When one layer is copied and this is True, the copied layer is
+returned. Otherwise, this function returns a list of layers.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><strong>copied</strong> : list of arcpy.mapping Layers or just a single Layer.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="tidegates.utils.concat_results">
+<code class="descclassname">tidegates.utils.</code><code class="descname">concat_results</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#tidegates.utils.concat_results" title="Permalink to this definition">¶</a></dt>
+<dd><p>Concatentates (merges) serveral datasets into a single shapefile
+or feature class.</p>
+<p>Relies on <a class="reference external" href="http://goo.gl/JD3q0f">arcpy.management.Merge</a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>destination</strong> : str</p>
+<blockquote>
+<div><p>Path to where the concatentated dataset should be saved.</p>
+</div></blockquote>
+<p><strong>*input_files</strong> : str</p>
+<blockquote>
+<div><p>Strings of the paths of the datasets to be merged.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">arcpy.mapping.Layer</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#tidegates.utils.join_results_to_baseline" title="tidegates.utils.join_results_to_baseline"><code class="xref py py-obj docutils literal"><span class="pre">join_results_to_baseline</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="tidegates.utils.join_results_to_baseline">
+<code class="descclassname">tidegates.utils.</code><code class="descname">join_results_to_baseline</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#tidegates.utils.join_results_to_baseline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Joins attributes of a geoprocessing result to a baseline dataset
+and saves the results to another file.</p>
+<p>Relies on <a class="reference external" href="http://resources.arcgis.com/en/help/main/10.2/index.html#//00080000000q000000">arcpy.analysis.SpatialJoin</a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>destination</strong> : str</p>
+<blockquote>
+<div><p>Path to where the final joined dataset should be saved.</p>
+</div></blockquote>
+<p><strong>results_file</strong> : str</p>
+<blockquote>
+<div><p>Path to the results file whose attributes will be added to the
+<code class="docutils literal"><span class="pre">baseline_file</span></code>.</p>
+</div></blockquote>
+<p><strong>baseline_file</strong> : str</p>
+<blockquote>
+<div><p>Path to the baseline_file with the desired geometry.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">arcpy.mapping.Layer</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#tidegates.utils.concat_results" title="tidegates.utils.concat_results"><code class="xref py py-obj docutils literal"><span class="pre">concat_results</span></code></a></p>
+</div>
+</dd></dl>
+
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="analysis.html" class="btn btn-neutral" title="analysis API Reference"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Geosyntec Consultants.
+    </p>
+  </div>
+
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'v0.1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="_static/copybutton.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

@@ -1,0 +1,435 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Using python-tidegates from python &mdash; python-tidegates v0.1.0 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="_static/style.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="python-tidegates v0.1.0 documentation" href="index.html"/>
+        <link rel="next" title="toolbox API Reference" href="toolbox.html"/>
+        <link rel="prev" title="Using python-tidegates as a python-toolbox in ArcGIS" href="arcgis.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+          <a href="index.html" class="fa fa-home"> python-tidegates</a>
+        
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installing <strong>python-tidegates</strong></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="install.html#terminology">Terminology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#downloading-python-tidegates">Downloading <strong>python-tidegates</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#dependencies">Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#id1">Installing <strong>python-tidegates</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#running-the-test-suite">Running the test suite</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="arcgis.html">Using <strong>python-tidegates</strong> as a python-toolbox in ArcGIS</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="arcgis.html#finding-the-toolbox">Finding the toolbox</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arcgis.html#inputs-to-the-toolboxes">Inputs to the toolboxes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arcgis.html#examples-of-filled-out-forms">Examples of filled out forms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arcgis.html#if-you-encounter-a-memoryerror">If you encounter a <code class="docutils literal"><span class="pre">MemoryError</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="arcgis.html#other-ways-of-using-python-tidegates">Other ways of using <strong>python-tidegates</strong></a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Using <strong>python-tidegates</strong> from python</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#common-elements-of-examples">Common elements of examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#the-toolbox-api">The <code class="docutils literal"><span class="pre">toolbox</span></code> API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#the-analysis-api">The <code class="docutils literal"><span class="pre">analysis</span></code> API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="toolbox.html"><code class="docutils literal"><span class="pre">toolbox</span></code> API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis.html"><code class="docutils literal"><span class="pre">analysis</span></code> API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html"><code class="docutils literal"><span class="pre">utils</span></code> API Reference</a></li>
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">python-tidegates</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Using <strong>python-tidegates</strong> from python</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="_sources/python.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <div class="section" id="using-python-tidegates-from-python">
+<span id="python"></span><h1>Using <strong>python-tidegates</strong> from python<a class="headerlink" href="#using-python-tidegates-from-python" title="Permalink to this headline">¶</a></h1>
+<p>You don&#8217;t have to start an ArcGIS session to use <strong>python-tidegates</strong>.
+The analytical guts of the library are completely isolated from the ArcGIS interface portions.
+This allows users to directly use the analytical capabilities from a python script or an interactive python session.</p>
+<p>There are two interfaces to the analytic capabilities:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><a class="reference internal" href="#toolbox-guide"><span>The toolbox API</span></a>, which is easier to use and parallels the toolboxes.</li>
+<li><a class="reference internal" href="#analysis-guide"><span>The analysis API</span></a>, which is more powerful but requires precise coding.</li>
+</ol>
+</div></blockquote>
+<div class="section" id="common-elements-of-examples">
+<h2>Common elements of examples<a class="headerlink" href="#common-elements-of-examples" title="Permalink to this headline">¶</a></h2>
+<p>The following import statements are prerequisites for all of the code snippets below.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">import</span> <span class="nn">arcpy</span>
+<span class="kn">import</span> <span class="nn">tidegates</span>
+<span class="kn">from</span> <span class="nn">tidegates</span> <span class="kn">import</span> <span class="n">utils</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="the-toolbox-api">
+<span id="toolbox-guide"></span><h2>The <code class="docutils literal"><span class="pre">toolbox</span></code> API<a class="headerlink" href="#the-toolbox-api" title="Permalink to this headline">¶</a></h2>
+<p>(see <a class="reference internal" href="install.html#install"><span>install instructions</span></a>)</p>
+<p>For a full description of the API, see the <a class="reference internal" href="toolbox.html#toolbox-auto"><span>reference guide</span></a></p>
+<p>The <a class="reference internal" href="toolbox.html#module-tidegates.toolbox" title="tidegates.toolbox"><code class="xref py py-mod docutils literal"><span class="pre">tidegates.toolbox</span></code></a> interface provides a very high-level interface to <strong>python-tidgeates</strong> that very closely mimics the tooboxes.
+Just like how there are two forms in the ArcGIS toolbox, there are two analagous classes available in the <a class="reference internal" href="toolbox.html#module-tidegates.toolbox" title="tidegates.toolbox"><code class="xref py py-mod docutils literal"><span class="pre">tidegates.toolbox</span></code></a> API.</p>
+<p>The <a class="reference internal" href="toolbox.html#tidegates.toolbox.Flooder" title="tidegates.toolbox.Flooder"><code class="xref py py-class docutils literal"><span class="pre">tidegates.toolbox.Flooder</span></code></a> class allows the user to estimate the extent and impact of flooding at custom elevations.</p>
+<p>The <a class="reference internal" href="toolbox.html#tidegates.toolbox.StandardScenarios" title="tidegates.toolbox.StandardScenarios"><code class="xref py py-class docutils literal"><span class="pre">tidegates.toolbox.StandardScenarios</span></code></a> class automatically estimates the extent and impact of flooding for all combinations of the four storm surge events and sea level rise in 1-ft increments up to 6 feet.</p>
+<p>Both classes are instantiated without any arguments and have identical <code class="docutils literal"><span class="pre">main_execute</span></code> methods to evaluate their scenarios.
+The only difference is that <a class="reference internal" href="toolbox.html#tidegates.toolbox.Flooder" title="tidegates.toolbox.Flooder"><code class="xref py py-class docutils literal"><span class="pre">tidegates.toolbox.Flooder</span></code></a> requires values for the flood elevations.</p>
+<div class="section" id="common-input-parameters">
+<h3>Common input parameters<a class="headerlink" href="#common-input-parameters" title="Permalink to this headline">¶</a></h3>
+<p>The following are the parameters shared by both toolboxes.
+All parameters are required except where noted.</p>
+<dl class="docutils">
+<dt>Analysis Workspace (<code class="docutils literal"><span class="pre">workspace</span></code>)</dt>
+<dd><p class="first">This is the folder or geodatabase that contains all of the input for the analysis.</p>
+<div class="last admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">All of the input for the analysis (see below) <em>must</em> be in this workspace.</p>
+</div>
+</dd>
+<dt>Digital Elevation Model (<code class="docutils literal"><span class="pre">dem</span></code>)</dt>
+<dd><p class="first">This is the raster dataset that contains the gridded topographic and bathymetric data that will be used to determine the extent of flooding.
+The original geodatabases provided contain DEMs: one at 4-m, and a second at 8-m resolution.
+The finer resolution DEM provides more detailed output, however it also requires more runtime and the analysis requires more computational resources.
+If the tool runs into a <code class="docutils literal"><span class="pre">MemoryError</span></code> during an analysis, try using the lower resolution raster.
+If these errors persist, other things to try include limiting the number of <code class="docutils literal"><span class="pre">zones</span></code> analyzed or reducing the resolution of the raster even further.</p>
+<div class="last admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The elevations of the DEMs provided in the standard geodatabase are measured in meters.
+However, care is taken to convert the properly convert the user input into meters to match the DEM when determining the extent of flooding.</p>
+</div>
+</dd>
+<dt>Tidegate Zone of Influence (<code class="docutils literal"><span class="pre">zones</span></code>)</dt>
+<dd>This is a polygon layer found in <em>workspace</em> that delineates the zone of influence of each tidegate.
+The original geodatabases provided include a dataset called &#8220;ZOI&#8221; that include this information.</dd>
+<dt>Column with Tidegate IDs (<code class="docutils literal"><span class="pre">ID_column</span></code>)</dt>
+<dd>This is the name of the field in the <code class="docutils literal"><span class="pre">zones</span></code> parameter that contains the unique idenifier of each tidegate.
+When using the &#8220;ZOI&#8221; layers provided in the geodatabases, this should be set to &#8220;GeoID&#8221;.</dd>
+<dt>Output floods layer/filename (<code class="docutils literal"><span class="pre">flood_output</span></code>)</dt>
+<dd><p class="first">This is the filename to which the extent of flooding will be saved within <code class="docutils literal"><span class="pre">workspace</span></code>.</p>
+<div class="last admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Both toolboxes will overwrite any previous output if duplicate filenames are provided.</p>
+</div>
+</dd>
+<dt>Wetlands, optional (<code class="docutils literal"><span class="pre">wetlands</span></code>)</dt>
+<dd>This is a polygon layer found within <code class="docutils literal"><span class="pre">workspace</span></code> that delineates wetlands within a study area.
+If provided, the area of wetlands inundated during each flood scenario will be added to the <code class="docutils literal"><span class="pre">flood_output</span></code> layer.</dd>
+<dt>Output layer/filename of impacted wetlands, optional (<code class="docutils literal"><span class="pre">wetlands_output</span></code>)</dt>
+<dd>This is the filename of the layer created by computing the intersections of <code class="docutils literal"><span class="pre">flood_output</span></code> and <code class="docutils literal"><span class="pre">wetlands</span></code>.
+The result is a shapefile/feature class that contains only the inundated areas of the wetlands.
+If <code class="docutils literal"><span class="pre">wetlands_output</span></code> is not provided, the information is not saved to disk.</dd>
+<dt>Building footprints, optional (<code class="docutils literal"><span class="pre">buildings</span></code>)</dt>
+<dd>This is a polygon layer of the building footprints in the study area.
+If provided the <em>number</em> of impacted buildings will be added to each record of <code class="docutils literal"><span class="pre">flood_output</span></code>.</dd>
+<dt>Output layer/filename of impacted buildings, optional (<code class="docutils literal"><span class="pre">building_output</span></code>)</dt>
+<dd><p class="first">This is the filename of an output layer that contains all of the impacted buildings for each flood scenario.
+If <code class="docutils literal"><span class="pre">building_output</span></code> is not provided, the information is not saved to disk.</p>
+<div class="last admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Both toolboxes will overwrite any previous output if duplicate filenames are provided.</p>
+</div>
+</dd>
+</dl>
+</div>
+<div class="section" id="custom-elevations">
+<h3>Custom elevations<a class="headerlink" href="#custom-elevations" title="Permalink to this headline">¶</a></h3>
+<p>The <a class="reference internal" href="toolbox.html#tidegates.toolbox.Flooder" title="tidegates.toolbox.Flooder"><code class="xref py py-class docutils literal"><span class="pre">tidegates.toolbox.Flooder</span></code></a> class allows the user to input multiple elevations to be analyzed.
+Thus, it has an <code class="docutils literal"><span class="pre">elevation</span></code> parameter not used by the <a class="reference internal" href="toolbox.html#tidegates.toolbox.StandardScenarios" title="tidegates.toolbox.StandardScenarios"><code class="xref py py-class docutils literal"><span class="pre">tidegates.toolbox.StandardScenarios</span></code></a> class.
+In keeping with the formatted definitions below:</p>
+<dl class="docutils">
+<dt>elevation</dt>
+<dd>A series of multiple custom flood elevations (in feet MSL) to be analyzed.</dd>
+</dl>
+</div>
+<div class="section" id="code-examples">
+<h3>Code examples<a class="headerlink" href="#code-examples" title="Permalink to this headline">¶</a></h3>
+<p>Below is an example of using the <a class="reference internal" href="toolbox.html#tidegates.toolbox.Flooder" title="tidegates.toolbox.Flooder"><code class="xref py py-class docutils literal"><span class="pre">tidegates.toolbox.Flooder</span></code></a> class to evaluate custom flood elevations.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># define the workspace as a geodatabase</span>
+<span class="n">workspace</span> <span class="o">=</span> <span class="s">r&#39;F:\phobson\Tidegates\MB_Small.gdb&#39;</span>
+
+<span class="c"># define the flood elevations to analyze (in feef MSL)</span>
+<span class="n">elevations_feet</span> <span class="o">=</span> <span class="p">[</span><span class="mf">4.8</span><span class="p">,</span> <span class="mf">6.1</span><span class="p">,</span> <span class="mf">8.9</span><span class="p">,</span> <span class="mf">10.5</span><span class="p">]</span>
+
+<span class="c"># instantiate the flooder</span>
+<span class="n">custom_tool</span> <span class="o">=</span> <span class="n">tidegates</span><span class="o">.</span><span class="n">toolbox</span><span class="o">.</span><span class="n">Flooder</span><span class="p">()</span>
+
+<span class="k">with</span> <span class="n">utils</span><span class="o">.</span><span class="n">OverwriteState</span><span class="p">(</span><span class="bp">True</span><span class="p">):</span>  <span class="c"># allow overwriting of any previous output</span>
+    <span class="n">custom_tool</span><span class="o">.</span><span class="n">main_execute</span><span class="p">(</span>
+        <span class="n">workspace</span><span class="o">=</span><span class="n">workspace</span><span class="p">,</span>
+        <span class="n">dem</span><span class="o">=</span><span class="s">&#39;dem_x08&#39;</span><span class="p">,</span>
+        <span class="n">zones</span><span class="o">=</span><span class="s">&#39;ZOI&#39;</span><span class="p">,</span>
+        <span class="n">wetlands</span><span class="o">=</span><span class="s">&#39;wetlands&#39;</span><span class="p">,</span>
+        <span class="n">buildings</span><span class="o">=</span><span class="s">&#39;buildings&#39;</span><span class="p">,</span>
+        <span class="n">ID_column</span><span class="o">=</span><span class="s">&#39;GeoID&#39;</span><span class="p">,</span>
+        <span class="n">flood_output</span><span class="o">=</span><span class="s">&#39;Custom_floods&#39;</span><span class="p">,</span>
+        <span class="n">building_output</span><span class="o">=</span><span class="s">&#39;Custom_floods_bldg&#39;</span><span class="p">,</span>
+        <span class="n">wetland_output</span><span class="o">=</span><span class="s">&#39;Custom_floods_wetland&#39;</span><span class="p">,</span>
+        <span class="n">elevations</span><span class="o">=</span><span class="n">elevations_feet</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+<p>Below is an example of using the <a class="reference internal" href="toolbox.html#tidegates.toolbox.StandardScenarios" title="tidegates.toolbox.StandardScenarios"><code class="xref py py-class docutils literal"><span class="pre">tidegates.toolbox.StandardScenarios</span></code></a> class to evaluate custom flood elevations.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># define the workspace as a geodatabase</span>
+<span class="n">workspace</span> <span class="o">=</span> <span class="s">r&#39;F:\phobson\Tidegates\MB_Small.gdb&#39;</span>
+
+<span class="c"># instantiate the flooder</span>
+<span class="n">std_tool</span> <span class="o">=</span> <span class="n">tidegates</span><span class="o">.</span><span class="n">toolbox</span><span class="o">.</span><span class="n">StandardScenarios</span><span class="p">()</span>
+
+<span class="k">with</span> <span class="n">utils</span><span class="o">.</span><span class="n">OverwriteState</span><span class="p">(</span><span class="bp">True</span><span class="p">):</span>  <span class="c"># allow overwriting of any previous output</span>
+    <span class="n">std_tool</span><span class="o">.</span><span class="n">main_execute</span><span class="p">(</span>
+        <span class="n">workspace</span><span class="o">=</span><span class="n">workspace</span><span class="p">,</span>
+        <span class="n">dem</span><span class="o">=</span><span class="s">&#39;dem_x08&#39;</span><span class="p">,</span>
+        <span class="n">zones</span><span class="o">=</span><span class="s">&#39;ZOI&#39;</span><span class="p">,</span>
+        <span class="n">wetlands</span><span class="o">=</span><span class="s">&#39;wetlands&#39;</span><span class="p">,</span>
+        <span class="n">buildings</span><span class="o">=</span><span class="s">&#39;buildings&#39;</span><span class="p">,</span>
+        <span class="n">ID_column</span><span class="o">=</span><span class="s">&#39;GeoID&#39;</span><span class="p">,</span>
+        <span class="n">flood_output</span><span class="o">=</span><span class="s">&#39;Std_floods&#39;</span><span class="p">,</span>
+        <span class="n">building_output</span><span class="o">=</span><span class="s">&#39;Std_floods_bldg&#39;</span><span class="p">,</span>
+        <span class="n">wetland_output</span><span class="o">=</span><span class="s">&#39;Std_floods_wetland&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="the-analysis-api">
+<span id="analysis-guide"></span><h2>The <code class="docutils literal"><span class="pre">analysis</span></code> API<a class="headerlink" href="#the-analysis-api" title="Permalink to this headline">¶</a></h2>
+<p>For a full description of the API, see the <a class="reference internal" href="analysis.html#module-tidegates.analysis" title="tidegates.analysis"><code class="xref py py-mod docutils literal"><span class="pre">tidegates.analysis</span></code></a>.</p>
+<p>The <code class="docutils literal"><span class="pre">analysis</span></code> API can be used to taylor a more nuanced, custom analysis of the impacts resulting from a flood event.
+Where the <code class="docutils literal"><span class="pre">toolbox</span></code> API effectively limits the user to computing total area and counts of one asset each, the functions below can be used by a python programmer to assess the impact to any number of assets.</p>
+<div class="section" id="general-descriptions">
+<h3>General descriptions<a class="headerlink" href="#general-descriptions" title="Permalink to this headline">¶</a></h3>
+<p>The <a class="reference internal" href="analysis.html#module-tidegates.analysis" title="tidegates.analysis"><code class="xref py py-mod docutils literal"><span class="pre">tidegates.analysis</span></code></a> submodule contains four functions:</p>
+<dl class="docutils">
+<dt><a class="reference internal" href="analysis.html#tidegates.analysis.flood_area" title="tidegates.analysis.flood_area"><code class="xref py py-func docutils literal"><span class="pre">tidegates.analysis.flood_area()</span></code></a></dt>
+<dd>Estimates spatial extent of flooding behind for a given water surface elevation.</dd>
+<dt><a class="reference internal" href="analysis.html#tidegates.analysis.assess_impact" title="tidegates.analysis.assess_impact"><code class="xref py py-func docutils literal"><span class="pre">tidegates.analysis.assess_impact()</span></code></a></dt>
+<dd>Estimates the total area of wetlands flooded and buildings impacted behind each tidegates for a (collection of) flood scenarios.</dd>
+<dt><a class="reference internal" href="analysis.html#tidegates.analysis.area_of_impacts" title="tidegates.analysis.area_of_impacts"><code class="xref py py-func docutils literal"><span class="pre">tidegates.analysis.area_of_impacts()</span></code></a></dt>
+<dd>A general function used by <a class="reference internal" href="analysis.html#tidegates.analysis.assess_impact" title="tidegates.analysis.assess_impact"><code class="xref py py-func docutils literal"><span class="pre">tidegates.analysis.assess_impact()</span></code></a>.
+This function takes the output from <a class="reference internal" href="analysis.html#tidegates.analysis.flood_area" title="tidegates.analysis.flood_area"><code class="xref py py-func docutils literal"><span class="pre">tidegates.analysis.flood_area()</span></code></a> and computes its intersection with another polygon layer.
+The areas of the resulting geometries behind each tidegate are then added up and inserted into the attribute table of the flood scenario dataset.</dd>
+<dt><a class="reference internal" href="analysis.html#tidegates.analysis.count_of_impacts" title="tidegates.analysis.count_of_impacts"><code class="xref py py-func docutils literal"><span class="pre">tidegates.analysis.count_of_impacts()</span></code></a></dt>
+<dd>Another general function used by <a class="reference internal" href="analysis.html#tidegates.analysis.assess_impact" title="tidegates.analysis.assess_impact"><code class="xref py py-func docutils literal"><span class="pre">tidegates.analysis.assess_impact()</span></code></a> that also relies on the output of <a class="reference internal" href="analysis.html#tidegates.analysis.flood_area" title="tidegates.analysis.flood_area"><code class="xref py py-func docutils literal"><span class="pre">tidegates.analysis.flood_area()</span></code></a>.
+In this case, instead of determining the total impacted area of the assesst behind each tidegate, this <em>counts</em> the number of impacted assets.
+For example, this function can be used to determine the number of buildings behind each tidegate that might see any amount of flooding during a flood event.</dd>
+</dl>
+</div>
+<div class="section" id="id1">
+<h3>Code examples<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<dl class="docutils">
+<dt>The classes in <a class="reference internal" href="toolbox.html#module-tidegates.toolbox" title="tidegates.toolbox"><code class="xref py py-mod docutils literal"><span class="pre">tidegates.toolbox</span></code></a> rely on the function in <a class="reference internal" href="analysis.html#module-tidegates.analysis" title="tidegates.analysis"><code class="xref py py-mod docutils literal"><span class="pre">tidegates.analysis</span></code></a> to determine</dt>
+<dd><ul class="first last simple">
+<li>the extent and area of flooding</li>
+<li>the number of buildings that recieve some amount of flooding</li>
+<li>the extent and area of flooding within wetlands.</li>
+</ul>
+</dd>
+</dl>
+<p>The sample script below does all of that and count the number of distinct wetlands impacted by each flood using <a class="reference internal" href="analysis.html#module-tidegates.analysis" title="tidegates.analysis"><code class="xref py py-mod docutils literal"><span class="pre">tidegates.analysis</span></code></a> directly.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># common parameters</span>
+<span class="n">workspace</span> <span class="o">=</span> <span class="s">r&#39;F:\phobson\Tidegates\MB_Small.gdb&#39;</span>
+<span class="n">flood_elev</span> <span class="o">=</span> <span class="mf">13.8</span> <span class="c"># ft MSL</span>
+<span class="n">flood_output</span> <span class="o">=</span> <span class="s">&#39;Example_flood&#39;</span>
+<span class="n">id_col</span> <span class="o">=</span> <span class="s">&#39;GeoID&#39;</span>
+
+<span class="k">with</span> <span class="n">utils</span><span class="o">.</span><span class="n">WorkSpace</span><span class="p">(</span><span class="n">workspace</span><span class="p">),</span> <span class="n">utils</span><span class="o">.</span><span class="n">OverwriteState</span><span class="p">(</span><span class="bp">True</span><span class="p">):</span>
+
+    <span class="c"># estimate the spatial extent of the floods</span>
+    <span class="n">flooded_zones</span> <span class="o">=</span> <span class="n">tidegates</span><span class="o">.</span><span class="n">flood_area</span><span class="p">(</span>
+        <span class="n">dem</span><span class="o">=</span><span class="s">&#39;dem_x08&#39;</span><span class="p">,</span>
+        <span class="n">zones</span><span class="o">=</span><span class="s">&#39;ZOI&#39;</span><span class="p">,</span>
+        <span class="n">ID_column</span><span class="o">=</span><span class="n">id_col</span><span class="p">,</span>
+        <span class="n">elevation_feet</span><span class="o">=</span><span class="n">flood_elev</span><span class="p">,</span>
+        <span class="n">filename</span><span class="o">=</span><span class="n">flood_output</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c"># add a field to the output&#39;s attribute table indicating the flood elevation</span>
+    <span class="n">utils</span><span class="o">.</span><span class="n">add_field_with_value</span><span class="p">(</span>
+        <span class="n">table</span><span class="o">=</span><span class="n">flood_output</span><span class="p">,</span>
+        <span class="n">field_name</span><span class="o">=</span><span class="s">&#39;flood_elev&#39;</span><span class="p">,</span>
+        <span class="n">field_value</span><span class="o">=</span><span class="n">flood_elev</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c"># count the number of buildings impacted</span>
+    <span class="n">tidegates</span><span class="o">.</span><span class="n">count_of_impacts</span><span class="p">(</span>
+        <span class="n">floods_path</span><span class="o">=</span><span class="n">flood_output</span><span class="p">,</span>
+        <span class="n">flood_idcol</span><span class="o">=</span><span class="n">id_col</span><span class="p">,</span>
+        <span class="n">assets_input</span><span class="o">=</span><span class="s">&#39;buildings&#39;</span><span class="p">,</span> <span class="c"># building footprint layer in the GeoDB,</span>
+        <span class="n">asset_idcol</span><span class="o">=</span><span class="s">&#39;STRUCT_ID&#39;</span><span class="p">,</span> <span class="c"># unique field for each building</span>
+        <span class="n">fieldname</span><span class="o">=</span><span class="s">&#39;N_bldgs&#39;</span><span class="p">,</span> <span class="c"># name of the field we&#39;ll add to &#39;Example_flood&#39;</span>
+    <span class="p">)</span>
+
+    <span class="c"># count the number of wetlands impacted</span>
+    <span class="n">tidegates</span><span class="o">.</span><span class="n">count_of_impacts</span><span class="p">(</span>
+        <span class="n">floods_path</span><span class="o">=</span><span class="n">flood_output</span><span class="p">,</span>
+        <span class="n">flood_idcol</span><span class="o">=</span><span class="n">id_col</span><span class="p">,</span>
+        <span class="n">assets_input</span><span class="o">=</span><span class="s">&#39;wetlands&#39;</span><span class="p">,</span> <span class="c"># wetlands layer in the GeoDB</span>
+        <span class="n">asset_idcol</span><span class="o">=</span><span class="s">&#39;WETCODE&#39;</span><span class="p">,</span> <span class="c"># unique field for each wetland</span>
+        <span class="n">fieldname</span><span class="o">=</span><span class="s">&#39;N_wtlds&#39;</span><span class="p">,</span> <span class="c"># name of the field we&#39;ll add to &#39;Example_flood&#39;</span>
+    <span class="p">)</span>
+
+    <span class="c"># sum up the area of impacted wetlands behind each tidegate</span>
+    <span class="n">tidegates</span><span class="o">.</span><span class="n">area_of_impacts</span><span class="p">(</span>
+        <span class="n">floods_path</span><span class="o">=</span><span class="n">flood_output</span><span class="p">,</span>
+        <span class="n">ID_column</span><span class="o">=</span><span class="n">id_col</span><span class="p">,</span>
+        <span class="n">assets_input</span><span class="o">=</span><span class="s">&#39;wetlands&#39;</span><span class="p">,</span> <span class="c"># wetlands layer in the GeoDB</span>
+        <span class="n">fieldname</span><span class="o">=</span><span class="s">&#39;area_wtlds&#39;</span><span class="p">,</span> <span class="c"># name of the field we&#39;ll add to &#39;Example_flood&#39;</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="toolbox.html" class="btn btn-neutral float-right" title="toolbox API Reference">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="arcgis.html" class="btn btn-neutral" title="Using python-tidegates as a python-toolbox in ArcGIS"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Geosyntec Consultants.
+    </p>
+  </div>
+
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'v0.1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="_static/copybutton.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

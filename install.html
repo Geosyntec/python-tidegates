@@ -1,0 +1,318 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Installing python-tidegates &mdash; python-tidegates v0.1.0 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="_static/style.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="python-tidegates v0.1.0 documentation" href="index.html"/>
+        <link rel="next" title="Using python-tidegates as a python-toolbox in ArcGIS" href="arcgis.html"/>
+        <link rel="prev" title="Documentation for python-tidegates" href="index.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+          <a href="index.html" class="fa fa-home"> python-tidegates</a>
+        
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="">Installing <strong>python-tidegates</strong></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#terminology">Terminology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#downloading-python-tidegates">Downloading <strong>python-tidegates</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#dependencies">Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id1">Installing <strong>python-tidegates</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#running-the-test-suite">Running the test suite</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="arcgis.html">Using <strong>python-tidegates</strong> as a python-toolbox in ArcGIS</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="arcgis.html#finding-the-toolbox">Finding the toolbox</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arcgis.html#inputs-to-the-toolboxes">Inputs to the toolboxes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arcgis.html#examples-of-filled-out-forms">Examples of filled out forms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arcgis.html#if-you-encounter-a-memoryerror">If you encounter a <code class="docutils literal"><span class="pre">MemoryError</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="arcgis.html#other-ways-of-using-python-tidegates">Other ways of using <strong>python-tidegates</strong></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="python.html">Using <strong>python-tidegates</strong> from python</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="python.html#common-elements-of-examples">Common elements of examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python.html#the-toolbox-api">The <code class="docutils literal"><span class="pre">toolbox</span></code> API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python.html#the-analysis-api">The <code class="docutils literal"><span class="pre">analysis</span></code> API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="toolbox.html"><code class="docutils literal"><span class="pre">toolbox</span></code> API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis.html"><code class="docutils literal"><span class="pre">analysis</span></code> API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html"><code class="docutils literal"><span class="pre">utils</span></code> API Reference</a></li>
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">python-tidegates</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Installing <strong>python-tidegates</strong></li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="_sources/install.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <div class="section" id="installing-python-tidegates">
+<span id="install"></span><h1>Installing <strong>python-tidegates</strong><a class="headerlink" href="#installing-python-tidegates" title="Permalink to this headline">¶</a></h1>
+<p><strong>python-tidegates</strong> is an ArcGIS python toolbox and library for analyzing the extent of flooding and damage to assets under varying sea level rise and storm surge scenarios.</p>
+<div class="section" id="terminology">
+<h2>Terminology<a class="headerlink" href="#terminology" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt>ArcGIS</dt>
+<dd>The suite of proprietarty GIS applications licensed by Esri.
+Includes ArcMap and ArcCatalog.</dd>
+<dt>ArcGIS session</dt>
+<dd>Use of either ArcMap or ArcCatalog.</dd>
+<dt>command prompt or terminal</dt>
+<dd>The Windows interface to its command-line tools.</dd>
+<dt>python</dt>
+<dd>An open source, dynamic programming language that Esri bundles with ArcGIS.
+The current version (as of 2015-11-11) is Python 3.5.
+However ArcGIS 10 installations use Python 2.7, released 2010-07-03.</dd>
+<dt>numpy</dt>
+<dd>An open source numerical extension to python that provides the basis for must scientific/numeric libraries in python.</dd>
+<dt>arcpy</dt>
+<dd>A proprietary Python-based interface to some of the geoprocessing and cartographic functionality of ArcGIS.</dd>
+<dt>nose</dt>
+<dd>An open source unit test runner for python.</dd>
+<dt>mock</dt>
+<dd>An open source unit testing library that allows you to replace complex parts of a system and inspect how they are used.</dd>
+<dt>fiona</dt>
+<dd>An open source python library for reading and writing shapefiles.</dd>
+<dt>jupyter</dt>
+<dd>An open source, programming language-agnostic suite tools aimed at facilitating reproducible scientific work.
+The name stands for &#8220;Julia&#8221;, &#8220;Python&#8221;, and &#8220;R&#8221;, the names of three scientific computing languages.</dd>
+<dt>git</dt>
+<dd>A distributed version control software. See <a class="reference external" href="https://git-scm.com/">https://git-scm.com/</a> for more details.</dd>
+<dt>API</dt>
+<dd>&#8220;Application programming interface&#8221;. This is essentially the public, developer-facing functions an classes of one library that a developer can used to create yet another library.</dd>
+</dl>
+</div>
+<div class="section" id="downloading-python-tidegates">
+<h2>Downloading <strong>python-tidegates</strong><a class="headerlink" href="#downloading-python-tidegates" title="Permalink to this headline">¶</a></h2>
+<p>An always current zipped archive of the tool can be downloaded at <a class="reference external" href="https://github.com/Geosyntec/python-tidegates/archive/master.zip">https://github.com/Geosyntec/python-tidegates/archive/master.zip</a>.</p>
+<p>Alternatively, you can simply clone this repository through git:</p>
+<div class="highlight-python"><div class="highlight"><pre>git clone https://github.com/Geosyntec/python-tidegates.git
+</pre></div>
+</div>
+</div>
+<div class="section" id="dependencies">
+<h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="runtime">
+<h3>Runtime<a class="headerlink" href="#runtime" title="Permalink to this headline">¶</a></h3>
+<dl class="docutils">
+<dt>This library requires the following python-packages to be installed on your system:</dt>
+<dd><ol class="first last arabic simple">
+<li>python 2.7</li>
+<li>arcpy</li>
+<li>numpy</li>
+</ol>
+</dd>
+</dl>
+</div>
+<div class="section" id="testing">
+<h3>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h3>
+<dl class="docutils">
+<dt>To run the full suite of tests packages with this system, you additionally need:</dt>
+<dd><ol class="first last arabic simple">
+<li>nose</li>
+<li>mock</li>
+<li>fiona (optional)</li>
+</ol>
+</dd>
+</dl>
+<p>Both nose and mock can be installed via pip (e.g., <cite>pip install mock</cite>), however fiona can be quite tricky to install on some systems.
+For that reason fiona is an optional dependency.
+Tests requiring it are skipped if it is not found while the tests are running.
+The nose and mock modules are absolutely required, however.</p>
+</div>
+</div>
+<div class="section" id="id1">
+<h2>Installing <strong>python-tidegates</strong><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>This is a pure-python library, so installation from source (even on Windows) is not an issue.
+After acquiring and unzipping the source-code in some fashion, open a terminal, navigate into the directory, and execute</p>
+<div class="highlight-python"><div class="highlight"><pre>pip install .
+</pre></div>
+</div>
+<p>(The <code class="docutils literal"><span class="pre">.</span></code> tells the command that the package is in the current directory)</p>
+<p>Inside a fresh, new terminal, that looks like this:</p>
+<div class="highlight-python"><div class="highlight"><pre>Microsoft Windows [Version 6.3.9600]
+(c) 2013 Microsoft Corporation. All rights reserved.
+
+C:\Users\phobson&gt; cd C:\Users\phobson\Downloads\python-tidegates-master
+
+C:\Users\phobson\Downloads\python-tidegates-master&gt; pip install .
+Processing c:\users\phobson\downloads\python-tidegates-master
+Building wheels for collected packages: tidegates
+  Running setup.py bdist_wheel for tidegates
+  Stored in directory: C:\Users\phobson\AppData\Local\pip\Cache\wheels\bc\1d\a3\fae5dffd5c5863...
+Successfully built tidegates
+Installing collected packages: tidegates
+Successfully installed tidegates-0.1
+</pre></div>
+</div>
+<p>At that point, <strong>python-tidegates</strong> as been installed.</p>
+</div>
+<div class="section" id="running-the-test-suite">
+<h2>Running the test suite<a class="headerlink" href="#running-the-test-suite" title="Permalink to this headline">¶</a></h2>
+<p>The code base that powers the GIS toolboxes uses a code QC technique known as <a class="reference external" href="https://en.wikipedia.org/wiki/Unit_testing">unit testing</a>.
+In this case, we rely on the python package <a class="reference external" href="https://nose.readthedocs.org/en/latest/">nose</a> to find, collect, and execute all of the tests.</p>
+<p>With all of the required testing dependencies installed, navigate to the source directory and execute the <code class="docutils literal"><span class="pre">nosetests</span></code> command.
+That entire process looks something like this.</p>
+<div class="highlight-python"><div class="highlight"><pre>Microsoft Windows [Version 6.3.9600]
+(c) 2013 Microsoft Corporation. All rights reserved.
+
+C:\Users\phobson&gt; cd C:\Users\phobson\Downloads\python-tidegates-master
+
+C:\Users\phobson\Downloads\python-tidegates-master&gt; nosetests
+........................................
+----------------------------------------------------------------------
+Ran 40 tests in 5.634s
+</pre></div>
+</div>
+<p>Depending on your system, more tests may be executed, and some might by skipped.</p>
+</div>
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="arcgis.html" class="btn btn-neutral float-right" title="Using python-tidegates as a python-toolbox in ArcGIS">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral" title="Documentation for python-tidegates"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Geosyntec Consultants.
+    </p>
+  </div>
+
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'v0.1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="_static/copybutton.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

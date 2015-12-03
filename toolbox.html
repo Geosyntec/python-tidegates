@@ -1,0 +1,575 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>toolbox API Reference &mdash; python-tidegates v0.1.0 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="_static/style.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="python-tidegates v0.1.0 documentation" href="index.html"/>
+        <link rel="next" title="analysis API Reference" href="analysis.html"/>
+        <link rel="prev" title="Using python-tidegates from python" href="python.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+          <a href="index.html" class="fa fa-home"> python-tidegates</a>
+        
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installing <strong>python-tidegates</strong></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="install.html#terminology">Terminology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#downloading-python-tidegates">Downloading <strong>python-tidegates</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#dependencies">Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#id1">Installing <strong>python-tidegates</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#running-the-test-suite">Running the test suite</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="arcgis.html">Using <strong>python-tidegates</strong> as a python-toolbox in ArcGIS</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="arcgis.html#finding-the-toolbox">Finding the toolbox</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arcgis.html#inputs-to-the-toolboxes">Inputs to the toolboxes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arcgis.html#examples-of-filled-out-forms">Examples of filled out forms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arcgis.html#if-you-encounter-a-memoryerror">If you encounter a <code class="docutils literal"><span class="pre">MemoryError</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="arcgis.html#other-ways-of-using-python-tidegates">Other ways of using <strong>python-tidegates</strong></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="python.html">Using <strong>python-tidegates</strong> from python</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="python.html#common-elements-of-examples">Common elements of examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python.html#the-toolbox-api">The <code class="docutils literal"><span class="pre">toolbox</span></code> API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python.html#the-analysis-api">The <code class="docutils literal"><span class="pre">analysis</span></code> API</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href=""><code class="docutils literal"><span class="pre">toolbox</span></code> API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis.html"><code class="docutils literal"><span class="pre">analysis</span></code> API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html"><code class="docutils literal"><span class="pre">utils</span></code> API Reference</a></li>
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">python-tidegates</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li><code class="docutils literal"><span class="pre">toolbox</span></code> API Reference</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="_sources/toolbox.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <blockquote id="toolbox-auto">
+<div>The <code class="docutils literal"><span class="pre">toolbox</span></code> API</div></blockquote>
+<div class="section" id="module-tidegates.toolbox">
+<span id="toolbox-api-reference"></span><h1><code class="docutils literal"><span class="pre">toolbox</span></code> API Reference<a class="headerlink" href="#module-tidegates.toolbox" title="Permalink to this headline">¶</a></h1>
+<p>ArcGIS python toolboxes for python-tidegates.</p>
+<p>This contains Classes compatible with ArcGIS python toolbox
+infrastructure.</p>
+<ol class="loweralpha simple" start="3">
+<li>Geosyntec Consultants, 2015.</li>
+</ol>
+<p>Released under the BSD 3-clause license (see LICENSE file for more info)</p>
+<p>Written by Paul Hobson (<a class="reference external" href="mailto:phobson&#37;&#52;&#48;geosyntec&#46;com">phobson<span>&#64;</span>geosyntec<span>&#46;</span>com</a>)</p>
+<dl class="class">
+<dt id="tidegates.toolbox.StandardScenarios">
+<em class="property">class </em><code class="descclassname">tidegates.toolbox.</code><code class="descname">StandardScenarios</code><a class="headerlink" href="#tidegates.toolbox.StandardScenarios" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<p>ArcGIS Python toolbox to analyze floods during the standard sea
+level rise and storm surge scenarios.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>None</strong></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#tidegates.toolbox.Flooder" title="tidegates.toolbox.Flooder"><code class="xref py py-obj docutils literal"><span class="pre">Flooder</span></code></a></p>
+</div>
+<dl class="method">
+<dt id="tidegates.toolbox.StandardScenarios.isLicensed">
+<code class="descname">isLicensed</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tidegates.toolbox.StandardScenarios.isLicensed" title="Permalink to this definition">¶</a></dt>
+<dd><p>PART OF THE ESRI BLACK BOX.</p>
+<p>Esri says:</p>
+<blockquote>
+<div>Set whether tool is licensed to execute.</div></blockquote>
+<p>So I just make this always true b/c it&#8217;s an open source project
+with a BSD license &#8211; (c) Geosyntec Consultants &#8211; so who cares?</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tidegates.toolbox.StandardScenarios.updateMessages">
+<code class="descname">updateMessages</code><span class="sig-paren">(</span><em>parameters</em><span class="sig-paren">)</span><a class="headerlink" href="#tidegates.toolbox.StandardScenarios.updateMessages" title="Permalink to this definition">¶</a></dt>
+<dd><p>PART OF THE ESRI BLACK BOX.</p>
+<p>Esri says:</p>
+<blockquote>
+<div>Modify the messages created by internal validation for each
+parameter of the tool.  This method is called after internal
+validation.</div></blockquote>
+<p>But I have no idea when or how internal validation is called so
+that&#8217;s pretty useless information.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tidegates.toolbox.StandardScenarios.updateParameters">
+<code class="descname">updateParameters</code><span class="sig-paren">(</span><em>parameters</em><span class="sig-paren">)</span><a class="headerlink" href="#tidegates.toolbox.StandardScenarios.updateParameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>PART OF THE ESRI BLACK BOX.</p>
+<p>Automatically called when any parameter is updated in the GUI.</p>
+<p>The general flow is like this:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>User interacts with GUI, filling out some input element</li>
+<li><code class="docutils literal"><span class="pre">self.getParameterInfo</span></code> is called</li>
+<li>Parameteter are fed to this method as a list</li>
+</ol>
+</div></blockquote>
+<p>I used to set the parameter dependecies in here, but that didn&#8217;t
+work. So now this does nothing and dependecies are set when the
+parameters (as class properties) are created (i.e., called for
+the first time).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tidegates.toolbox.StandardScenarios.getParameterInfo">
+<code class="descname">getParameterInfo</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tidegates.toolbox.StandardScenarios.getParameterInfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>PART OF THE ESRI BLACK BOX</p>
+<p>This <em>must</em> return a list of all of the parameter definitions.</p>
+<p>Esri recommends that you create all of the parameters in here,
+and always return that list. I instead chose to create the list
+from the class properties I&#8217;ve defined. Accessing things with
+meaningful names is always better, in my opinion.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tidegates.toolbox.StandardScenarios.execute">
+<code class="descname">execute</code><span class="sig-paren">(</span><em>parameters</em>, <em>messages</em><span class="sig-paren">)</span><a class="headerlink" href="#tidegates.toolbox.StandardScenarios.execute" title="Permalink to this definition">¶</a></dt>
+<dd><p>PART OF THE ESRI BLACK BOX</p>
+<blockquote>
+<div><p>This method is called when the tool is actually executed. It
+gets passed magics lists of parameters and messages that no one
+can actually see.</p>
+<p>Due to this mysterious nature, I do the following:</p>
+<ol class="arabic simple">
+<li>turn all of the elements of the list into a dictionary
+so that we can access them in a meaningful way. This
+means, instead of doing something like</li>
+</ol>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">dem</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">valueAsText</span>
+<span class="n">zones</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">valueAsText</span>
+<span class="c"># yada yada</span>
+<span class="n">nth_param</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">valueAsText</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>for EVERY. SINGLE. PARAMETER, we can instead do something like:</p>
+<blockquote>
+<div><div class="highlight-python"><div class="highlight"><pre><span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_parameter_values</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">multivals</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;elevation&#39;</span><span class="p">])</span>
+<span class="n">dem</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s">&#39;dem&#39;</span><span class="p">]</span>
+<span class="n">zones</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s">&#39;zones&#39;</span><span class="p">]</span><span class="o">.</span>
+<span class="c"># yada</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>This is much cleaner, in my opinion, and we don&#8217;t have to
+magically know where in the list of parameters e.g., the
+DEM is found. Take note, Esri.</p>
+<blockquote>
+<div><ol class="arabic simple" start="2">
+<li>generate a list of scenarios usings <a class="reference internal" href="#tidegates.toolbox.StandardScenarios.make_scenarios" title="tidegates.toolbox.StandardScenarios.make_scenarios"><code class="xref py py-meth docutils literal"><span class="pre">make_scenarios()</span></code></a>.</li>
+<li>loop through those scenarios.</li>
+<li>call <a class="reference internal" href="#tidegates.toolbox.StandardScenarios.analyze" title="tidegates.toolbox.StandardScenarios.analyze"><code class="xref py py-meth docutils literal"><span class="pre">analyze()</span></code></a> on each scenario.</li>
+<li>call <a class="reference internal" href="#tidegates.toolbox.StandardScenarios.finish_results" title="tidegates.toolbox.StandardScenarios.finish_results"><code class="xref py py-meth docutils literal"><span class="pre">finish_results()</span></code></a> on all of the layers
+generated by the loop.</li>
+</ol>
+</div></blockquote>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tidegates.toolbox.StandardScenarios.workspace">
+<code class="descname">workspace</code><a class="headerlink" href="#tidegates.toolbox.StandardScenarios.workspace" title="Permalink to this definition">¶</a></dt>
+<dd><p>The directory or geodatabase in which the analysis will
+occur.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tidegates.toolbox.StandardScenarios.dem">
+<code class="descname">dem</code><a class="headerlink" href="#tidegates.toolbox.StandardScenarios.dem" title="Permalink to this definition">¶</a></dt>
+<dd><p>DEM file (topography) to be used in the analysis.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tidegates.toolbox.StandardScenarios.zones">
+<code class="descname">zones</code><a class="headerlink" href="#tidegates.toolbox.StandardScenarios.zones" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Zones of influence polygons to be used in the analysis.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tidegates.toolbox.StandardScenarios.ID_column">
+<code class="descname">ID_column</code><a class="headerlink" href="#tidegates.toolbox.StandardScenarios.ID_column" title="Permalink to this definition">¶</a></dt>
+<dd><p>Name of the field in <cite>zones</cite> that uniquely identifies
+each zone of influence.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tidegates.toolbox.StandardScenarios.flood_output">
+<code class="descname">flood_output</code><a class="headerlink" href="#tidegates.toolbox.StandardScenarios.flood_output" title="Permalink to this definition">¶</a></dt>
+<dd><p>Where the flooded areas for each scenario will be saved.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tidegates.toolbox.StandardScenarios.building_output">
+<code class="descname">building_output</code><a class="headerlink" href="#tidegates.toolbox.StandardScenarios.building_output" title="Permalink to this definition">¶</a></dt>
+<dd><p>Where the flooded buildings for each scenario will be saved.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tidegates.toolbox.StandardScenarios.wetland_output">
+<code class="descname">wetland_output</code><a class="headerlink" href="#tidegates.toolbox.StandardScenarios.wetland_output" title="Permalink to this definition">¶</a></dt>
+<dd><p>Where the flooded wetlands for each scenario will be saved.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tidegates.toolbox.StandardScenarios.wetlands">
+<code class="descname">wetlands</code><a class="headerlink" href="#tidegates.toolbox.StandardScenarios.wetlands" title="Permalink to this definition">¶</a></dt>
+<dd><p>Input layer of wetlands.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="tidegates.toolbox.StandardScenarios.buildings">
+<code class="descname">buildings</code><a class="headerlink" href="#tidegates.toolbox.StandardScenarios.buildings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Input layer of building footprints.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tidegates.toolbox.StandardScenarios.make_scenarios">
+<code class="descname">make_scenarios</code><span class="sig-paren">(</span><em>**params</em><span class="sig-paren">)</span><a class="headerlink" href="#tidegates.toolbox.StandardScenarios.make_scenarios" title="Permalink to this definition">¶</a></dt>
+<dd><p>Makes a list of dictionaries of all scenario parameters that
+will be analyzed by the toolbox.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>**params</strong> : keyword arguments</p>
+<blockquote>
+<div><p>Keyword arguments of analysis parameters generated by
+<code class="xref py py-meth docutils literal"><span class="pre">_get_parameter_values()</span></code></p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>scenarios</strong> : list of dictionaries</p>
+<blockquote class="last">
+<div><p>A list of dictionaries describing each scenario to be
+analyzed. Keys of the dictionaries will be:</p>
+<blockquote>
+<div><ul class="simple">
+<li><em>elev</em> - the custom elevation</li>
+<li><em>surge_name</em> - the name of a storm surge event</li>
+<li><em>surge_elev</em> - the elevation associated with &#8220;surge_name&#8221;</li>
+<li><em>slr</em> - the amount of sea level rise to be considered.</li>
+</ul>
+</div></blockquote>
+<p>When analyzing custom elevations, all other entries are set
+to None. Likewise, when evaluating standard scenarios,
+&#8220;elev&#8221; is None.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tidegates.toolbox.StandardScenarios.analyze">
+<code class="descname">analyze</code><span class="sig-paren">(</span><em>elev=None</em>, <em>surge=None</em>, <em>slr=None</em>, <em>**params</em><span class="sig-paren">)</span><a class="headerlink" href="#tidegates.toolbox.StandardScenarios.analyze" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tool-agnostic helper function for <a class="reference internal" href="#tidegates.toolbox.StandardScenarios.main_execute" title="tidegates.toolbox.StandardScenarios.main_execute"><code class="xref py py-meth docutils literal"><span class="pre">main_execute()</span></code></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>elev</strong> : float, optional</p>
+<blockquote>
+<div><p>Custom elevation to be analyzed</p>
+</div></blockquote>
+<p><strong>slr</strong> : float, optional</p>
+<blockquote>
+<div><p>Sea level rise associated with the standard scenario.</p>
+</div></blockquote>
+<p><strong>surge</strong> : str, optional</p>
+<blockquote>
+<div><p>The name of the storm surge associated with the scenario
+(e.g., MHHW, 100yr).</p>
+</div></blockquote>
+<p><strong>**params</strong> : keyword arguments</p>
+<blockquote>
+<div><p>Keyword arguments of analysis parameters generated by
+<cite>self._get_parameter_values</cite></p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>floods, flooded_wetlands, flooded_buildings</strong> : arcpy.mapping.Layers</p>
+<blockquote class="last">
+<div><p>Layers (or None) of the floods and flood-impacted wetlands
+and buildings, respectively.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="tidegates.toolbox.StandardScenarios.finish_results">
+<em class="property">static </em><code class="descname">finish_results</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#tidegates.toolbox.StandardScenarios.finish_results" title="Permalink to this definition">¶</a></dt>
+<dd><p>Merges and cleans up compiled output from <cite>analyze</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>outputname</strong> : str</p>
+<blockquote>
+<div><p>Path to where the final file sould be saved.</p>
+</div></blockquote>
+<p><strong>results</strong> : list of str</p>
+<blockquote>
+<div><p>Lists of all of the floods, flooded wetlands, and flooded
+buildings, respectively, that will be merged and deleted.</p>
+</div></blockquote>
+<p><strong>sourcename</strong> : str, optional</p>
+<blockquote>
+<div><p>Path to the original source file of the results. If
+provided, its attbutes will be spatially joined to the
+concatenated results.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="tidegates.toolbox.StandardScenarios.main_execute">
+<code class="descname">main_execute</code><span class="sig-paren">(</span><em>**params</em><span class="sig-paren">)</span><a class="headerlink" href="#tidegates.toolbox.StandardScenarios.main_execute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs the flood-impact analysis on multiple flood
+elevations.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>workspace</strong> : str</p>
+<blockquote>
+<div><p>The folder or geodatabase where the analysis will be
+executed.</p>
+</div></blockquote>
+<p><strong>dem</strong> : str</p>
+<blockquote>
+<div><p>Filename of the digital elevation model (topography data)
+to be used in determinging the inundated areas.</p>
+</div></blockquote>
+<p><strong>zones</strong> : str</p>
+<blockquote>
+<div><p>Name of zones of influence layer.</p>
+</div></blockquote>
+<p><strong>ID_column</strong> : str</p>
+<blockquote>
+<div><p>Name of the field in <code class="docutils literal"><span class="pre">zones</span></code> that uniquely identifies
+each zone of influence.</p>
+</div></blockquote>
+<p><strong>elevation</strong> : list, optional</p>
+<blockquote>
+<div><p>List of (custom) flood elevations to be analyzed. If this is
+not provided, <em>all</em> of the standard scenarios will be
+evaluated.</p>
+</div></blockquote>
+<p><strong>flood_output</strong> : str</p>
+<blockquote>
+<div><p>Filename where the extent of flooding and damage will be
+saved.</p>
+</div></blockquote>
+<p><strong>wetlands, buildings</strong> : str, optional</p>
+<blockquote>
+<div><p>Names of the wetland and building footprint layers.</p>
+</div></blockquote>
+<p><strong>wetland_output, building_output</strong> : str, optional</p>
+<blockquote>
+<div><p>Filenames where the flooded wetlands and building footprints
+will be saved.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="tidegates.toolbox.Flooder">
+<em class="property">class </em><code class="descclassname">tidegates.toolbox.</code><code class="descname">Flooder</code><a class="headerlink" href="#tidegates.toolbox.Flooder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tidegates.toolbox.StandardScenarios" title="tidegates.toolbox.StandardScenarios"><code class="xref py py-class docutils literal"><span class="pre">tidegates.toolbox.StandardScenarios</span></code></a></p>
+<p>ArcGIS Python toolbox to analyze custom flood elevations.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>None</strong></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#tidegates.toolbox.StandardScenarios" title="tidegates.toolbox.StandardScenarios"><code class="xref py py-obj docutils literal"><span class="pre">StandardScenarios</span></code></a></p>
+</div>
+<dl class="attribute">
+<dt id="tidegates.toolbox.Flooder.elevation">
+<code class="descname">elevation</code><a class="headerlink" href="#tidegates.toolbox.Flooder.elevation" title="Permalink to this definition">¶</a></dt>
+<dd><p>The flood elevation for a custom scenario.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="analysis.html" class="btn btn-neutral float-right" title="analysis API Reference">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="python.html" class="btn btn-neutral" title="Using python-tidegates from python"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Geosyntec Consultants.
+    </p>
+  </div>
+
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'v0.1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="_static/copybutton.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

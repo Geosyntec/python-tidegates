@@ -1,0 +1,442 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>analysis API Reference &mdash; python-tidegates v0.1.0 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="_static/style.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="python-tidegates v0.1.0 documentation" href="index.html"/>
+        <link rel="next" title="utils API Reference" href="utils.html"/>
+        <link rel="prev" title="toolbox API Reference" href="toolbox.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+          <a href="index.html" class="fa fa-home"> python-tidegates</a>
+        
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installing <strong>python-tidegates</strong></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="install.html#terminology">Terminology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#downloading-python-tidegates">Downloading <strong>python-tidegates</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#dependencies">Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#id1">Installing <strong>python-tidegates</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#running-the-test-suite">Running the test suite</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="arcgis.html">Using <strong>python-tidegates</strong> as a python-toolbox in ArcGIS</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="arcgis.html#finding-the-toolbox">Finding the toolbox</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arcgis.html#inputs-to-the-toolboxes">Inputs to the toolboxes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arcgis.html#examples-of-filled-out-forms">Examples of filled out forms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arcgis.html#if-you-encounter-a-memoryerror">If you encounter a <code class="docutils literal"><span class="pre">MemoryError</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="arcgis.html#other-ways-of-using-python-tidegates">Other ways of using <strong>python-tidegates</strong></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="python.html">Using <strong>python-tidegates</strong> from python</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="python.html#common-elements-of-examples">Common elements of examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python.html#the-toolbox-api">The <code class="docutils literal"><span class="pre">toolbox</span></code> API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python.html#the-analysis-api">The <code class="docutils literal"><span class="pre">analysis</span></code> API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="toolbox.html"><code class="docutils literal"><span class="pre">toolbox</span></code> API Reference</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href=""><code class="docutils literal"><span class="pre">analysis</span></code> API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html"><code class="docutils literal"><span class="pre">utils</span></code> API Reference</a></li>
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">python-tidegates</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li><code class="docutils literal"><span class="pre">analysis</span></code> API Reference</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="_sources/analysis.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <blockquote id="analysis-auto">
+<div>The <code class="docutils literal"><span class="pre">analysis</span></code> API</div></blockquote>
+<div class="section" id="module-tidegates.analysis">
+<span id="analysis-api-reference"></span><h1><code class="docutils literal"><span class="pre">analysis</span></code> API Reference<a class="headerlink" href="#module-tidegates.analysis" title="Permalink to this headline">¶</a></h1>
+<p>Top-level functions for python-tidegates.</p>
+<p>This contains main functions to evaluate the extent of floodinga and
+damage due to floods.</p>
+<ol class="loweralpha simple" start="3">
+<li>Geosyntec Consultants, 2015.</li>
+</ol>
+<p>Released under the BSD 3-clause license (see LICENSE file for more info)</p>
+<p>Written by Paul Hobson (<a class="reference external" href="mailto:phobson&#37;&#52;&#48;geosyntec&#46;com">phobson<span>&#64;</span>geosyntec<span>&#46;</span>com</a>)</p>
+<dl class="function">
+<dt id="tidegates.analysis.flood_area">
+<code class="descclassname">tidegates.analysis.</code><code class="descname">flood_area</code><span class="sig-paren">(</span><em>dem</em>, <em>zones</em>, <em>ID_column</em>, <em>elevation_feet</em>, <em>filename=None</em>, <em>cleanup=True</em>, <em>**verbose_options</em><span class="sig-paren">)</span><a class="headerlink" href="#tidegates.analysis.flood_area" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mask out portions of a a tidegates area of influence below
+a certain elevation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>dem</strong> : str or arcpy.Raster</p>
+<blockquote>
+<div><p>The (filepath to the ) Digital Elevation Model of the area.</p>
+</div></blockquote>
+<p><strong>zones</strong> : str or arcpy.mapping.Layer</p>
+<blockquote>
+<div><p>The (filepath to the) zones that will be flooded. If a string,
+a Layer will be created.</p>
+</div></blockquote>
+<p><strong>ID_column</strong> : str</p>
+<blockquote>
+<div><p>Name of the column in the <code class="docutils literal"><span class="pre">zones</span></code> layer that associates
+each geomstry with a tidegate.</p>
+</div></blockquote>
+<p><strong>elevation_feet: float</strong></p>
+<blockquote>
+<div><p>The theoritical flood elevation (in ft MSL) that will be
+analyzed.</p>
+</div></blockquote>
+<p><strong>filename</strong> : str, optional</p>
+<blockquote>
+<div><p>Filename to which the flooded zone will be saved.</p>
+</div></blockquote>
+<p><strong>cleanup</strong> : bool (default = True)</p>
+<blockquote>
+<div><p>When True, temporary results are removed from disk.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>flood_zones</strong> : arcpy.mapping.Layer</p>
+<blockquote>
+<div><p>arcpy Layer of the zones showing the extent flooded behind
+each tidegate.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Other Parameters:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><p class="first"><strong>verbose</strong> : bool (default = False)</p>
+<blockquote>
+<div><p>Toggles the printing of messages communication the progress
+of the processing.</p>
+</div></blockquote>
+<p><strong>asMessage</strong> : bool (default = False)</p>
+<blockquote class="last">
+<div><p>When True, progress messages are passed through
+<code class="docutils literal"><span class="pre">arcpy.AddMessage</span></code>. Otherwise, the msg is simply printed to
+stdin.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#tidegates.analysis.assess_impact" title="tidegates.analysis.assess_impact"><code class="xref py py-obj docutils literal"><span class="pre">assess_impact</span></code></a>, <a class="reference internal" href="#tidegates.analysis.area_of_impacts" title="tidegates.analysis.area_of_impacts"><code class="xref py py-obj docutils literal"><span class="pre">area_of_impacts</span></code></a>, <a class="reference internal" href="#tidegates.analysis.count_of_impacts" title="tidegates.analysis.count_of_impacts"><code class="xref py py-obj docutils literal"><span class="pre">count_of_impacts</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="tidegates.analysis.assess_impact">
+<code class="descclassname">tidegates.analysis.</code><code class="descname">assess_impact</code><span class="sig-paren">(</span><em>floods_path</em>, <em>flood_idcol</em>, <em>cleanup=False</em>, <em>wetlands_path=None</em>, <em>wetlands_output=None</em>, <em>buildings_path=None</em>, <em>buildings_output=None</em>, <em>bldg_idcol='STRUCT_ID'</em>, <em>**verbose_options</em><span class="sig-paren">)</span><a class="headerlink" href="#tidegates.analysis.assess_impact" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assess the extent of damage due to flooding in wetlands and
+buildings.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>floods_path</strong> : str or arcpy.mapping.Layer</p>
+<blockquote>
+<div><p>The (filepath to the) layer of the extent of flooding. Ideally,
+this layer should be generated with <code class="docutils literal"><span class="pre">flood_area</span></code>.</p>
+</div></blockquote>
+<p><strong>flood_idcol</strong> : str</p>
+<blockquote>
+<div><p>Name of the column in the <code class="docutils literal"><span class="pre">floods_path</span></code> layer that associates
+each geomstry with a tidegate.</p>
+</div></blockquote>
+<p><strong>wetlands_path, buildings_path</strong> : str</p>
+<blockquote>
+<div><p>Paths to layers containing wetlands and building footprints.</p>
+</div></blockquote>
+<p><strong>wetlands_output, buildings_output</strong> : str</p>
+<blockquote>
+<div><p>Path to where the final output of the assessed damage to the
+wetlands and buildings should be saved.</p>
+</div></blockquote>
+<p><strong>cleanup</strong> : bool (default = True)</p>
+<blockquote>
+<div><p>When True, temporary results are removed from disk.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>flooded_areas</strong> : arcpy.mapping.Layer</p>
+<p><strong>flooded_wetlands</strong> : arcpy.mapping.Layer</p>
+<p><strong>flooded_buildings</strong> : arcpy.mapping.Layer</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Other Parameters:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><p class="first"><strong>verbose</strong> : bool (default = False)</p>
+<blockquote>
+<div><p>Toggles the printing of messages communication the progress
+of the processing.</p>
+</div></blockquote>
+<p><strong>asMessage</strong> : bool (default = False)</p>
+<blockquote class="last">
+<div><p>When True, progress messages are passed through
+<code class="docutils literal"><span class="pre">arcpy.AddMessage</span></code>. Otherwise, the msg is simply printed to
+stdin.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#tidegates.analysis.flood_area" title="tidegates.analysis.flood_area"><code class="xref py py-obj docutils literal"><span class="pre">flood_area</span></code></a>, <a class="reference internal" href="#tidegates.analysis.area_of_impacts" title="tidegates.analysis.area_of_impacts"><code class="xref py py-obj docutils literal"><span class="pre">area_of_impacts</span></code></a>, <a class="reference internal" href="#tidegates.analysis.count_of_impacts" title="tidegates.analysis.count_of_impacts"><code class="xref py py-obj docutils literal"><span class="pre">count_of_impacts</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="tidegates.analysis.area_of_impacts">
+<code class="descclassname">tidegates.analysis.</code><code class="descname">area_of_impacts</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#tidegates.analysis.area_of_impacts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the area of assets impacted by a flooded area.</p>
+<p>The impacted area is anywhere an asset and the flooded areas
+overlap. This is useful for such tasks as determine the amount of
+wetlands inundated by a flood.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>floods_path</strong> : str</p>
+<blockquote>
+<div><p>Path/filename of the dataset of flooded areas. Ideally this is
+output from <a class="reference internal" href="#tidegates.analysis.flood_area" title="tidegates.analysis.flood_area"><code class="xref py py-func docutils literal"><span class="pre">flood_area()</span></code></a>.</p>
+</div></blockquote>
+<p><strong>flood_idcol</strong> : str</p>
+<blockquote>
+<div><p>Name of the field in <code class="docutils literal"><span class="pre">floods_path</span></code> that associates each
+flooded area with a tidegate.</p>
+</div></blockquote>
+<p><strong>assets_input</strong> : str</p>
+<blockquote>
+<div><p>Path/filename of the dataset of assets (e.g., wetland
+boundaries).</p>
+</div></blockquote>
+<p><strong>fieldname</strong> : str, optional (&#8216;wetlands&#8217;)</p>
+<blockquote>
+<div><p>The name of the field that will be added to <code class="docutils literal"><span class="pre">floods_path</span></code>
+containing the count of impacted assets for each flooded area.</p>
+</div></blockquote>
+<p><strong>assets_output</strong> : str, optional</p>
+<blockquote>
+<div><p>Path/filename of the dataset in which only the impacted assets
+will be saved.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>flooded_assets</strong> : arcpy.mapping.Layer</p>
+<blockquote class="last">
+<div><p>Layer of the flooded assets.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#tidegates.analysis.flood_area" title="tidegates.analysis.flood_area"><code class="xref py py-obj docutils literal"><span class="pre">flood_area</span></code></a>, <a class="reference internal" href="#tidegates.analysis.assess_impact" title="tidegates.analysis.assess_impact"><code class="xref py py-obj docutils literal"><span class="pre">assess_impact</span></code></a>, <a class="reference internal" href="#tidegates.analysis.count_of_impacts" title="tidegates.analysis.count_of_impacts"><code class="xref py py-obj docutils literal"><span class="pre">count_of_impacts</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="tidegates.analysis.count_of_impacts">
+<code class="descclassname">tidegates.analysis.</code><code class="descname">count_of_impacts</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#tidegates.analysis.count_of_impacts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Counts of the number of assets impacted by a flooded area.</p>
+<p>An asset is considered impacted if a flooded area overlaps its
+boundary in anyway. This is useful for such tasks as counting the
+number of building footprints within a flood area.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>floods_path</strong> : str</p>
+<blockquote>
+<div><p>Path/filename of the dataset of flooded areas. Ideally this is
+output from <a class="reference internal" href="#tidegates.analysis.flood_area" title="tidegates.analysis.flood_area"><code class="xref py py-func docutils literal"><span class="pre">flood_area()</span></code></a>.</p>
+</div></blockquote>
+<p><strong>flood_idcol</strong> : str</p>
+<blockquote>
+<div><p>Name of the field in <code class="docutils literal"><span class="pre">floods_path</span></code> that associates each
+flooded area with a tidegate.</p>
+</div></blockquote>
+<p><strong>assets_input</strong> : str</p>
+<blockquote>
+<div><p>Path/filename of the dataset of assets (e.g., building
+footprints).</p>
+</div></blockquote>
+<p><strong>fieldname</strong> : str, optional (&#8216;buildings&#8217;)</p>
+<blockquote>
+<div><p>The name of the field that will be added to <code class="docutils literal"><span class="pre">floods_path</span></code>
+containing the count of impacted assets for each flooded area.</p>
+</div></blockquote>
+<p><strong>assets_output</strong> : str, optional</p>
+<blockquote>
+<div><p>Path/filename of the dataset in which only the impacted assets
+will be saved.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>touched_assets</strong> : arcpy.mapping.Layer</p>
+<blockquote class="last">
+<div><p>Layer of the impacted assets.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#tidegates.analysis.flood_area" title="tidegates.analysis.flood_area"><code class="xref py py-obj docutils literal"><span class="pre">flood_area</span></code></a>, <a class="reference internal" href="#tidegates.analysis.assess_impact" title="tidegates.analysis.assess_impact"><code class="xref py py-obj docutils literal"><span class="pre">assess_impact</span></code></a>, <a class="reference internal" href="#tidegates.analysis.area_of_impacts" title="tidegates.analysis.area_of_impacts"><code class="xref py py-obj docutils literal"><span class="pre">area_of_impacts</span></code></a></p>
+</div>
+</dd></dl>
+
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="utils.html" class="btn btn-neutral float-right" title="utils API Reference">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="toolbox.html" class="btn btn-neutral" title="toolbox API Reference"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Geosyntec Consultants.
+    </p>
+  </div>
+
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'v0.1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="_static/copybutton.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
