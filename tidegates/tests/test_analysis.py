@@ -3,6 +3,8 @@ from pkg_resources import resource_filename
 import shutil
 import glob
 
+import numpy
+
 import nose.tools as nt
 from nose import with_setup
 import numpy.testing as nptest
@@ -16,14 +18,27 @@ from tidegates import utils
 
 @nptest.dec.skipif(not tgtest.has_fiona)
 def test_flood_area():
+    topo = numpy.mgrid[:8, :8].sum(axis=0) * tidegates.METERS_PER_FOOT
+    zones = numpy.array([
+        [-1,  2,  2,  2,  2,  2,  2, -1,],
+        [-1,  2,  2,  2, -1,  2,  2, -1,],
+        [ 1,  1,  1,  1, -1,  2,  2, -1,],
+        [ 1,  1,  1,  1, -1,  2,  2, -1,],
+        [ 1, -1,  1,  1,  2,  2,  2,  2,],
+        [-1, -1,  1,  1,  2,  2,  2,  2,],
+        [-1, -1, -1, -1, -1, -1, -1, -1,],
+        [-1, -1, -1, -1, -1, -1, -1, -1,]
+    ])
+    template = utils._Template(8, 4, 6)
     ws = resource_filename('tidegates.testing', 'flood_area')
+    filename = 'test_flood_area_output.shp'
     with utils.WorkSpace(ws), utils.OverwriteState(True):
-        filename = 'test_flood_area_output.shp'
         floods = tidegates.flood_area(
-            dem='test_dem.tif',
-            zones='test_zones.shp',
+            topo_array=topo,
+            zones_array=zones,
+            template=template,
             ID_column='GeoID',
-            elevation_feet=7.8,
+            elevation_feet=5,
             filename=filename,
             cleanup=True,
             verbose=False,

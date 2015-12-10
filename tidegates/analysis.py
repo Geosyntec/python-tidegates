@@ -28,17 +28,24 @@ METERS_PER_FOOT = 0.3048
 
 
 def flood_area(dem, zones, ID_column, elevation_feet,
+def flood_area(topo_array, zones_array, template, ID_column, elevation_feet,
                filename=None, cleanup=True, **verbose_options):
     """ Mask out portions of a a tidegates area of influence below
     a certain elevation.
 
     Parameters
     ----------
-    dem : str or arcpy.Raster
-        The (filepath to the ) Digital Elevation Model of the area.
-    zones : str or arcpy.mapping.Layer
-        The (filepath to the) zones that will be flooded. If a string,
-        a Layer will be created.
+    topo_array : numpy array
+        Floating point array of the digital elevation model.
+    zones_array : numpy array
+        Categorical (integer) array of where each non-zero value
+        delineates a tidegate's zone of influence.
+    template : arcpy.Raster or utils._TemplateFromRaster
+        A raster or raster-like object that define the spatial extent
+        of the analysis area. Required attributes are:
+          - templatemeanCellWidth
+          - templatemeanCellHeight
+          - templateextent.lowerLeft
     ID_column : str
         Name of the column in the ``zones`` layer that associates
         each geomstry with a tidegate.
@@ -68,6 +75,7 @@ def flood_area(dem, zones, ID_column, elevation_feet,
 
     See also
     --------
+    process_dem_and_zones,
     assess_impact,
     area_of_impacts,
     count_of_impacts
@@ -84,49 +92,10 @@ def flood_area(dem, zones, ID_column, elevation_feet,
     else:
         temp_filename = utils.create_temp_filename(filename, filetype='shape')
 
-    utils._status('WorkSpace set to {}'.format(arcpy.env.workspace), **verbose_options)
-
-    # load the raw DEM (topo data)
-    raw_topo = utils.load_data(
-        datapath=dem,
-        datatype="raster",
-        msg='Loading DEM {}'.format(dem),
-        **verbose_options
-    )
-
-    # load the zones of influence, converting to a raster
-    _p2r_outfile = utils.create_temp_filename("pgon_as_rstr", filetype='raster')
-    zones_r = utils.polygons_to_raster(
-        polygons=zones,
-        ID_column=ID_column,
-        cellsize=raw_topo.meanCellWidth,
-        outfile=_p2r_outfile,
-        msg='Processing {} polygons'.format(zones),
-        **verbose_options
-    )
-
-    # clip the DEM to the zones raster
-    _cd2z_outfile = utils.create_temp_filename("clipped2zones", filetype='raster')
-    topo_r = utils.clip_dem_to_zones(
-        dem=raw_topo,
-        zones=zones_r,
-        outfile=_cd2z_outfile,
-        msg='Clipping DEM to extent of {}'.format(zones),
-        **verbose_options
-    )
-
-    # convert the clipped DEM and zones to numpy arrays
-    zones_a, topo_a = utils.rasters_to_arrays(
-        zones_r,
-        topo_r,
-        msg='Converting rasters to arrays',
-        **verbose_options
-    )
-
     # compute floods of zoned areas of topo
-    flooded_a = utils.flood_zones(
-        zones_array=zones_a,
-        topo_array=topo_a,
+    flooded_array = utils.flood_zones(
+        zones_array=zones_array,
+        topo_array=topo_array,
         elevation=elevation_meters,
         msg='Flooding areas up to {} ft'.format(elevation_feet),
         **verbose_options
@@ -134,9 +103,9 @@ def flood_area(dem, zones, ID_column, elevation_feet,
 
     # convert flooded zone array back into a Raster
     _fr_outfile = utils.create_temp_filename('floods_raster', filetype='raster')
-    flooded_r = utils.array_to_raster(
-        array=flooded_a,
-        template=zones_r,
+    flooded_raster = utils.array_to_raster(
+        array=flooded_array,
+        template=template,
         outfile=_fr_outfile,
         msg='Converting flooded array to a raster dataset',
         **verbose_options
@@ -144,7 +113,7 @@ def flood_area(dem, zones, ID_column, elevation_feet,
 
     # convert raster into polygons
     temp_polygons = utils.raster_to_polygons(
-        flooded_r,
+        flooded_raster,
         temp_filename,
         newfield=ID_column,
         msg='Converting raster of floods to polygons',
@@ -165,8 +134,6 @@ def flood_area(dem, zones, ID_column, elevation_feet,
         utils.cleanup_temp_results(
             temp_polygons.dataSource,
             _fr_outfile,
-            _cd2z_outfile,
-            _p2r_outfile,
             msg="Removing intermediate files",
             **verbose_options
         )
