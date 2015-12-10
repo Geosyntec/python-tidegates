@@ -28,6 +28,52 @@ METERS_PER_FOOT = 0.3048
 
 
 def process_dem_and_zones(dem, zones, ID_column, cleanup=True, **verbose_options):
+    """ Convert DEM and Zones layers to numpy arrays.
+
+    This is a pre-processor of the DEM and Zone of Influent input data.
+    Both are converted to numpy arrays and returned along with a raster
+    template so that the arrays can be correctly georeferenced if
+    necessary. These returned values are intended to be fed directly to
+    :func:`flood_area`.
+
+    Parameters
+    ----------
+    dem : str or arcpy.Raster
+        The topographic data needed to assess flood impacts.
+    zones : str or arcpy.mapping.Layer
+        The shapefile or feature class representing the tidegates' zones
+        of influence.
+    ID_column : str
+        Name of the column in the attribute table of ``zones`` that
+        uniquely identifies each tidegate.
+    cleanup : bool, optional (True)
+        Toggles the removal of temporary files.
+
+    Other Parameters
+    ----------------
+    verbose : bool (default = False)
+        Toggles the printing of messages communication the progress
+        of the processing.
+    asMessage : bool (default = False)
+        When True, progress messages are passed through
+        ``arcpy.AddMessage``. Otherwise, the msg is simply printed to
+        stdin.
+
+    Returns
+    -------
+    topo_array, zones_array : numpy.ndarray
+        Arrays of the topo data and zones of influence.
+    template : tidegates.utils.RasterTemplate
+        A raster template that can be used to georeference the returned
+        arrays.
+
+    See also
+    --------
+    flood_area
+    tidegates.utils.RasterTemplate
+
+    """
+
     utils._status('WorkSpace set to {}'.format(arcpy.env.workspace), **verbose_options)
 
     # load the raw DEM (topo data)
