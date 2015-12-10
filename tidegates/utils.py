@@ -28,13 +28,10 @@ import numpy
 import arcpy
 
 
-class _Extent(object):
-    def __init__(self, x, y):
-        self.lowerLeft = arcpy.Point(x, y)
+class RasterTemplate(object):
+    """ Georeferencing template for Rasters.
 
 
-class _Template(object):
-    def __init__(self, cellsize, x, y):
         self.meanCellWidth = cellsize
         self.meanCellHeight = cellsize
         self.extent = _Extent(x, y)

@@ -31,19 +31,19 @@ def test__Extent():
     nt.assert_equal(ext.lowerLeft.Y, y)
 
 
-def test__Template():
+def test_RasterTemplate():
     size, x, y = 8, 1, 2
-    template = utils._Template(size, x, y)
+    template = utils.RasterTemplate(size, x, y)
     nt.assert_equal(template.meanCellWidth, size)
     nt.assert_equal(template.meanCellHeight, size)
     nt.assert_equal(template.extent.lowerLeft.X, x)
     nt.assert_equal(template.extent.lowerLeft.Y, y)
 
 
-def test__Template_from_raster():
+def test_RasterTemplate_from_raster():
     _raster = resource_filename('tidegates.testing._Template', 'dem.tif')
     raster = utils.load_data(_raster, 'raster')
-    template = utils._Template.from_raster(raster)
+    template = utils.RasterTemplate.from_raster(raster)
     nt.assert_equal(template.meanCellWidth, raster.meanCellWidth)
     nt.assert_equal(template.meanCellHeight, raster.meanCellHeight)
     nt.assert_equal(template.extent.lowerLeft.X, raster.extent.lowerLeft.X)

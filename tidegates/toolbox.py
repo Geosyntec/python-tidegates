@@ -627,7 +627,7 @@ class StandardScenarios(object):
         zones_array : numpy array
             Categorical (integer) array of where each non-zero value
             delineates a tidegate's zone of influence.
-        template : arcpy.Raster or utils._Template
+        template : arcpy.Raster or tidegates.utils.RasterTemplate
             A raster or raster-like object that define the spatial
             extent of the analysis area. Required attributes are:
               - templatemeanCellWidth

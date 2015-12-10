@@ -68,7 +68,7 @@ def test_flood_area():
         [-1, -1, -1, -1, -1, -1, -1, -1,],
         [-1, -1, -1, -1, -1, -1, -1, -1,]
     ])
-    template = utils._Template(8, 4, 6)
+    template = utils.RasterTemplate(8, 4, 6)
     ws = resource_filename('tidegates.testing', 'flood_area')
     filename = 'test_flood_area_output.shp'
     with utils.WorkSpace(ws), utils.OverwriteState(True):
