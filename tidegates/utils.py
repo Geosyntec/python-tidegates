@@ -34,7 +34,7 @@ class RasterTemplate(object):
 
         self.meanCellWidth = cellsize
         self.meanCellHeight = cellsize
-        self.extent = _Extent(x, y)
+        self.extent = arcpy.Extent(xmin, ymin, numpy.nan, numpy.nan)
 
     @classmethod
     def from_raster(cls, raster):

@@ -23,14 +23,6 @@ class MockResult(object):
         return self.path
 
 
-def test__Extent():
-    x, y = 1, 5
-    ext = utils._Extent(x, y)
-    nt.assert_true(isinstance(ext.lowerLeft, arcpy.Point))
-    nt.assert_equal(ext.lowerLeft.X, x)
-    nt.assert_equal(ext.lowerLeft.Y, y)
-
-
 def test_RasterTemplate():
     size, x, y = 8, 1, 2
     template = utils.RasterTemplate(size, x, y)
