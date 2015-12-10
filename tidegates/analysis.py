@@ -27,7 +27,59 @@ from . import utils
 METERS_PER_FOOT = 0.3048
 
 
-def flood_area(dem, zones, ID_column, elevation_feet,
+def process_dem_and_zones(dem, zones, ID_column, cleanup=True, **verbose_options):
+    utils._status('WorkSpace set to {}'.format(arcpy.env.workspace), **verbose_options)
+
+    # load the raw DEM (topo data)
+    raw_topo = utils.load_data(
+        datapath=dem,
+        datatype="raster",
+        msg='Loading DEM {}'.format(dem),
+        **verbose_options
+    )
+
+    # load the zones of influence, converting to a raster
+    _p2r_outfile = utils.create_temp_filename("pgon_as_rstr", filetype='raster')
+    zones_raster = utils.polygons_to_raster(
+        polygons=zones,
+        ID_column=ID_column,
+        cellsize=raw_topo.meanCellWidth,
+        outfile=_p2r_outfile,
+        msg='Processing {} polygons'.format(zones),
+        **verbose_options
+    )
+    template = utils._Template.from_raster(zones_raster)
+
+    # clip the DEM to the zones raster
+    _cd2z_outfile = utils.create_temp_filename("clipped2zones", filetype='raster')
+    topo_raster = utils.clip_dem_to_zones(
+        dem=raw_topo,
+        zones=zones_raster,
+        outfile=_cd2z_outfile,
+        msg='Clipping DEM to extent of {}'.format(zones),
+        **verbose_options
+    )
+
+    # convert the clipped DEM and zones to numpy arrays
+    topo_array, zones_array = utils.rasters_to_arrays(
+        topo_raster,
+        zones_raster,
+        msg='Converting rasters to arrays',
+        **verbose_options
+    )
+
+    if cleanup:
+        _temp_files = []
+        utils.cleanup_temp_results(
+            _p2r_outfile,
+            _cd2z_outfile,
+            msg="Removing intermediate rasters",
+            **verbose_options
+        )
+
+    return topo_array, zones_array, template
+
+
 def flood_area(topo_array, zones_array, template, ID_column, elevation_feet,
                filename=None, cleanup=True, **verbose_options):
     """ Mask out portions of a a tidegates area of influence below
@@ -40,7 +92,7 @@ def flood_area(topo_array, zones_array, template, ID_column, elevation_feet,
     zones_array : numpy array
         Categorical (integer) array of where each non-zero value
         delineates a tidegate's zone of influence.
-    template : arcpy.Raster or utils._TemplateFromRaster
+    template : arcpy.Raster or utils._Template
         A raster or raster-like object that define the spatial extent
         of the analysis area. Required attributes are:
           - templatemeanCellWidth
