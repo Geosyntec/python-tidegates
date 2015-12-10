@@ -140,6 +140,74 @@ of its <code class="docutils literal"><span class="pre">arcpy</span></code> depe
 <p>Released under the BSD 3-clause license (see LICENSE file for more info)</p>
 <p>Written by Paul Hobson (<a class="reference external" href="mailto:phobson&#37;&#52;&#48;geosyntec&#46;com">phobson<span>&#64;</span>geosyntec<span>&#46;</span>com</a>)</p>
 <dl class="class">
+<dt id="tidegates.utils.RasterTemplate">
+<em class="property">class </em><code class="descclassname">tidegates.utils.</code><code class="descname">RasterTemplate</code><span class="sig-paren">(</span><em>cellsize</em>, <em>xmin</em>, <em>ymin</em><span class="sig-paren">)</span><a class="headerlink" href="#tidegates.utils.RasterTemplate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Georeferencing template for Rasters.</p>
+<p>This mimics the attributes of teh <code class="docutils literal"><span class="pre">arcpy.Raster</span></code> class enough
+that it can be used as a template to georeference numpy arrays
+when converting to rasters.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>cellsize</strong> : int or float</p>
+<blockquote>
+<div><p>The width of the raster&#8217;s cells.</p>
+</div></blockquote>
+<p><strong>xmin, ymin</strong> : float</p>
+<blockquote class="last">
+<div><p>The x- and y-coordinates of the raster&#8217;s lower left (south west)
+corner.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><code class="xref py py-obj docutils literal"><span class="pre">arcpy.Extent</span></code></p>
+</div>
+<p class="rubric">Attributes</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="7%" />
+<col width="93%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>cellsize</td>
+<td>(int or float) The width of the raster&#8217;s cells.</td>
+</tr>
+<tr class="row-even"><td>extent</td>
+<td>(Extent) Yet another mock-ish class that <code class="docutils literal"><span class="pre">x</span></code> and <code class="docutils literal"><span class="pre">y</span></code> are stored in <code class="docutils literal"><span class="pre">extent.lowerLeft</span></code> as an <code class="docutils literal"><span class="pre">arcpy.Point</span></code>.</td>
+</tr>
+</tbody>
+</table>
+<dl class="classmethod">
+<dt id="tidegates.utils.RasterTemplate.from_raster">
+<em class="property">classmethod </em><code class="descname">from_raster</code><span class="sig-paren">(</span><em>raster</em><span class="sig-paren">)</span><a class="headerlink" href="#tidegates.utils.RasterTemplate.from_raster" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alternative constructor to generate a RasterTemplate from
+an actual raster.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>raster</strong> : arcpy.Raster</p>
+<blockquote>
+<div><p>The raster whose georeferencing attributes need to be
+replicated.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><strong>template</strong> : RasterTemplate</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
 <dt id="tidegates.utils.EasyMapDoc">
 <em class="property">class </em><code class="descclassname">tidegates.utils.</code><code class="descname">EasyMapDoc</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#tidegates.utils.EasyMapDoc" title="Permalink to this definition">¶</a></dt>
 <dd><p>The object-oriented map class Esri should have made.</p>
@@ -387,7 +455,7 @@ before the final output has been generated.</p>
 <dl class="function">
 <dt id="tidegates.utils.result_to_raster">
 <code class="descclassname">tidegates.utils.</code><code class="descname">result_to_raster</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#tidegates.utils.result_to_raster" title="Permalink to this definition">¶</a></dt>
-<dd><p>Gets the actual <a href="#id6"><span class="problematic" id="id7">`arcpy.Raster`_</span></a> from an <a class="reference external" href="http://goo.gl/xPIbHi">arcpy.Result</a> object.</p>
+<dd><p>Gets the actual <a class="reference external" href="http://goo.gl/AQgFXW">arcpy.Raster</a> from an <a class="reference external" href="http://goo.gl/xPIbHi">arcpy.Result</a> object.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -441,7 +509,7 @@ function.</p>
 <dt id="tidegates.utils.rasters_to_arrays">
 <code class="descclassname">tidegates.utils.</code><code class="descname">rasters_to_arrays</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#tidegates.utils.rasters_to_arrays" title="Permalink to this definition">¶</a></dt>
 <dd><p>Converts an arbitrary number of <a class="reference external" href="http://goo.gl/AQgFXW">rasters</a> to <a class="reference external" href="http://goo.gl/iaDlli">numpy arrays</a>.
-Relies on <a class="reference external" href="http://goo.gl/fy8Fnx">arcpy.RasterToNumPyArray</a>.</p>
+Relies on <a class="reference external" href="http://goo.gl/nXjo8N">arcpy.RasterToNumPyArray</a>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -483,7 +551,7 @@ This wrapper around <a class="reference external" href="http://goo.gl/xQsaIz">ar
 <blockquote>
 <div><p>The array of values to be coverted to a raster.</p>
 </div></blockquote>
-<p><strong>template</strong> : arcpy.Raster</p>
+<p><strong>template</strong> : arcpy.Raster or RasterTemplate</p>
 <blockquote>
 <div><p>The raster whose, extent, position, and cell size will be
 applied to <code class="docutils literal"><span class="pre">array</span></code>.</p>
@@ -497,7 +565,7 @@ applied to <code class="docutils literal"><span class="pre">array</span></code>.
 </table>
 <div class="admonition seealso">
 <p class="first admonition-title">See also</p>
-<p class="last"><a class="reference internal" href="#tidegates.utils.rasters_to_arrays" title="tidegates.utils.rasters_to_arrays"><code class="xref py py-obj docutils literal"><span class="pre">rasters_to_arrays</span></code></a>, <a class="reference internal" href="#tidegates.utils.polygons_to_raster" title="tidegates.utils.polygons_to_raster"><code class="xref py py-obj docutils literal"><span class="pre">polygons_to_raster</span></code></a></p>
+<p class="last"><a class="reference internal" href="#tidegates.utils.RasterTemplate" title="tidegates.utils.RasterTemplate"><code class="xref py py-obj docutils literal"><span class="pre">RasterTemplate</span></code></a>, <a class="reference internal" href="#tidegates.utils.rasters_to_arrays" title="tidegates.utils.rasters_to_arrays"><code class="xref py py-obj docutils literal"><span class="pre">rasters_to_arrays</span></code></a>, <a class="reference internal" href="#tidegates.utils.polygons_to_raster" title="tidegates.utils.polygons_to_raster"><code class="xref py py-obj docutils literal"><span class="pre">polygons_to_raster</span></code></a></p>
 </div>
 <p class="rubric">Examples</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">tidegates</span> <span class="kn">import</span> <span class="n">utils</span>
@@ -535,7 +603,7 @@ applied to <code class="docutils literal"><span class="pre">array</span></code>.
 </div></blockquote>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>data</strong> : <a href="#id8"><span class="problematic" id="id9">`arcpy.Raster`_</span></a> or <a class="reference external" href="http://goo.gl/KfrGNa">arcpy.mapping.Layer</a></p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>data</strong> : <a class="reference external" href="http://goo.gl/AQgFXW">arcpy.Raster</a> or <a class="reference external" href="http://goo.gl/KfrGNa">arcpy.mapping.Layer</a></p>
 <blockquote class="last">
 <div><p>The data loaded as an arcpy object.</p>
 </div></blockquote>

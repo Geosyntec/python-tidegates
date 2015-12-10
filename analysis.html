@@ -139,22 +139,100 @@ damage due to floods.</p>
 <p>Released under the BSD 3-clause license (see LICENSE file for more info)</p>
 <p>Written by Paul Hobson (<a class="reference external" href="mailto:phobson&#37;&#52;&#48;geosyntec&#46;com">phobson<span>&#64;</span>geosyntec<span>&#46;</span>com</a>)</p>
 <dl class="function">
-<dt id="tidegates.analysis.flood_area">
-<code class="descclassname">tidegates.analysis.</code><code class="descname">flood_area</code><span class="sig-paren">(</span><em>dem</em>, <em>zones</em>, <em>ID_column</em>, <em>elevation_feet</em>, <em>filename=None</em>, <em>cleanup=True</em>, <em>**verbose_options</em><span class="sig-paren">)</span><a class="headerlink" href="#tidegates.analysis.flood_area" title="Permalink to this definition">¶</a></dt>
-<dd><p>Mask out portions of a a tidegates area of influence below
-a certain elevation.</p>
+<dt id="tidegates.analysis.process_dem_and_zones">
+<code class="descclassname">tidegates.analysis.</code><code class="descname">process_dem_and_zones</code><span class="sig-paren">(</span><em>dem</em>, <em>zones</em>, <em>ID_column</em>, <em>cleanup=True</em>, <em>**verbose_options</em><span class="sig-paren">)</span><a class="headerlink" href="#tidegates.analysis.process_dem_and_zones" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert DEM and Zones layers to numpy arrays.</p>
+<p>This is a pre-processor of the DEM and Zone of Influent input data.
+Both are converted to numpy arrays and returned along with a raster
+template so that the arrays can be correctly georeferenced if
+necessary. These returned values are intended to be fed directly to
+<a class="reference internal" href="#tidegates.analysis.flood_area" title="tidegates.analysis.flood_area"><code class="xref py py-func docutils literal"><span class="pre">flood_area()</span></code></a>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>dem</strong> : str or arcpy.Raster</p>
 <blockquote>
-<div><p>The (filepath to the ) Digital Elevation Model of the area.</p>
+<div><p>The topographic data needed to assess flood impacts.</p>
 </div></blockquote>
 <p><strong>zones</strong> : str or arcpy.mapping.Layer</p>
 <blockquote>
-<div><p>The (filepath to the) zones that will be flooded. If a string,
-a Layer will be created.</p>
+<div><p>The shapefile or feature class representing the tidegates&#8217; zones
+of influence.</p>
+</div></blockquote>
+<p><strong>ID_column</strong> : str</p>
+<blockquote>
+<div><p>Name of the column in the attribute table of <code class="docutils literal"><span class="pre">zones</span></code> that
+uniquely identifies each tidegate.</p>
+</div></blockquote>
+<p><strong>cleanup</strong> : bool, optional (True)</p>
+<blockquote>
+<div><p>Toggles the removal of temporary files.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>topo_array, zones_array</strong> : numpy.ndarray</p>
+<blockquote>
+<div><p>Arrays of the topo data and zones of influence.</p>
+</div></blockquote>
+<p><strong>template</strong> : tidegates.utils.RasterTemplate</p>
+<blockquote>
+<div><p>A raster template that can be used to georeference the returned
+arrays.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Other Parameters:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><p class="first"><strong>verbose</strong> : bool (default = False)</p>
+<blockquote>
+<div><p>Toggles the printing of messages communication the progress
+of the processing.</p>
+</div></blockquote>
+<p><strong>asMessage</strong> : bool (default = False)</p>
+<blockquote class="last">
+<div><p>When True, progress messages are passed through
+<code class="docutils literal"><span class="pre">arcpy.AddMessage</span></code>. Otherwise, the msg is simply printed to
+stdin.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#tidegates.analysis.flood_area" title="tidegates.analysis.flood_area"><code class="xref py py-obj docutils literal"><span class="pre">flood_area</span></code></a>, <a class="reference internal" href="utils.html#tidegates.utils.RasterTemplate" title="tidegates.utils.RasterTemplate"><code class="xref py py-obj docutils literal"><span class="pre">tidegates.utils.RasterTemplate</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="tidegates.analysis.flood_area">
+<code class="descclassname">tidegates.analysis.</code><code class="descname">flood_area</code><span class="sig-paren">(</span><em>topo_array</em>, <em>zones_array</em>, <em>template</em>, <em>ID_column</em>, <em>elevation_feet</em>, <em>filename=None</em>, <em>cleanup=True</em>, <em>**verbose_options</em><span class="sig-paren">)</span><a class="headerlink" href="#tidegates.analysis.flood_area" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mask out portions of a a tidegates area of influence below
+a certain elevation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>topo_array</strong> : numpy array</p>
+<blockquote>
+<div><p>Floating point array of the digital elevation model.</p>
+</div></blockquote>
+<p><strong>zones_array</strong> : numpy array</p>
+<blockquote>
+<div><p>Categorical (integer) array of where each non-zero value
+delineates a tidegate&#8217;s zone of influence.</p>
+</div></blockquote>
+<p><strong>template</strong> : arcpy.Raster or utils.RasterTemplate</p>
+<blockquote>
+<div><p>A raster or raster-like object that define the spatial extent
+of the analysis area. Required attributes are:</p>
+<blockquote>
+<div><ul class="simple">
+<li>templatemeanCellWidth</li>
+<li>templatemeanCellHeight</li>
+<li>templateextent.lowerLeft</li>
+</ul>
+</div></blockquote>
 </div></blockquote>
 <p><strong>ID_column</strong> : str</p>
 <blockquote>
@@ -201,7 +279,7 @@ stdin.</p>
 </table>
 <div class="admonition seealso">
 <p class="first admonition-title">See also</p>
-<p class="last"><a class="reference internal" href="#tidegates.analysis.assess_impact" title="tidegates.analysis.assess_impact"><code class="xref py py-obj docutils literal"><span class="pre">assess_impact</span></code></a>, <a class="reference internal" href="#tidegates.analysis.area_of_impacts" title="tidegates.analysis.area_of_impacts"><code class="xref py py-obj docutils literal"><span class="pre">area_of_impacts</span></code></a>, <a class="reference internal" href="#tidegates.analysis.count_of_impacts" title="tidegates.analysis.count_of_impacts"><code class="xref py py-obj docutils literal"><span class="pre">count_of_impacts</span></code></a></p>
+<p class="last"><a class="reference internal" href="#tidegates.analysis.process_dem_and_zones" title="tidegates.analysis.process_dem_and_zones"><code class="xref py py-obj docutils literal"><span class="pre">process_dem_and_zones</span></code></a>, <a class="reference internal" href="#tidegates.analysis.assess_impact" title="tidegates.analysis.assess_impact"><code class="xref py py-obj docutils literal"><span class="pre">assess_impact</span></code></a>, <a class="reference internal" href="#tidegates.analysis.area_of_impacts" title="tidegates.analysis.area_of_impacts"><code class="xref py py-obj docutils literal"><span class="pre">area_of_impacts</span></code></a>, <a class="reference internal" href="#tidegates.analysis.count_of_impacts" title="tidegates.analysis.count_of_impacts"><code class="xref py py-obj docutils literal"><span class="pre">count_of_impacts</span></code></a></p>
 </div>
 </dd></dl>
 

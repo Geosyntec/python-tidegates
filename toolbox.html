@@ -350,13 +350,34 @@ to None. Likewise, when evaluating standard scenarios,
 
 <dl class="method">
 <dt id="tidegates.toolbox.StandardScenarios.analyze">
-<code class="descname">analyze</code><span class="sig-paren">(</span><em>elev=None</em>, <em>surge=None</em>, <em>slr=None</em>, <em>**params</em><span class="sig-paren">)</span><a class="headerlink" href="#tidegates.toolbox.StandardScenarios.analyze" title="Permalink to this definition">¶</a></dt>
+<code class="descname">analyze</code><span class="sig-paren">(</span><em>topo_array</em>, <em>zones_array</em>, <em>template</em>, <em>elev=None</em>, <em>surge=None</em>, <em>slr=None</em>, <em>**params</em><span class="sig-paren">)</span><a class="headerlink" href="#tidegates.toolbox.StandardScenarios.analyze" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tool-agnostic helper function for <a class="reference internal" href="#tidegates.toolbox.StandardScenarios.main_execute" title="tidegates.toolbox.StandardScenarios.main_execute"><code class="xref py py-meth docutils literal"><span class="pre">main_execute()</span></code></a>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>elev</strong> : float, optional</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>topo_array</strong> : numpy array</p>
+<blockquote>
+<div><p>Floating point array of the digital elevation model.</p>
+</div></blockquote>
+<p><strong>zones_array</strong> : numpy array</p>
+<blockquote>
+<div><p>Categorical (integer) array of where each non-zero value
+delineates a tidegate&#8217;s zone of influence.</p>
+</div></blockquote>
+<p><strong>template</strong> : arcpy.Raster or tidegates.utils.RasterTemplate</p>
+<blockquote>
+<div><p>A raster or raster-like object that define the spatial
+extent of the analysis area. Required attributes are:</p>
+<blockquote>
+<div><ul class="simple">
+<li>templatemeanCellWidth</li>
+<li>templatemeanCellHeight</li>
+<li>templateextent.lowerLeft</li>
+</ul>
+</div></blockquote>
+</div></blockquote>
+<p><strong>elev</strong> : float, optional</p>
 <blockquote>
 <div><p>Custom elevation to be analyzed</p>
 </div></blockquote>
