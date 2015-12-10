@@ -23,6 +23,33 @@ class MockResult(object):
         return self.path
 
 
+def test__Extent():
+    x, y = 1, 5
+    ext = utils._Extent(x, y)
+    nt.assert_true(isinstance(ext.lowerLeft, arcpy.Point))
+    nt.assert_equal(ext.lowerLeft.X, x)
+    nt.assert_equal(ext.lowerLeft.Y, y)
+
+
+def test__Template():
+    size, x, y = 8, 1, 2
+    template = utils._Template(size, x, y)
+    nt.assert_equal(template.meanCellWidth, size)
+    nt.assert_equal(template.meanCellHeight, size)
+    nt.assert_equal(template.extent.lowerLeft.X, x)
+    nt.assert_equal(template.extent.lowerLeft.Y, y)
+
+
+def test__Template_from_raster():
+    _raster = resource_filename('tidegates.testing._Template', 'dem.tif')
+    raster = utils.load_data(_raster, 'raster')
+    template = utils._Template.from_raster(raster)
+    nt.assert_equal(template.meanCellWidth, raster.meanCellWidth)
+    nt.assert_equal(template.meanCellHeight, raster.meanCellHeight)
+    nt.assert_equal(template.extent.lowerLeft.X, raster.extent.lowerLeft.X)
+    nt.assert_equal(template.extent.lowerLeft.Y, raster.extent.lowerLeft.Y)
+
+
 class Test_EasyMapDoc(object):
     def setup(self):
         self.mxd = resource_filename("tidegates.testing.EasyMapDoc", "test.mxd")
