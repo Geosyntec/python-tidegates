@@ -28,6 +28,27 @@ import numpy
 import arcpy
 
 
+class _Extent(object):
+    def __init__(self, x, y):
+        self.lowerLeft = arcpy.Point(x, y)
+
+
+class _Template(object):
+    def __init__(self, cellsize, x, y):
+        self.meanCellWidth = cellsize
+        self.meanCellHeight = cellsize
+        self.extent = _Extent(x, y)
+
+    @classmethod
+    def from_raster(cls, raster):
+        template = cls(
+            raster.meanCellHeight,
+            raster.extent.lowerLeft.X,
+            raster.extent.lowerLeft.Y,
+        )
+        return template
+
+
 class EasyMapDoc(object):
     """ The object-oriented map class Esri should have made.
 

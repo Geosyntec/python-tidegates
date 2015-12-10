@@ -3,6 +3,8 @@ from pkg_resources import resource_filename
 import shutil
 import glob
 
+import numpy
+
 import nose.tools as nt
 from nose import with_setup
 import numpy.testing as nptest
@@ -14,16 +16,68 @@ import tidegates
 from tidegates import utils
 
 
+def test_process_dem_and_zones():
+    known_topo = numpy.array([
+        [-999.0, 0.305, 0.610, 0.914, 1.219, 1.524, 1.829, 2.134,],
+        [ 0.305, 0.610, 0.914, 1.219, 1.524, 1.829, 2.134, 2.438,],
+        [ 0.610, 0.914, 1.219, 1.524, 1.829, 2.134, 2.438, 2.743,],
+        [ 0.914, 1.219, 1.524, 1.829, 2.134, 2.438, 2.743, 3.048,],
+        [ 1.219, 1.524, 1.829, 2.134, 2.438, 2.743, 3.048, 3.353,],
+        [ 1.524, 1.829, 2.134, 2.438, 2.743, 3.048, 3.353, 3.658,],
+    ])
+
+    known_zones = numpy.array([
+        [-999,    2,    2,    2,    2,    2,    2, -999],
+        [-999,    2,    2,    2, -999,    2,    2, -999],
+        [   1,    1,    1,    1, -999,    2,    2, -999],
+        [   1,    1,    1,    1, -999,    2,    2, -999],
+        [   1, -999,    1,    1,    2,    2,    2,    2],
+        [-999, -999,    1,    1,    2,    2,    2,    2]
+    ])
+
+    known_cell_size = 8
+    known_X, known_Y = 4, 22
+    ws = resource_filename('tidegates.testing', 'process_dem_and_zones')
+    with utils.WorkSpace(ws), utils.OverwriteState(True):
+        ta, za, template = tidegates.process_dem_and_zones(
+            dem='topo.tif',
+            zones='zones.shp',
+            ID_column='GeoID',
+            cleanup=True,
+            verbose=False
+        )
+
+    nptest.assert_array_almost_equal(ta, known_topo, decimal=3)
+    nptest.assert_array_almost_equal(za, known_zones, decimal=3)
+    nt.assert_equal(template.meanCellWidth, known_cell_size)
+    nt.assert_equal(template.meanCellHeight, known_cell_size)
+    nt.assert_equal(template.extent.lowerLeft.X, known_X)
+    nt.assert_equal(template.extent.lowerLeft.Y, known_Y)
+
+
 @nptest.dec.skipif(not tgtest.has_fiona)
 def test_flood_area():
+    topo = numpy.mgrid[:8, :8].sum(axis=0) * tidegates.METERS_PER_FOOT
+    zones = numpy.array([
+        [-1,  2,  2,  2,  2,  2,  2, -1,],
+        [-1,  2,  2,  2, -1,  2,  2, -1,],
+        [ 1,  1,  1,  1, -1,  2,  2, -1,],
+        [ 1,  1,  1,  1, -1,  2,  2, -1,],
+        [ 1, -1,  1,  1,  2,  2,  2,  2,],
+        [-1, -1,  1,  1,  2,  2,  2,  2,],
+        [-1, -1, -1, -1, -1, -1, -1, -1,],
+        [-1, -1, -1, -1, -1, -1, -1, -1,]
+    ])
+    template = utils._Template(8, 4, 6)
     ws = resource_filename('tidegates.testing', 'flood_area')
+    filename = 'test_flood_area_output.shp'
     with utils.WorkSpace(ws), utils.OverwriteState(True):
-        filename = 'test_flood_area_output.shp'
         floods = tidegates.flood_area(
-            dem='test_dem.tif',
-            zones='test_zones.shp',
+            topo_array=topo,
+            zones_array=zones,
+            template=template,
             ID_column='GeoID',
-            elevation_feet=7.8,
+            elevation_feet=5,
             filename=filename,
             cleanup=True,
             verbose=False,

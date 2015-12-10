@@ -616,11 +616,23 @@ class StandardScenarios(object):
 
         return scenario_list
 
-    def analyze(self, elev=None, surge=None, slr=None, **params):
+    def analyze(self, topo_array, zones_array, template,
+                elev=None, surge=None, slr=None, **params):
         """ Tool-agnostic helper function for :meth:`.main_execute`.
 
         Parameters
         ----------
+        topo_array : numpy array
+            Floating point array of the digital elevation model.
+        zones_array : numpy array
+            Categorical (integer) array of where each non-zero value
+            delineates a tidegate's zone of influence.
+        template : arcpy.Raster or utils._Template
+            A raster or raster-like object that define the spatial
+            extent of the analysis area. Required attributes are:
+              - templatemeanCellWidth
+              - templatemeanCellHeight
+              - templateextent.lowerLeft
         elev : float, optional
             Custom elevation to be analyzed
         slr : float, optional
@@ -653,8 +665,9 @@ class StandardScenarios(object):
 
         # run the scenario and add its info the output attribute table
         flooded_zones = tidegates.flood_area(
-            dem=params['dem'],
-            zones=params['zones'],
+            topo_array=topo_array,
+            zones_array=zones_array,
+            template=template,
             ID_column=params['ID_column'],
             elevation_feet=elev,
             filename=floods_path,
@@ -772,8 +785,18 @@ class StandardScenarios(object):
         all_buildings = []
 
         with utils.WorkSpace(params['workspace']), utils.OverwriteState(True):
+
+            topo_array, zones_array, template = tidegates.process_dem_and_zones(
+                dem=params['dem'],
+                zones=params['zones'],
+                ID_column=params['ID_column']
+            )
+
             for scenario in self.make_scenarios(**params):
                 fldlyr, wtlndlyr, blgdlyr = self.analyze(
+                    topo_array=topo_array,
+                    zones_array=zones_array,
+                    template=template,
                     elev=scenario['elev'],
                     surge=scenario['surge_name'],
                     slr=scenario['slr'],

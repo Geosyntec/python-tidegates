@@ -321,8 +321,19 @@ class CheckToolbox_Mixin(object):
         test_buidlings = resource_filename(testdir, 'buildings.shp')
         output = resource_filename(testdir, 'flooding.shp')
 
+        topo_array, zones_array, template = tidegates.process_dem_and_zones(
+            dem=test_dem,
+            zones=test_zones,
+            ID_column="GeoID",
+            cleanup=True,
+            verbose=False
+        )
+
         with utils.WorkSpace(ws), utils.OverwriteState(True):
             flood, wetland, building = self.tbx.analyze(
+                topo_array=topo_array,
+                zones_array=zones_array,
+                template=template,
                 elev=self.elev,
                 slr=self.slr,
                 surge=self.surge,
@@ -353,8 +364,19 @@ class CheckToolbox_Mixin(object):
         test_buidlings = resource_filename(testdir, 'buildings.shp')
         output = resource_filename(testdir, 'flooding_no_opts.shp')
 
+        topo_array, zones_array, template = tidegates.process_dem_and_zones(
+            dem=test_dem,
+            zones=test_zones,
+            ID_column="GeoID",
+            cleanup=True,
+            verbose=False
+        )
+
         with utils.WorkSpace(ws), utils.OverwriteState(True):
             flood, wetland, building = self.tbx.analyze(
+                topo_array=topo_array,
+                zones_array=zones_array,
+                template=template,
                 elev=self.elev,
                 slr=self.slr,
                 surge=self.surge,
