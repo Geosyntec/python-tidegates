@@ -86,6 +86,7 @@ class RasterTemplate(object):
         return template
 
 
+
 class EasyMapDoc(object):
     """ The object-oriented map class Esri should have made.
 
@@ -487,7 +488,7 @@ def rasters_to_arrays(*rasters, **kwargs):
 
     .. _rasters: http://goo.gl/AQgFXW
     .. _numpy arrays: http://goo.gl/iaDlli
-    .. _arcpy.RasterToNumPyArray: http://goo.gl/fy8Fnx
+    .. _arcpy.RasterToNumPyArray: http://goo.gl/nXjo8N
 
     Parameters
     ----------
@@ -534,7 +535,7 @@ def array_to_raster(array, template, outfile=None):
     ----------
     array : numpy.ndarray
         The array of values to be coverted to a raster.
-    template : arcpy.Raster
+    template : arcpy.Raster or RasterTemplate
         The raster whose, extent, position, and cell size will be
         applied to ``array``.
 
@@ -544,6 +545,7 @@ def array_to_raster(array, template, outfile=None):
 
     See also
     --------
+    RasterTemplate
     rasters_to_arrays
     polygons_to_raster
 
@@ -593,7 +595,7 @@ def load_data(datapath, datatype, greedyRasters=True, **verbosity):
     data : `arcpy.Raster`_ or `arcpy.mapping.Layer`_
         The data loaded as an arcpy object.
 
-    .. _arcpy.Raster: http://goo.gl/fy8Fnx
+    .. _arcpy.Raster: http://goo.gl/AQgFXW
     .. _arcpy.mapping.Layer: http://goo.gl/KfrGNa
 
     """
