@@ -28,25 +28,63 @@ import numpy
 import arcpy
 
 
-class _Extent(object):
-    def __init__(self, x, y):
-        self.lowerLeft = arcpy.Point(x, y)
+class RasterTemplate(object):
+    """ Georeferencing template for Rasters.
 
+    This mimics the attributes of teh ``arcpy.Raster`` class enough
+    that it can be used as a template to georeference numpy arrays
+    when converting to rasters.
 
-class _Template(object):
-    def __init__(self, cellsize, x, y):
+    Parameters
+    ----------
+    cellsize : int or float
+        The width of the raster's cells.
+    xmin, ymin : float
+        The x- and y-coordinates of the raster's lower left (south west)
+        corner.
+
+    Attributes
+    ----------
+    cellsize : int or float
+        The width of the raster's cells.
+    extent : Extent
+        Yet another mock-ish class that ``x`` and ``y`` are stored in
+        ``extent.lowerLeft`` as an ``arcpy.Point``.
+
+    See also
+    --------
+    arcpy.Extent
+
+    """
+
+    def __init__(self, cellsize, xmin, ymin):
         self.meanCellWidth = cellsize
         self.meanCellHeight = cellsize
-        self.extent = _Extent(x, y)
+        self.extent = arcpy.Extent(xmin, ymin, numpy.nan, numpy.nan)
 
     @classmethod
     def from_raster(cls, raster):
+        """ Alternative constructor to generate a RasterTemplate from
+        an actual raster.
+
+        Parameters
+        ----------
+        raster : arcpy.Raster
+            The raster whose georeferencing attributes need to be
+            replicated.
+
+        Returns
+        -------
+        template : RasterTemplate
+
+        """
         template = cls(
             raster.meanCellHeight,
             raster.extent.lowerLeft.X,
             raster.extent.lowerLeft.Y,
         )
         return template
+
 
 
 class EasyMapDoc(object):
@@ -450,7 +488,7 @@ def rasters_to_arrays(*rasters, **kwargs):
 
     .. _rasters: http://goo.gl/AQgFXW
     .. _numpy arrays: http://goo.gl/iaDlli
-    .. _arcpy.RasterToNumPyArray: http://goo.gl/fy8Fnx
+    .. _arcpy.RasterToNumPyArray: http://goo.gl/nXjo8N
 
     Parameters
     ----------
@@ -497,7 +535,7 @@ def array_to_raster(array, template, outfile=None):
     ----------
     array : numpy.ndarray
         The array of values to be coverted to a raster.
-    template : arcpy.Raster
+    template : arcpy.Raster or RasterTemplate
         The raster whose, extent, position, and cell size will be
         applied to ``array``.
 
@@ -507,6 +545,7 @@ def array_to_raster(array, template, outfile=None):
 
     See also
     --------
+    RasterTemplate
     rasters_to_arrays
     polygons_to_raster
 
@@ -556,7 +595,7 @@ def load_data(datapath, datatype, greedyRasters=True, **verbosity):
     data : `arcpy.Raster`_ or `arcpy.mapping.Layer`_
         The data loaded as an arcpy object.
 
-    .. _arcpy.Raster: http://goo.gl/fy8Fnx
+    .. _arcpy.Raster: http://goo.gl/AQgFXW
     .. _arcpy.mapping.Layer: http://goo.gl/KfrGNa
 
     """
