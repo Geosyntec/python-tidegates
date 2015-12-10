@@ -31,13 +31,53 @@ import arcpy
 class RasterTemplate(object):
     """ Georeferencing template for Rasters.
 
+    This mimics the attributes of teh ``arcpy.Raster`` class enough
+    that it can be used as a template to georeference numpy arrays
+    when converting to rasters.
 
+    Parameters
+    ----------
+    cellsize : int or float
+        The width of the raster's cells.
+    xmin, ymin : float
+        The x- and y-coordinates of the raster's lower left (south west)
+        corner.
+
+    Attributes
+    ----------
+    cellsize : int or float
+        The width of the raster's cells.
+    extent : Extent
+        Yet another mock-ish class that ``x`` and ``y`` are stored in
+        ``extent.lowerLeft`` as an ``arcpy.Point``.
+
+    See also
+    --------
+    arcpy.Extent
+
+    """
+
+    def __init__(self, cellsize, xmin, ymin):
         self.meanCellWidth = cellsize
         self.meanCellHeight = cellsize
         self.extent = arcpy.Extent(xmin, ymin, numpy.nan, numpy.nan)
 
     @classmethod
     def from_raster(cls, raster):
+        """ Alternative constructor to generate a RasterTemplate from
+        an actual raster.
+
+        Parameters
+        ----------
+        raster : arcpy.Raster
+            The raster whose georeferencing attributes need to be
+            replicated.
+
+        Returns
+        -------
+        template : RasterTemplate
+
+        """
         template = cls(
             raster.meanCellHeight,
             raster.extent.lowerLeft.X,
