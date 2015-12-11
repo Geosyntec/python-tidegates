@@ -178,7 +178,12 @@ Where the ``toolbox`` API effectively limits the user to computing total area an
 General descriptions
 ~~~~~~~~~~~~~~~~~~~~
 
-The :mod:`tidegates.analysis` submodule contains four functions:
+The :mod:`tidegates.analysis` submodule contains five functions:
+
+:func:`tidegates.analysis.process_dem_and_zones`
+    Does the prelimarary job of converting the elevation data and zones of influence to rasters.
+    This can be quite computationally expensive, so it's handy have it in a seperate function.
+    This let's you do that pre-processing once, and then feed its results to the other functions as you evaluate potentially many scenarios.
 
 :func:`tidegates.analysis.flood_area`
     Estimates spatial extent of flooding behind for a given water surface elevation.
@@ -212,50 +217,63 @@ The sample script below does all of that and count the number of distinct wetlan
 
     # common parameters
     workspace = r'F:\phobson\Tidegates\MB_Small.gdb'
-    flood_elev = 13.8 # ft MSL
-    flood_output = 'Example_flood'
+    flood_elevs = [7.8, 13.8, 19.8] # ft MSL
+    flood_output_template = 'Example_flood_{}'
     id_col = 'GeoID'
 
     with utils.WorkSpace(workspace), utils.OverwriteState(True):
-
-        # estimate the spatial extent of the floods
-        flooded_zones = tidegates.flood_area(
+        # convert DEM and zone data to rasters
+        topo, zones, template = tidegates.process_dem_and_zones(
             dem='dem_x08',
             zones='ZOI',
-            ID_column=id_col,
-            elevation_feet=flood_elev,
-            filename=flood_output,
+            ID_columnd=id_col,
+            cleanup=True,
         )
 
-        # add a field to the output's attribute table indicating the flood elevation
-        utils.add_field_with_value(
-            table=flood_output,
-            field_name='flood_elev',
-            field_value=flood_elev,
-        )
+        # loop through each elevation defined above
+        for elev in flood_elevs:
+            # create an output file name for the scenario
+            flood_output = flood_output_template.format(elev)
 
-        # count the number of buildings impacted
-        tidegates.count_of_impacts(
-            floods_path=flood_output,
-            flood_idcol=id_col,
-            assets_input='buildings', # building footprint layer in the GeoDB,
-            asset_idcol='STRUCT_ID', # unique field for each building
-            fieldname='N_bldgs', # name of the field we'll add to 'Example_flood'
-        )
+            # estimate the spatial extent of the floods
+            flooded_zones = tidegates.flood_area(
+                topo_array=topo,
+                zones_array=zones,
+                template=template,
+                ID_column=id_col,
+                elevation_feet=elev,
+                filename=flood_output,
+            )
 
-        # count the number of wetlands impacted
-        tidegates.count_of_impacts(
-            floods_path=flood_output,
-            flood_idcol=id_col,
-            assets_input='wetlands', # wetlands layer in the GeoDB
-            asset_idcol='WETCODE', # unique field for each wetland
-            fieldname='N_wtlds', # name of the field we'll add to 'Example_flood'
-        )
+            # add a field to the output's attribute table indicating the flood elevation
+            utils.add_field_with_value(
+                table=flood_output,
+                field_name='flood_elev',
+                field_value=elev,
+            )
 
-        # sum up the area of impacted wetlands behind each tidegate
-        tidegates.area_of_impacts(
-            floods_path=flood_output,
-            ID_column=id_col,
-            assets_input='wetlands', # wetlands layer in the GeoDB
-            fieldname='area_wtlds', # name of the field we'll add to 'Example_flood'
-        )
+            # count the number of buildings impacted
+            tidegates.count_of_impacts(
+                floods_path=flood_output,
+                flood_idcol=id_col,
+                assets_input='buildings', # building footprint layer in the GeoDB,
+                asset_idcol='STRUCT_ID', # unique field for each building
+                fieldname='N_bldgs', # name of the field we'll add to 'Example_flood'
+            )
+
+            # count the number of wetlands impacted
+            tidegates.count_of_impacts(
+                floods_path=flood_output,
+                flood_idcol=id_col,
+                assets_input='wetlands', # wetlands layer in the GeoDB
+                asset_idcol='WETCODE', # unique field for each wetland
+                fieldname='N_wtlds', # name of the field we'll add to 'Example_flood'
+            )
+
+            # sum up the area of impacted wetlands behind each tidegate
+            tidegates.area_of_impacts(
+                floods_path=flood_output,
+                ID_column=id_col,
+                assets_input='wetlands', # wetlands layer in the GeoDB
+                fieldname='area_wtlds', # name of the field we'll add to 'Example_flood'
+            )

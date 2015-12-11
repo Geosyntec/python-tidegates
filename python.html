@@ -282,8 +282,12 @@ In keeping with the formatted definitions below:</p>
 Where the <code class="docutils literal"><span class="pre">toolbox</span></code> API effectively limits the user to computing total area and counts of one asset each, the functions below can be used by a python programmer to assess the impact to any number of assets.</p>
 <div class="section" id="general-descriptions">
 <h3>General descriptions<a class="headerlink" href="#general-descriptions" title="Permalink to this headline">¶</a></h3>
-<p>The <a class="reference internal" href="analysis.html#module-tidegates.analysis" title="tidegates.analysis"><code class="xref py py-mod docutils literal"><span class="pre">tidegates.analysis</span></code></a> submodule contains four functions:</p>
+<p>The <a class="reference internal" href="analysis.html#module-tidegates.analysis" title="tidegates.analysis"><code class="xref py py-mod docutils literal"><span class="pre">tidegates.analysis</span></code></a> submodule contains five functions:</p>
 <dl class="docutils">
+<dt><a class="reference internal" href="analysis.html#tidegates.analysis.process_dem_and_zones" title="tidegates.analysis.process_dem_and_zones"><code class="xref py py-func docutils literal"><span class="pre">tidegates.analysis.process_dem_and_zones()</span></code></a></dt>
+<dd>Does the prelimarary job of converting the elevation data and zones of influence to rasters.
+This can be quite computationally expensive, so it&#8217;s handy have it in a seperate function.
+This let&#8217;s you do that pre-processing once, and then feed its results to the other functions as you evaluate potentially many scenarios.</dd>
 <dt><a class="reference internal" href="analysis.html#tidegates.analysis.flood_area" title="tidegates.analysis.flood_area"><code class="xref py py-func docutils literal"><span class="pre">tidegates.analysis.flood_area()</span></code></a></dt>
 <dd>Estimates spatial extent of flooding behind for a given water surface elevation.</dd>
 <dt><a class="reference internal" href="analysis.html#tidegates.analysis.assess_impact" title="tidegates.analysis.assess_impact"><code class="xref py py-func docutils literal"><span class="pre">tidegates.analysis.assess_impact()</span></code></a></dt>
@@ -312,53 +316,66 @@ For example, this function can be used to determine the number of buildings behi
 <p>The sample script below does all of that and count the number of distinct wetlands impacted by each flood using <a class="reference internal" href="analysis.html#module-tidegates.analysis" title="tidegates.analysis"><code class="xref py py-mod docutils literal"><span class="pre">tidegates.analysis</span></code></a> directly.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="c"># common parameters</span>
 <span class="n">workspace</span> <span class="o">=</span> <span class="s">r&#39;F:\phobson\Tidegates\MB_Small.gdb&#39;</span>
-<span class="n">flood_elev</span> <span class="o">=</span> <span class="mf">13.8</span> <span class="c"># ft MSL</span>
-<span class="n">flood_output</span> <span class="o">=</span> <span class="s">&#39;Example_flood&#39;</span>
+<span class="n">flood_elevs</span> <span class="o">=</span> <span class="p">[</span><span class="mf">7.8</span><span class="p">,</span> <span class="mf">13.8</span><span class="p">,</span> <span class="mf">19.8</span><span class="p">]</span> <span class="c"># ft MSL</span>
+<span class="n">flood_output_template</span> <span class="o">=</span> <span class="s">&#39;Example_flood_{}&#39;</span>
 <span class="n">id_col</span> <span class="o">=</span> <span class="s">&#39;GeoID&#39;</span>
 
 <span class="k">with</span> <span class="n">utils</span><span class="o">.</span><span class="n">WorkSpace</span><span class="p">(</span><span class="n">workspace</span><span class="p">),</span> <span class="n">utils</span><span class="o">.</span><span class="n">OverwriteState</span><span class="p">(</span><span class="bp">True</span><span class="p">):</span>
-
-    <span class="c"># estimate the spatial extent of the floods</span>
-    <span class="n">flooded_zones</span> <span class="o">=</span> <span class="n">tidegates</span><span class="o">.</span><span class="n">flood_area</span><span class="p">(</span>
+    <span class="c"># convert DEM and zone data to rasters</span>
+    <span class="n">topo</span><span class="p">,</span> <span class="n">zones</span><span class="p">,</span> <span class="n">template</span> <span class="o">=</span> <span class="n">tidegates</span><span class="o">.</span><span class="n">process_dem_and_zones</span><span class="p">(</span>
         <span class="n">dem</span><span class="o">=</span><span class="s">&#39;dem_x08&#39;</span><span class="p">,</span>
         <span class="n">zones</span><span class="o">=</span><span class="s">&#39;ZOI&#39;</span><span class="p">,</span>
-        <span class="n">ID_column</span><span class="o">=</span><span class="n">id_col</span><span class="p">,</span>
-        <span class="n">elevation_feet</span><span class="o">=</span><span class="n">flood_elev</span><span class="p">,</span>
-        <span class="n">filename</span><span class="o">=</span><span class="n">flood_output</span><span class="p">,</span>
+        <span class="n">ID_columnd</span><span class="o">=</span><span class="n">id_col</span><span class="p">,</span>
+        <span class="n">cleanup</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="c"># add a field to the output&#39;s attribute table indicating the flood elevation</span>
-    <span class="n">utils</span><span class="o">.</span><span class="n">add_field_with_value</span><span class="p">(</span>
-        <span class="n">table</span><span class="o">=</span><span class="n">flood_output</span><span class="p">,</span>
-        <span class="n">field_name</span><span class="o">=</span><span class="s">&#39;flood_elev&#39;</span><span class="p">,</span>
-        <span class="n">field_value</span><span class="o">=</span><span class="n">flood_elev</span><span class="p">,</span>
-    <span class="p">)</span>
+    <span class="c"># loop through each elevation defined above</span>
+    <span class="k">for</span> <span class="n">elev</span> <span class="ow">in</span> <span class="n">flood_elevs</span><span class="p">:</span>
+        <span class="c"># create an output file name for the scenario</span>
+        <span class="n">flood_output</span> <span class="o">=</span> <span class="n">flood_output_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">elev</span><span class="p">)</span>
 
-    <span class="c"># count the number of buildings impacted</span>
-    <span class="n">tidegates</span><span class="o">.</span><span class="n">count_of_impacts</span><span class="p">(</span>
-        <span class="n">floods_path</span><span class="o">=</span><span class="n">flood_output</span><span class="p">,</span>
-        <span class="n">flood_idcol</span><span class="o">=</span><span class="n">id_col</span><span class="p">,</span>
-        <span class="n">assets_input</span><span class="o">=</span><span class="s">&#39;buildings&#39;</span><span class="p">,</span> <span class="c"># building footprint layer in the GeoDB,</span>
-        <span class="n">asset_idcol</span><span class="o">=</span><span class="s">&#39;STRUCT_ID&#39;</span><span class="p">,</span> <span class="c"># unique field for each building</span>
-        <span class="n">fieldname</span><span class="o">=</span><span class="s">&#39;N_bldgs&#39;</span><span class="p">,</span> <span class="c"># name of the field we&#39;ll add to &#39;Example_flood&#39;</span>
-    <span class="p">)</span>
+        <span class="c"># estimate the spatial extent of the floods</span>
+        <span class="n">flooded_zones</span> <span class="o">=</span> <span class="n">tidegates</span><span class="o">.</span><span class="n">flood_area</span><span class="p">(</span>
+            <span class="n">topo_array</span><span class="o">=</span><span class="n">topo</span><span class="p">,</span>
+            <span class="n">zones_array</span><span class="o">=</span><span class="n">zones</span><span class="p">,</span>
+            <span class="n">template</span><span class="o">=</span><span class="n">template</span><span class="p">,</span>
+            <span class="n">ID_column</span><span class="o">=</span><span class="n">id_col</span><span class="p">,</span>
+            <span class="n">elevation_feet</span><span class="o">=</span><span class="n">elev</span><span class="p">,</span>
+            <span class="n">filename</span><span class="o">=</span><span class="n">flood_output</span><span class="p">,</span>
+        <span class="p">)</span>
 
-    <span class="c"># count the number of wetlands impacted</span>
-    <span class="n">tidegates</span><span class="o">.</span><span class="n">count_of_impacts</span><span class="p">(</span>
-        <span class="n">floods_path</span><span class="o">=</span><span class="n">flood_output</span><span class="p">,</span>
-        <span class="n">flood_idcol</span><span class="o">=</span><span class="n">id_col</span><span class="p">,</span>
-        <span class="n">assets_input</span><span class="o">=</span><span class="s">&#39;wetlands&#39;</span><span class="p">,</span> <span class="c"># wetlands layer in the GeoDB</span>
-        <span class="n">asset_idcol</span><span class="o">=</span><span class="s">&#39;WETCODE&#39;</span><span class="p">,</span> <span class="c"># unique field for each wetland</span>
-        <span class="n">fieldname</span><span class="o">=</span><span class="s">&#39;N_wtlds&#39;</span><span class="p">,</span> <span class="c"># name of the field we&#39;ll add to &#39;Example_flood&#39;</span>
-    <span class="p">)</span>
+        <span class="c"># add a field to the output&#39;s attribute table indicating the flood elevation</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">add_field_with_value</span><span class="p">(</span>
+            <span class="n">table</span><span class="o">=</span><span class="n">flood_output</span><span class="p">,</span>
+            <span class="n">field_name</span><span class="o">=</span><span class="s">&#39;flood_elev&#39;</span><span class="p">,</span>
+            <span class="n">field_value</span><span class="o">=</span><span class="n">elev</span><span class="p">,</span>
+        <span class="p">)</span>
 
-    <span class="c"># sum up the area of impacted wetlands behind each tidegate</span>
-    <span class="n">tidegates</span><span class="o">.</span><span class="n">area_of_impacts</span><span class="p">(</span>
-        <span class="n">floods_path</span><span class="o">=</span><span class="n">flood_output</span><span class="p">,</span>
-        <span class="n">ID_column</span><span class="o">=</span><span class="n">id_col</span><span class="p">,</span>
-        <span class="n">assets_input</span><span class="o">=</span><span class="s">&#39;wetlands&#39;</span><span class="p">,</span> <span class="c"># wetlands layer in the GeoDB</span>
-        <span class="n">fieldname</span><span class="o">=</span><span class="s">&#39;area_wtlds&#39;</span><span class="p">,</span> <span class="c"># name of the field we&#39;ll add to &#39;Example_flood&#39;</span>
-    <span class="p">)</span>
+        <span class="c"># count the number of buildings impacted</span>
+        <span class="n">tidegates</span><span class="o">.</span><span class="n">count_of_impacts</span><span class="p">(</span>
+            <span class="n">floods_path</span><span class="o">=</span><span class="n">flood_output</span><span class="p">,</span>
+            <span class="n">flood_idcol</span><span class="o">=</span><span class="n">id_col</span><span class="p">,</span>
+            <span class="n">assets_input</span><span class="o">=</span><span class="s">&#39;buildings&#39;</span><span class="p">,</span> <span class="c"># building footprint layer in the GeoDB,</span>
+            <span class="n">asset_idcol</span><span class="o">=</span><span class="s">&#39;STRUCT_ID&#39;</span><span class="p">,</span> <span class="c"># unique field for each building</span>
+            <span class="n">fieldname</span><span class="o">=</span><span class="s">&#39;N_bldgs&#39;</span><span class="p">,</span> <span class="c"># name of the field we&#39;ll add to &#39;Example_flood&#39;</span>
+        <span class="p">)</span>
+
+        <span class="c"># count the number of wetlands impacted</span>
+        <span class="n">tidegates</span><span class="o">.</span><span class="n">count_of_impacts</span><span class="p">(</span>
+            <span class="n">floods_path</span><span class="o">=</span><span class="n">flood_output</span><span class="p">,</span>
+            <span class="n">flood_idcol</span><span class="o">=</span><span class="n">id_col</span><span class="p">,</span>
+            <span class="n">assets_input</span><span class="o">=</span><span class="s">&#39;wetlands&#39;</span><span class="p">,</span> <span class="c"># wetlands layer in the GeoDB</span>
+            <span class="n">asset_idcol</span><span class="o">=</span><span class="s">&#39;WETCODE&#39;</span><span class="p">,</span> <span class="c"># unique field for each wetland</span>
+            <span class="n">fieldname</span><span class="o">=</span><span class="s">&#39;N_wtlds&#39;</span><span class="p">,</span> <span class="c"># name of the field we&#39;ll add to &#39;Example_flood&#39;</span>
+        <span class="p">)</span>
+
+        <span class="c"># sum up the area of impacted wetlands behind each tidegate</span>
+        <span class="n">tidegates</span><span class="o">.</span><span class="n">area_of_impacts</span><span class="p">(</span>
+            <span class="n">floods_path</span><span class="o">=</span><span class="n">flood_output</span><span class="p">,</span>
+            <span class="n">ID_column</span><span class="o">=</span><span class="n">id_col</span><span class="p">,</span>
+            <span class="n">assets_input</span><span class="o">=</span><span class="s">&#39;wetlands&#39;</span><span class="p">,</span> <span class="c"># wetlands layer in the GeoDB</span>
+            <span class="n">fieldname</span><span class="o">=</span><span class="s">&#39;area_wtlds&#39;</span><span class="p">,</span> <span class="c"># name of the field we&#39;ll add to &#39;Example_flood&#39;</span>
+        <span class="p">)</span>
 </pre></div>
 </div>
 </div>
