@@ -181,7 +181,7 @@ General descriptions
 The :mod:`tidegates.analysis` submodule contains five functions:
 
 :func:`tidegates.analysis.process_dem_and_zones`
-    Does the prelimarary job of converting the elevation data and zones of influence to rasters.
+    Does the preliminary job of converting the elevation data and zones of influence to rasters.
     This can be quite computationally expensive, so it's handy have it in a seperate function.
     This let's you do that pre-processing once, and then feed its results to the other functions as you evaluate potentially many scenarios.
 
