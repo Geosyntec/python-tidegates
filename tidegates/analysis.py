@@ -127,7 +127,7 @@ def process_dem_and_zones(dem, zones, ID_column, cleanup=True, **verbose_options
 
 
 def flood_area(topo_array, zones_array, template, ID_column, elevation_feet,
-               filename=None, cleanup=True, **verbose_options):
+               filename=None, num=0, cleanup=True, **verbose_options):
     """ Mask out portions of a a tidegates area of influence below
     a certain elevation.
 
@@ -188,7 +188,7 @@ def flood_area(topo_array, zones_array, template, ID_column, elevation_feet,
         datestring = datetime.datetime.now().strftime(datefmt)
         temp_filename = "_temp_FloodedZones_" + datestring
     else:
-        temp_filename = utils.create_temp_filename(filename, filetype='shape')
+        temp_filename = utils.create_temp_filename(filename, filetype='shape', num=num)
 
     # compute floods of zoned areas of topo
     flooded_array = utils.flood_zones(
@@ -200,7 +200,7 @@ def flood_area(topo_array, zones_array, template, ID_column, elevation_feet,
     )
 
     # convert flooded zone array back into a Raster
-    _fr_outfile = utils.create_temp_filename('floods_raster', filetype='raster')
+    _fr_outfile = utils.create_temp_filename('floods_raster', filetype='raster', num=num)
     flooded_raster = utils.array_to_raster(
         array=flooded_array,
         template=template,

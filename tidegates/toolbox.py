@@ -346,7 +346,8 @@ class StandardScenarios(object):
         return params
 
     @staticmethod
-    def _prep_flooder_input(elev=None, surge=None, slr=None, flood_output=None):
+    def _prep_flooder_input(elev=None, surge=None, slr=None, num=None,
+                            flood_output=None):
         """ Prepares the basic inputs to the :meth:`.analyze` method.
 
         Parameters
@@ -383,7 +384,8 @@ class StandardScenarios(object):
             raise ValueError('must provide a `flood_output`')
 
         basename, ext = os.path.splitext(flood_output)
-        temp_fname = basename + str(elevation).replace('.', '_') + ext
+        _temp_fname = basename + str(elevation).replace('.', '_') + ext
+        temp_fname = utils.create_temp_filename(_temp_fname, num=num, prefix='', filetype='shape')
 
         return elevation, title, temp_fname
 
@@ -600,7 +602,7 @@ class StandardScenarios(object):
                         'elev': None,
                         'surge_name': surge_name,
                         'surge_elev': surge_elev,
-                        'slr': slr
+                        'slr': slr,
                     }
                     scenario_list.append(scenario)
         # custom floods
@@ -610,14 +612,14 @@ class StandardScenarios(object):
                     'elev': float(elev),
                     'surge_name': None,
                     'surge_elev': None,
-                    'slr': None
+                    'slr': None,
                 }
                 scenario_list.append(scenario)
 
         return scenario_list
 
     def analyze(self, topo_array, zones_array, template,
-                elev=None, surge=None, slr=None, **params):
+                elev=None, surge=None, slr=None, num=0, **params):
         """ Tool-agnostic helper function for :meth:`.main_execute`.
 
         Parameters
@@ -658,6 +660,7 @@ class StandardScenarios(object):
             elev=elev,
             surge=surge,
             slr=slr,
+            num=num,
         )
 
         # define the scenario in the message windows
@@ -671,14 +674,15 @@ class StandardScenarios(object):
             ID_column=params['ID_column'],
             elevation_feet=elev,
             filename=floods_path,
+            num=num,
             verbose=True,
             asMessage=True
         )
         self._add_scenario_columns(flooded_zones.dataSource, elev=elev, surge=surge, slr=slr)
 
         # setup temporary files for impacted wetlands and buildings
-        wl_path = utils.create_temp_filename(floods_path, prefix="_wetlands_", filetype='shape')
-        bldg_path = utils.create_temp_filename(floods_path, prefix="_buildings_", filetype='shape')
+        wl_path = utils.create_temp_filename(floods_path, prefix="_wetlands_", filetype='shape', num=num)
+        bldg_path = utils.create_temp_filename(floods_path, prefix="_buildings_", filetype='shape', num=num)
 
         # asses impacts due to flooding
         fldlyr, wtlndlyr, blgdlyr = tidegates.assess_impact(
@@ -792,7 +796,7 @@ class StandardScenarios(object):
                 ID_column=params['ID_column']
             )
 
-            for scenario in self.make_scenarios(**params):
+            for num, scenario in enumerate(self.make_scenarios(**params)):
                 fldlyr, wtlndlyr, blgdlyr = self.analyze(
                     topo_array=topo_array,
                     zones_array=zones_array,
@@ -800,6 +804,7 @@ class StandardScenarios(object):
                     elev=scenario['elev'],
                     surge=scenario['surge_name'],
                     slr=scenario['slr'],
+                    num=num,
                     **params
                 )
                 all_floods.append(fldlyr.dataSource)
