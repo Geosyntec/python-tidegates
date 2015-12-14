@@ -340,7 +340,7 @@ def update_status(): # pragma: no cover
     return decorate
 
 
-def create_temp_filename(filepath, filetype=None, prefix='_temp_'):
+def create_temp_filename(filepath, filetype=None, prefix='_temp_', num=None):
     """ Helper function to create temporary filenames before to be saved
     before the final output has been generated.
 
@@ -353,6 +353,9 @@ def create_temp_filename(filepath, filetype=None, prefix='_temp_'):
         "Shape".
     prefix : str, optional ('_temp_')
         The prefix that will be applied to ``filepath``.
+    num : int, optional
+        A file "number" that can be appended to the very end of the
+        filename.
 
     Returns
     -------
@@ -370,6 +373,11 @@ def create_temp_filename(filepath, filetype=None, prefix='_temp_'):
         'shape': '.shp'
     }
 
+    if num is None:
+        num = ''
+    else:
+        num = '_{}'.format(num)
+
     ws = arcpy.env.workspace or '.'
     filename, _ = os.path.splitext(os.path.basename(filepath))
     folder = os.path.dirname(filepath)
@@ -384,7 +392,7 @@ def create_temp_filename(filepath, filetype=None, prefix='_temp_'):
         ext = file_extensions[filetype.lower()]
 
 
-    return os.path.join(ws, folder, prefix + filename + ext)
+    return os.path.join(ws, folder, prefix + filename + num + ext)
 
 
 def _check_fields(table, *fieldnames, **kwargs):
