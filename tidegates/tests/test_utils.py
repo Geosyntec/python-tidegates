@@ -176,6 +176,16 @@ class Test_create_temp_filename():
             temp_shape = utils.create_temp_filename(os.path.join('subfolder','test'), filetype='shape')
             nt.assert_equal(temp_shape, known_shape)
 
+    def test_folderworkspace_withsubfolder_with_num(self):
+        with utils.WorkSpace(self.folderworkspace):
+            known_raster = os.path.join(self.folderworkspace, 'subfolder', '_temp_test_1.tif')
+            temp_raster = utils.create_temp_filename(os.path.join('subfolder', 'test'), filetype='raster', num=1)
+            nt.assert_equal(temp_raster, known_raster)
+
+            known_shape = os.path.join(self.folderworkspace, 'subfolder', '_temp_test_12.shp')
+            temp_shape = utils.create_temp_filename(os.path.join('subfolder','test'), filetype='shape', num=12)
+            nt.assert_equal(temp_shape, known_shape)
+
     def test_folderworkspace_barefile(self):
         with utils.WorkSpace(self.folderworkspace):
             known_raster = os.path.join(self.folderworkspace, '_temp_test.tif')
@@ -186,6 +196,16 @@ class Test_create_temp_filename():
             temp_shape = utils.create_temp_filename('test', filetype='shape')
             nt.assert_equal(temp_shape, known_shape)
 
+    def test_folderworkspace_barefile_with_num(self):
+        with utils.WorkSpace(self.folderworkspace):
+            known_raster = os.path.join(self.folderworkspace, '_temp_test_14.tif')
+            temp_raster = utils.create_temp_filename('test', filetype='raster', num=14)
+            nt.assert_equal(temp_raster, known_raster)
+
+            known_shape = os.path.join(self.folderworkspace, '_temp_test_3.shp')
+            temp_shape = utils.create_temp_filename('test', filetype='shape', num=3)
+            nt.assert_equal(temp_shape, known_shape)
+
     def test_geodb_barefile(self):
         with utils.WorkSpace(self.geodbworkspace):
             known_raster = os.path.join(self.geodbworkspace, '_temp_test')
@@ -194,6 +214,16 @@ class Test_create_temp_filename():
 
             known_shape = os.path.join(self.geodbworkspace, '_temp_test')
             temp_shape = utils.create_temp_filename('test', filetype='shape')
+            nt.assert_equal(temp_shape, known_shape)
+
+    def test_geodb_barefile_with_num(self):
+        with utils.WorkSpace(self.geodbworkspace):
+            known_raster = os.path.join(self.geodbworkspace, '_temp_test_7')
+            temp_raster = utils.create_temp_filename('test', filetype='raster', num=7)
+            nt.assert_equal(temp_raster, known_raster)
+
+            known_shape = os.path.join(self.geodbworkspace, '_temp_test_22')
+            temp_shape = utils.create_temp_filename('test', filetype='shape', num=22)
             nt.assert_equal(temp_shape, known_shape)
 
     def test_geodb_as_subfolder(self):
@@ -207,6 +237,17 @@ class Test_create_temp_filename():
             temp_shape = utils.create_temp_filename(filename, filetype='shape')
             nt.assert_equal(temp_shape, known_shape)
 
+    def test_geodb_as_subfolder_with_num(self):
+        with utils.WorkSpace(self.folderworkspace):
+            filename = os.path.join(self.geodbworkspace, 'test')
+            known_raster = os.path.join(self.folderworkspace, self.geodbworkspace, '_temp_test_5')
+            temp_raster = utils.create_temp_filename(filename, filetype='raster', num=5)
+            nt.assert_equal(temp_raster, known_raster)
+
+            known_shape = os.path.join(self.folderworkspace, self.geodbworkspace, '_temp_test_99')
+            temp_shape = utils.create_temp_filename(filename, filetype='shape', num=99)
+            nt.assert_equal(temp_shape, known_shape)
+
     def test_with_extension_geodb(self):
         with utils.WorkSpace(self.folderworkspace):
             filename = os.path.join(self.geodbworkspace, 'test')
@@ -218,6 +259,17 @@ class Test_create_temp_filename():
             temp_shape = utils.create_temp_filename(filename + '.tif', filetype='shape')
             nt.assert_equal(temp_shape, known_shape)
 
+    def test_with_extension_geodb_with_num(self):
+        with utils.WorkSpace(self.folderworkspace):
+            filename = os.path.join(self.geodbworkspace, 'test')
+            known_raster = os.path.join(self.folderworkspace, self.geodbworkspace, '_temp_test_2000')
+            temp_raster = utils.create_temp_filename(filename + '.tif', filetype='raster', num=2000)
+            nt.assert_equal(temp_raster, known_raster)
+
+            known_shape = os.path.join(self.folderworkspace, self.geodbworkspace, '_temp_test_999')
+            temp_shape = utils.create_temp_filename(filename + '.tif', filetype='shape', num=999)
+            nt.assert_equal(temp_shape, known_shape)
+
     def test_with_extension_folder(self):
         with utils.WorkSpace(self.folderworkspace):
             filename = 'test'
@@ -227,6 +279,17 @@ class Test_create_temp_filename():
 
             known_shape = os.path.join(self.folderworkspace, '_temp_test.shp')
             temp_shape = utils.create_temp_filename(filename + '.shp', filetype='shape')
+            nt.assert_equal(temp_shape, known_shape)
+
+    def test_with_extension_folder_with_num(self):
+        with utils.WorkSpace(self.folderworkspace):
+            filename = 'test'
+            known_raster = os.path.join(self.folderworkspace, '_temp_test_4.tif')
+            temp_raster = utils.create_temp_filename(filename + '.tif', filetype='raster', num=4)
+            nt.assert_equal(temp_raster, known_raster)
+
+            known_shape = os.path.join(self.folderworkspace, '_temp_test_4.shp')
+            temp_shape = utils.create_temp_filename(filename + '.shp', filetype='shape', num=4)
             nt.assert_equal(temp_shape, known_shape)
 
 

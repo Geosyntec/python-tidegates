@@ -169,13 +169,13 @@ class CheckToolbox_Mixin(object):
         elev, header, fname = self.tbx._prep_flooder_input(elev="7.8", flood_output="test.shp")
         nt.assert_equal(elev, 7.8)
         nt.assert_equal(header, "Analyzing flood elevation: 7.8 ft")
-        nt.assert_equal(fname, 'test7_8.shp')
+        nt.assert_equal(fname, os.path.join('.', 'test7_8.shp'))
 
     def test__prep_flooder_input_surge_and_slr(self):
         elev, header, fname = self.tbx._prep_flooder_input(slr=2.5, surge='50yr', flood_output="test.shp")
         nt.assert_equal(elev, 12.1)
         nt.assert_equal(header, "Analyzing flood elevation: 12.1 ft (50yr, 2.5)")
-        nt.assert_equal(fname, 'test12_1.shp')
+        nt.assert_equal(fname, os.path.join('.', 'test12_1.shp'))
 
     def test_dem(self):
         nt.assert_true(hasattr(self.tbx, 'dem'))
@@ -325,6 +325,7 @@ class CheckToolbox_Mixin(object):
             dem=test_dem,
             zones=test_zones,
             ID_column="GeoID",
+
             cleanup=True,
             verbose=False
         )
@@ -337,6 +338,7 @@ class CheckToolbox_Mixin(object):
                 elev=self.elev,
                 slr=self.slr,
                 surge=self.surge,
+                num=None,
                 flood_output=output,
                 dem=test_dem,
                 zones=test_zones,
@@ -380,6 +382,7 @@ class CheckToolbox_Mixin(object):
                 elev=self.elev,
                 slr=self.slr,
                 surge=self.surge,
+                num=None,
                 flood_output=output,
                 dem=test_dem,
                 zones=test_zones,
